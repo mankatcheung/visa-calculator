@@ -22,7 +22,6 @@ export default async function middleware(request: NextRequest) {
   response.headers.set("x-your-custom-locale", defaultLocale);
 
   const [, locale, ...segments] = request.nextUrl.pathname.split("/");
-  console.log(request.nextUrl.pathname);
   const isAuthPath = AUTH_PATHS.includes(segments?.[0]);
 
   if (!isAuthPath) {

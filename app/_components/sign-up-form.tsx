@@ -27,8 +27,8 @@ export function SignUpForm({
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (loading) return;
-
     const formData = new FormData(event.currentTarget);
+
     startTransition(async () => {
       const res = await signUp(formData);
       // if (res && res.error) {
@@ -51,6 +51,7 @@ export function SignUpForm({
                 <Label htmlFor="email">{t("email")}</Label>
                 <Input
                   id="email"
+                  name="email"
                   type="email"
                   placeholder="m@example.com"
                   required
@@ -60,7 +61,7 @@ export function SignUpForm({
                 <div className="flex items-center">
                   <Label htmlFor="password">{t("password")}</Label>
                 </div>
-                <Input id="password" type="password" required />
+                <Input id="password" name="password" type="password" required />
               </div>
               <div className="grid gap-2">
                 <div className="flex items-center">
@@ -68,7 +69,12 @@ export function SignUpForm({
                     {t("confirmPassword")}
                   </Label>
                 </div>
-                <Input id="confirmPassword" type="password" required />
+                <Input
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  type="password"
+                  required
+                />
               </div>
               <Button type="submit" className="w-full">
                 {t("signUp")}
