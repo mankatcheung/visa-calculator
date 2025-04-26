@@ -1,6 +1,11 @@
 import createMiddleware from "next-intl/middleware";
-import { NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+import { SESSION_COOKIE } from "./config";
+import { getInjection } from "./di/container";
+
 type localeType = "en" | "zh-Hant-HK";
+
+const AUTH_PATHS = ["sign-in", "sign-up"];
 
 export default async function middleware(request: NextRequest) {
   // Step 1: Use the incoming request (example)
@@ -16,14 +21,32 @@ export default async function middleware(request: NextRequest) {
   // Step 3: Alter the response (example)
   response.headers.set("x-your-custom-locale", defaultLocale);
 
+  const [, locale, ...segments] = request.nextUrl.pathname.split("/");
+  console.log(request.nextUrl.pathname);
+  const isAuthPath = AUTH_PATHS.includes(segments?.[0]);
+
+  if (!isAuthPath) {
+    const sessionId = request.cookies.get(SESSION_COOKIE)?.value;
+    if (!sessionId) {
+      return NextResponse.redirect(
+        new URL(`/${defaultLocale}/sign-in`, request.url),
+      );
+    }
+    try {
+      const authenticationService = getInjection("IAuthenticationService");
+      await authenticationService.validateSession(sessionId);
+    } catch (err) {
+      return NextResponse.redirect(
+        new URL(`/${defaultLocale}/sign-in`, request.url),
+      );
+    }
+  }
   return response;
 }
 
 export const config = {
   // Match only internationalized pathnames
   matcher: [
-    "/",
-    "/(en|zh-Hant-HK)/:path*",
-    "/((?!api|trpc|_next|_vercel|.*\\..*).*)",
+    "/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt).*)",
   ],
 };

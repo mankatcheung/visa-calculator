@@ -1,1 +1,12 @@
-{}
+{
+  "signIn": "登入",
+  "signUp": "註冊",
+  "signInDescription": "請在下面輸入您的電郵以登入您的帳戶",
+  "signUpDescription": "請在下面輸入您的電郵以創建您的帳戶",
+  "email": "電郵",
+  "password": "密碼",
+  "confirmPassword": "確認密碼",
+  "forgotPassword": "忘記密碼",
+  "dontHaveAnAccount": "還沒有帳戶？",
+  "alreadyHaveAnAccount": "已經有帳戶？"
+}

@@ -1,1 +1,12 @@
-{}
+{
+  "signIn": "Sign In",
+  "signUp": "Sign Up",
+  "signInDescription": "Enter your email below to login to your account",
+  "signUpDescription": "Enter your email below to create your account",
+  "email": "Email",
+  "password": "Password",
+  "confirmPassword": "Confirm Password",
+  "forgotPassword": "Forgot Password",
+  "dontHaveAnAccount": "Don't have an account?",
+  "alreadyHaveAnAccount": "Already have an account?"
+}
