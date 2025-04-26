@@ -30,7 +30,7 @@ export default async function RootLayout({
     notFound();
   }
   return (
-    <html lang={locale}>
+    <html lang={locale} suppressHydrationWarning>
       <body
         className={cn(
           "min-h-screen font-sans antialiased flex items-center justify-center",
@@ -38,9 +38,9 @@ export default async function RootLayout({
         )}
       >
         <NextIntlClientProvider>
-          {/* <ThemeProvider attribute="class" defaultTheme="system" enableSystem> */}
-          {children}
-          {/* </ThemeProvider> */}
+          <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+            {children}
+          </ThemeProvider>
           {/* <Toaster position="bottom-center" /> */}
         </NextIntlClientProvider>
       </body>
