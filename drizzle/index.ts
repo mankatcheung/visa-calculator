@@ -1,14 +1,16 @@
 import { ExtractTablesWithRelations } from "drizzle-orm";
-import { PgTransaction } from "drizzle-orm/pg-core";
-
-import { drizzle, PostgresJsQueryResultHKT } from "drizzle-orm/postgres-js";
-import postgres from "postgres";
+import { drizzle } from "drizzle-orm/libsql";
 import { sessions, users, leaves } from "./schema";
 
-const connectionString = process.env.DATABASE_URL;
+import { SQLiteTransaction } from "drizzle-orm/sqlite-core";
+import { createClient, ResultSet } from "@libsql/client";
 
-// Disable prefetch as it is not supported for "Transaction" pool mode
-const client = postgres(connectionString!, { prepare: false });
+const connectionString = process.env.DATABASE_URL;
+const databaseToken = process.env.DATABASE_AUTH_TOKEN;
+const client = createClient({
+  url: connectionString ?? "file:sqlite.db",
+  authToken: databaseToken,
+});
 
 export const db = drizzle(client, { schema: { users, sessions, leaves } });
 
@@ -18,8 +20,9 @@ type Schema = {
   leaves: typeof leaves;
 };
 
-export type Transaction = PgTransaction<
-  PostgresJsQueryResultHKT,
+export type Transaction = SQLiteTransaction<
+  "async",
+  ResultSet,
   Schema,
   ExtractTablesWithRelations<Schema>
 >;

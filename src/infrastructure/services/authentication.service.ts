@@ -1,7 +1,6 @@
 import { compare } from "bcrypt-ts";
 
 import { SESSION_COOKIE } from "@/config";
-import { type IUsersRepository } from "@/src/application/repositories/users.repository.interface";
 import { IAuthenticationService } from "@/src/application/services/authentication.service.interface";
 import { UnauthenticatedError } from "@/src/entities/errors/auth";
 import { Cookie } from "@/src/entities/models/cookie";
@@ -67,7 +66,7 @@ export class AuthenticationService implements IAuthenticationService {
         if (!result.user || !result.session) {
           throw new UnauthenticatedError("Unauthenticated");
         }
-        if (Date.now() >= result.session.expires_at.getTime()) {
+        if (Date.now() >= new Date(result.session.expires_at).getTime()) {
           await this._sessionRepository.deleteSession(sessionId);
           throw new UnauthenticatedError("Session Expired");
         }

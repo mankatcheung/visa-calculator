@@ -1,0 +1,1 @@
+ALTER TABLE `sessions` ALTER COLUMN "expires_at" TO "expires_at" integer NOT NULL;

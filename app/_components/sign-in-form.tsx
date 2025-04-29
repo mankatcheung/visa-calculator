@@ -14,12 +14,30 @@ import { Input } from "./ui/input";
 import { Link } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { Separator } from "./ui/separator";
+import { useTransition } from "react";
+import { signIn } from "../[locale]/(auth)/actions";
 
 export function SignInForm({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<"div">) {
   const t = useTranslations();
+  const [loading, startTransition] = useTransition();
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (loading) return;
+    const formData = new FormData(event.currentTarget);
+
+    startTransition(async () => {
+      const res = await signIn(formData);
+      if (res && res.error) {
+        // setError(res.error);
+        console.log(res.error);
+      }
+    });
+  };
+
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
@@ -28,13 +46,14 @@ export function SignInForm({
           <CardDescription>{t("signInDescription")}</CardDescription>
         </CardHeader>
         <CardContent>
-          <form>
+          <form onSubmit={handleSubmit}>
             <div className="flex flex-col gap-6">
               <div className="grid gap-2">
                 <Label htmlFor="email">{t("email")}</Label>
                 <Input
                   id="email"
                   type="email"
+                  name="email"
                   placeholder="m@example.com"
                   required
                 />
@@ -49,7 +68,7 @@ export function SignInForm({
                     {t("forgotPassword")}
                   </a>
                 </div>
-                <Input id="password" type="password" required />
+                <Input id="password" name="password" type="password" required />
               </div>
               <Button type="submit" className="w-full">
                 {t("signIn")}

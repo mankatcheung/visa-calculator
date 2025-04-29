@@ -31,9 +31,10 @@ export function SignUpForm({
 
     startTransition(async () => {
       const res = await signUp(formData);
-      // if (res && res.error) {
-      //   setError(res.error);
-      // }
+      if (res && res.error) {
+        // setError(res.error);
+        console.log(res.error);
+      }
     });
   };
 
