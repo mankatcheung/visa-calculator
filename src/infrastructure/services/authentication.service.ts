@@ -4,7 +4,7 @@ import { SESSION_COOKIE } from "@/config";
 import { IAuthenticationService } from "@/src/application/services/authentication.service.interface";
 import { UnauthenticatedError } from "@/src/entities/errors/auth";
 import { Cookie } from "@/src/entities/models/cookie";
-import { Session, sessionSchema } from "@/src/entities/models/session";
+import { Session } from "@/src/entities/models/session";
 import { User } from "@/src/entities/models/user";
 import type { IInstrumentationService } from "@/src/application/services/instrumentation.service.interface";
 import { ISessionsRepository } from "@/src/application/repositories/sessions.repository.interface";

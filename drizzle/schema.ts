@@ -1,3 +1,4 @@
+import { sql } from "drizzle-orm";
 import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
 export const users = sqliteTable("users", {
@@ -15,8 +16,10 @@ export const sessions = sqliteTable("sessions", {
 });
 
 export const leaves = sqliteTable("leaves", {
-  id: text("id").primaryKey().notNull(),
-  created_at: integer("created_at", { mode: "timestamp" }).notNull(),
+  id: integer("id").primaryKey({ autoIncrement: true }).notNull(),
+  created_at: integer("created_at", { mode: "timestamp" })
+    .notNull()
+    .default(sql`(unixepoch())`),
   start_date: integer("start_date", { mode: "timestamp" }).notNull(),
   end_date: integer("end_date", { mode: "timestamp" }).notNull(),
   color: text("color"),
@@ -25,5 +28,3 @@ export const leaves = sqliteTable("leaves", {
     .references(() => users.id)
     .notNull(),
 });
-
-export type InsertLeave = typeof leaves.$inferInsert;

@@ -10,6 +10,7 @@ import { ISignOutUseCase } from "@/src/application/use-cases/auth/sign-out.use-c
 import { ISignUpUseCase } from "@/src/application/use-cases/auth/sign-up.use-case";
 import { ICreateLeaveUseCase } from "@/src/application/use-cases/leaves/create-leave.use-case";
 import { IDeleteLeaveUseCase } from "@/src/application/use-cases/leaves/delete-leave.use-case";
+import { IGetLeaveUseCase } from "@/src/application/use-cases/leaves/get-leave.use-case";
 import { IGetLeavesForUserUseCase } from "@/src/application/use-cases/leaves/get-leaves-for-user.use-case";
 import { IUpdateLeaveUseCase } from "@/src/application/use-cases/leaves/update-leave.use-case";
 import { ISignInController } from "@/src/interface-adapters/controllers/auth/sign-in.controller";
@@ -17,6 +18,7 @@ import { ISignOutController } from "@/src/interface-adapters/controllers/auth/si
 import { ISignUpController } from "@/src/interface-adapters/controllers/auth/sign-up.controller";
 import { ICreateLeaveController } from "@/src/interface-adapters/controllers/leaves/create-leave.controller";
 import { IDeleteLeaveController } from "@/src/interface-adapters/controllers/leaves/delete-leave.controller";
+import { IGetLeaveController } from "@/src/interface-adapters/controllers/leaves/get-leave.controller";
 import { IGetLeavesForUserController } from "@/src/interface-adapters/controllers/leaves/get-leaves-for-user.controller";
 import { IUpdateLeaveController } from "@/src/interface-adapters/controllers/leaves/update-leave.controller";
 
@@ -36,6 +38,7 @@ export const DI_SYMBOLS = {
   ICreateLeaveUseCase: Symbol.for("ICreateLeaveUseCase"),
   IDeleteLeaveUseCase: Symbol.for("IDeleteLeaveUseCase"),
   IGetLeavesForUserUseCase: Symbol.for("IGetLeavesForUserUseCase"),
+  IGetLeaveUseCase: Symbol.for("IGetLeaveUseCase"),
   IUpdateLeaveUseCase: Symbol.for("IUpdateLeaveUseCase"),
   ISignInUseCase: Symbol.for("ISignInUseCase"),
   ISignOutUseCase: Symbol.for("ISignOutUseCase"),
@@ -48,6 +51,7 @@ export const DI_SYMBOLS = {
   ICreateLeaveController: Symbol.for("ICreateLeaveController"),
   IDeleteLeaveController: Symbol.for("IDeleteLeaveController"),
   IGetLeavesForUserController: Symbol.for("IGetLeavesForUserController"),
+  IGetLeaveController: Symbol.for("IGetLeaveController"),
   IUpdateLeaveController: Symbol.for("IUpdateLeaveController"),
 };
 
@@ -67,6 +71,7 @@ export interface DI_RETURN_TYPES {
   ICreateLeaveUseCase: ICreateLeaveUseCase;
   IDeleteLeaveUseCase: IDeleteLeaveUseCase;
   IGetLeavesForUserUseCase: IGetLeavesForUserUseCase;
+  IGetLeaveUseCase: IGetLeaveUseCase;
   IUpdateLeaveUseCase: IUpdateLeaveUseCase;
   ISignInUseCase: ISignInUseCase;
   ISignOutUseCase: ISignOutUseCase;
@@ -78,6 +83,7 @@ export interface DI_RETURN_TYPES {
   ISignUpController: ISignUpController;
   ICreateLeaveController: ICreateLeaveController;
   IDeleteLeaveController: IDeleteLeaveController;
+  IGetLeaveController: IGetLeaveController;
   IGetLeavesForUserController: IGetLeavesForUserController;
   IUpdateLeaveController: IUpdateLeaveController;
 }

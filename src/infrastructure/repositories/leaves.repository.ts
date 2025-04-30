@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { eq, asc } from "drizzle-orm";
 
 import { db, Transaction } from "@/drizzle";
 import { leaves } from "@/drizzle/schema";
@@ -21,10 +21,7 @@ export class LeavesRepository implements ILeavesRepository {
       { name: "LeavesRepository > createLeave" },
       async () => {
         try {
-          const query = invoker
-            .insert(leaves)
-            .values({ ...leave, created_at: new Date() })
-            .returning();
+          const query = invoker.insert(leaves).values(leave).returning();
 
           const [created] = await this.instrumentationService.startSpan(
             {
@@ -81,7 +78,8 @@ export class LeavesRepository implements ILeavesRepository {
       async () => {
         try {
           const query = db.query.leaves.findMany({
-            where: eq(leaves.user, userId),
+            orderBy: [asc(leaves.start_date)],
+            where: eq(leaves.user_id, userId),
           });
 
           const usersLeaves = await this.instrumentationService.startSpan(

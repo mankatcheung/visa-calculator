@@ -14,8 +14,8 @@ export const updateLeaveUseCase =
   (
     input: {
       id: number;
-      start_date: string;
-      end_date: string;
+      start_date: Date;
+      end_date: Date;
       color?: string;
       remarks?: string;
     },
@@ -33,7 +33,7 @@ export const updateLeaveUseCase =
           throw new NotFoundError("Leave does not exist");
         }
 
-        if (leave.user !== userId) {
+        if (leave.user_id !== userId) {
           throw new UnauthorizedError(
             "Cannot delete leave. Reason: unauthorized",
           );

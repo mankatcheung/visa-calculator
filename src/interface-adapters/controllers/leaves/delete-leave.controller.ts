@@ -40,7 +40,7 @@ export const deleteLeaveController =
         }
 
         await instrumentationService.startSpan(
-          { name: "Create Leave Transaction" },
+          { name: "Delete Leave Transaction" },
           async () =>
             transactionManagerService.startTransaction(async (tx) => {
               try {

@@ -13,6 +13,8 @@ import { DI_SYMBOLS } from "@/di/types";
 import { updateLeaveUseCase } from "@/src/application/use-cases/leaves/update-leave.use-case";
 import { updateLeaveController } from "@/src/interface-adapters/controllers/leaves/update-leave.controller";
 import { deleteLeaveController } from "@/src/interface-adapters/controllers/leaves/delete-leave.controller";
+import { getLeaveUseCase } from "@/src/application/use-cases/leaves/get-leave.use-case";
+import { getLeaveController } from "@/src/interface-adapters/controllers/leaves/get-leave.controller";
 
 export function createLeavesModule() {
   const leavesModule = createModule();
@@ -41,6 +43,13 @@ export function createLeavesModule() {
   leavesModule
     .bind(DI_SYMBOLS.IGetLeavesForUserUseCase)
     .toHigherOrderFunction(getLeavesForUserUseCase, [
+      DI_SYMBOLS.IInstrumentationService,
+      DI_SYMBOLS.ILeavesRepository,
+    ]);
+
+  leavesModule
+    .bind(DI_SYMBOLS.IGetLeaveUseCase)
+    .toHigherOrderFunction(getLeaveUseCase, [
       DI_SYMBOLS.IInstrumentationService,
       DI_SYMBOLS.ILeavesRepository,
     ]);
@@ -79,10 +88,19 @@ export function createLeavesModule() {
     ]);
 
   leavesModule
+    .bind(DI_SYMBOLS.IGetLeaveController)
+    .toHigherOrderFunction(getLeaveController, [
+      DI_SYMBOLS.IInstrumentationService,
+      DI_SYMBOLS.IAuthenticationService,
+      DI_SYMBOLS.IGetLeaveUseCase,
+    ]);
+
+  leavesModule
     .bind(DI_SYMBOLS.IDeleteLeaveController)
     .toHigherOrderFunction(deleteLeaveController, [
       DI_SYMBOLS.IInstrumentationService,
       DI_SYMBOLS.IAuthenticationService,
+      DI_SYMBOLS.ITransactionManagerService,
       DI_SYMBOLS.IDeleteLeaveUseCase,
     ]);
 

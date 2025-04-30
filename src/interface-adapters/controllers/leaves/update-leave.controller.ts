@@ -17,21 +17,20 @@ function presenter(
     () => {
       return {
         id: leave.id,
-        created_at: leave.created_at,
-        start_date: leave.start_date,
-        end_date: leave.end_date,
+        createdAt: new Date(leave.created_at),
+        start_date: new Date(leave.start_date),
+        end_date: new Date(leave.end_date),
         color: leave.color,
         remarks: leave.remarks,
-        user: leave.user,
       };
     },
   );
 }
 
 const inputSchema = z.object({
-  id: z.number(),
-  start_date: z.date(),
-  end_date: z.date(),
+  id: z.string(),
+  startDate: z.string(),
+  endDate: z.string(),
   color: z.string().optional(),
   remarks: z.string().optional(),
 });
@@ -72,9 +71,9 @@ export const updateLeaveController =
               try {
                 return await updateLeaveUseCase(
                   {
-                    id: data.id,
-                    start_date: data.start_date.toString(),
-                    end_date: data.end_date.toString(),
+                    id: Number(data.id),
+                    start_date: new Date(data.startDate),
+                    end_date: new Date(data.endDate),
                     color: data.color,
                     remarks: data.remarks,
                   },

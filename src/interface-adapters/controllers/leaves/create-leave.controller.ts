@@ -17,24 +17,21 @@ function presenter(
     () => {
       return {
         id: leave.id,
-        created_at: leave.created_at,
-        start_date: leave.start_date,
-        end_date: leave.end_date,
+        created_at: new Date(leave.created_at),
+        start_date: new Date(leave.start_date),
+        end_date: new Date(leave.end_date),
         color: leave.color,
         remarks: leave.remarks,
-        user: leave.user,
       };
     },
   );
 }
 
 const inputSchema = z.object({
-  created_at: z.string().datetime(),
-  start_date: z.date(),
-  end_date: z.date(),
+  startDate: z.string(),
+  endDate: z.string(),
   color: z.string().optional(),
   remarks: z.string().optional(),
-  user: z.string(),
 });
 
 export type ICreateLeaveController = ReturnType<typeof createLeaveController>;
@@ -61,7 +58,6 @@ export const createLeaveController =
         const { user } = await authenticationService.validateSession(token);
 
         const { data, error: inputParseError } = inputSchema.safeParse(input);
-
         if (inputParseError) {
           throw new InputParseError("Invalid data", { cause: inputParseError });
         }
@@ -73,8 +69,8 @@ export const createLeaveController =
               try {
                 return await createLeaveUseCase(
                   {
-                    start_date: data.start_date?.toString(),
-                    end_date: data.end_date?.toString(),
+                    start_date: new Date(data.startDate),
+                    end_date: new Date(data.endDate),
                     color: data.color,
                     remarks: data.remarks,
                   },

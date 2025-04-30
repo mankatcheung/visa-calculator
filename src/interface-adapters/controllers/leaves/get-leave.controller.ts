@@ -3,36 +3,38 @@ import { UnauthenticatedError } from "@/src/entities/errors/auth";
 import { Leave } from "@/src/entities/models/leave";
 import { IInstrumentationService } from "@/src/application/services/instrumentation.service.interface";
 import { IAuthenticationService } from "@/src/application/services/authentication.service.interface";
+import { IGetLeaveUseCase } from "@/src/application/use-cases/leaves/get-leave.use-case";
+import { InputParseError } from "@/src/entities/errors/common";
 
 function presenter(
-  leaves: Leave[],
+  leave: Leave,
   instrumentationService: IInstrumentationService,
 ) {
   return instrumentationService.startSpan(
     { name: "getLeavesForUser Presenter", op: "serialize" },
-    () =>
-      leaves.map((t) => ({
-        id: t.id,
-        startDate: new Date(t.start_date),
-        endDate: new Date(t.end_date),
-        color: t.color,
-        remarks: t.remarks,
-        createdAt: new Date(t.created_at),
-      })),
+    () => ({
+      id: leave.id,
+      startDate: new Date(leave.start_date),
+      endDate: new Date(leave.end_date),
+      color: leave.color,
+      remarks: leave.remarks,
+      createdAt: new Date(leave.created_at),
+    }),
   );
 }
 
-export type IGetLeavesForUserController = ReturnType<
-  typeof getLeavesForUserController
->;
+export type IGetLeaveController = ReturnType<typeof getLeaveController>;
 
-export const getLeavesForUserController =
+export const getLeaveController =
   (
     instrumentationService: IInstrumentationService,
     authenticationService: IAuthenticationService,
-    getLeavesForUserUseCase: IGetLeavesForUserUseCase,
+    getLeaveUseCase: IGetLeaveUseCase,
   ) =>
-  async (token: string | undefined): Promise<ReturnType<typeof presenter>> => {
+  async (
+    leaveId: number | undefined,
+    token: string | undefined,
+  ): Promise<ReturnType<typeof presenter>> => {
     return await instrumentationService.startSpan(
       { name: "getLeavesForUser Controller" },
       async () => {
@@ -40,11 +42,15 @@ export const getLeavesForUserController =
           throw new UnauthenticatedError("Must be logged in to create a leave");
         }
 
+        if (!leaveId) {
+          throw new InputParseError("Please provide the leave id");
+        }
+
         const { session } = await authenticationService.validateSession(token);
 
-        const leaves = await getLeavesForUserUseCase(session.user_id);
+        const leave = await getLeaveUseCase(leaveId, session.user_id);
 
-        return presenter(leaves, instrumentationService);
+        return presenter(leave, instrumentationService);
       },
     );
   };

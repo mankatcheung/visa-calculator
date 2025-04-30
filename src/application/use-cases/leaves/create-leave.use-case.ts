@@ -12,8 +12,8 @@ export const createLeaveUseCase =
   ) =>
   (
     input: {
-      start_date: string;
-      end_date: string;
+      start_date: Date;
+      end_date: Date;
       color?: string;
       remarks?: string;
     },
@@ -34,10 +34,15 @@ export const createLeaveUseCase =
           throw new InputParseError("Start date should not be after end date");
         }
 
+        //TODO: validate the color string in hex string
+
         const newLeave = await leavesRepository.createLeave(
           {
-            ...input,
-            user: userId,
+            start_date: input.start_date,
+            end_date: input.end_date,
+            color: input.color,
+            remarks: input.remarks,
+            user_id: userId,
           },
           tx,
         );

@@ -28,7 +28,7 @@ export const deleteLeaveUseCase =
           throw new NotFoundError("Leave does not exist");
         }
 
-        if (leave.user !== userId) {
+        if (leave.user_id !== userId) {
           throw new UnauthorizedError(
             "Cannot delete leave. Reason: unauthorized",
           );
