@@ -6,6 +6,7 @@ import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { routing } from "@/i18n/routing";
 import { notFound } from "next/navigation";
 import { ThemeProvider } from "@/app/_components/theme-provider";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 const fontSans = FontSans({
   subsets: ["latin"],
@@ -42,6 +43,7 @@ export default async function RootLayout({
           </ThemeProvider>
           {/* <Toaster position="bottom-center" /> */}
         </NextIntlClientProvider>
+        <SpeedInsights />
       </body>
     </html>
   );
