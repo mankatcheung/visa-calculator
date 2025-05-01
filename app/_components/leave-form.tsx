@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "./ui/button";
 import { useTranslations } from "next-intl";
 import { useTransition } from "react";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, Loader2 } from "lucide-react";
 
 import { Calendar } from "./ui/calendar";
 import { format } from "date-fns";
@@ -21,13 +21,11 @@ import {
   FormDescription,
   FormMessage,
 } from "./ui/form";
-import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
 import { SelectSingleEventHandler } from "react-day-picker";
 import { createLeave, updateLeave } from "../[locale]/(private)/actions";
 import { useRouter } from "@/i18n/navigation";
-
-const HEX_CODE_REGEX = /^#(?:[0-9a-fA-F]{3}){1,2}$/;
+import { GradientPicker } from "./color-picker";
 
 const DateInput = ({
   value,
@@ -90,26 +88,27 @@ export function LeaveForm({ leave }: LeaveFormProps) {
   const router = useRouter();
   const [loading, startTransition] = useTransition();
 
-  const FormSchema = z.object({
-    startDate: z.date({
-      required_error: t("startDateRequiredWarning"),
-    }),
-    endDate: z.date({
-      required_error: t("endDateRequiredWarning"),
-    }),
-    color: z
-      .string()
-      .refine(
-        (value) => HEX_CODE_REGEX.test(value ?? ""),
-        t("colorFormatWarning"),
-      )
-      .optional(),
-    remarks: z.string().optional(),
-  });
+  const FormSchema = z
+    .object({
+      startDate: z.date({
+        required_error: t("startDateRequiredWarning"),
+      }),
+      endDate: z.date({
+        required_error: t("endDateRequiredWarning"),
+      }),
+      color: z.string(),
+      remarks: z.string().optional(),
+    })
+    .refine((data) => data.startDate <= data.endDate, {
+      message: t("wrongDateRange"),
+      path: ["endDate"], // This sets which field the error is attached to
+    });
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
-    defaultValues: leave,
+    defaultValues: leave ?? {
+      color: "#123212",
+    },
   });
 
   const onSubmit = async (data: z.infer<typeof FormSchema>) => {
@@ -170,7 +169,10 @@ export function LeaveForm({ leave }: LeaveFormProps) {
             <FormItem className="flex flex-col">
               <FormLabel>{t("color")}</FormLabel>
               <FormControl>
-                <Input {...field} />
+                <GradientPicker
+                  background={field.value}
+                  setBackground={field.onChange}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -194,7 +196,10 @@ export function LeaveForm({ leave }: LeaveFormProps) {
             </FormItem>
           )}
         />
-        <Button type="submit">{t("submit")}</Button>
+        <Button type="submit" disabled={loading}>
+          {loading && <Loader2 className="animate-spin" />}
+          {t("submit")}
+        </Button>
       </form>
     </Form>
   );

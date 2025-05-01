@@ -6,7 +6,6 @@ import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { routing } from "@/i18n/routing";
 import { notFound } from "next/navigation";
 import { ThemeProvider } from "@/app/_components/theme-provider";
-import { Toaster } from "@/app/_components/ui/sonner";
 
 const fontSans = FontSans({
   subsets: ["latin"],

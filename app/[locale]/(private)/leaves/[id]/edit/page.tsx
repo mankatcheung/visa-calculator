@@ -1,4 +1,12 @@
 import { LeaveForm } from "@/app/_components/leave-form";
+import {
+  Breadcrumb,
+  BreadcrumbList,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbSeparator,
+  BreadcrumbPage,
+} from "@/app/_components/ui/breadcrumb";
 import { SESSION_COOKIE } from "@/config";
 import { getInjection } from "@/di/container";
 import {
@@ -53,7 +61,17 @@ export default async function LeaveEditPage({
   }
   return (
     <div className="flex flex-1 flex-col gap-4 p-4">
-      <div>{t("editLeave")}</div>
+      <Breadcrumb>
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink href="/">{t("visaCalculator")}</BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbPage>{t("editLeave")}</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
       <LeaveForm
         leave={{
           id: leave.id,

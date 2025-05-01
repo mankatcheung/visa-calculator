@@ -1,6 +1,6 @@
 "use client";
 
-import { Trash2 } from "lucide-react";
+import { Loader2, Trash2 } from "lucide-react";
 import { Button } from "@/app/_components/ui/button";
 import {
   Dialog,
@@ -55,7 +55,8 @@ export function LeaveDeleteButton({
         <div>{`${startDate.toDateString()} - ${endDate.toDateString()}`}</div>
         <DialogFooter>
           <form onSubmit={handleSubmit}>
-            <Button variant="destructive" type="submit">
+            <Button variant="destructive" type="submit" disabled={loading}>
+              {loading && <Loader2 className="animate-spin" />}
               {t("confirm")}
             </Button>
           </form>

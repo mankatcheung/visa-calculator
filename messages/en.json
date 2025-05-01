@@ -27,5 +27,10 @@
   "editLeave": "Edit Leave",
   "deleteLeave": "Delete Leave",
   "confirm": "Confirm",
-  "deleteReminder": "Are you sure to delete the following record?"
+  "deleteReminder": "Are you sure to delete the following record?",
+  "wrongDateRange": "The end date should not be before the start date",
+  "solid": "Solid",
+  "gradient": "gradient",
+  "totalLeaves": "Total Leave Days",
+  "leavesWithinCount": "Leave days within {count} days"
 }
