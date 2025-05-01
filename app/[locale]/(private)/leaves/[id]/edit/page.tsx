@@ -17,7 +17,7 @@ import { getTranslations } from "next-intl/server";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
-export async function getLeave(id: number) {
+async function getLeave(id: number) {
   const instrumentationService = getInjection("IInstrumentationService");
   return await instrumentationService.startSpan(
     {

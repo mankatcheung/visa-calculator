@@ -18,7 +18,7 @@ import {
   CardTitle,
 } from "@/app/_components/ui/card";
 
-export async function getLeavesForUser() {
+async function getLeavesForUser() {
   const instrumentationService = getInjection("IInstrumentationService");
   return await instrumentationService.startSpan(
     {
