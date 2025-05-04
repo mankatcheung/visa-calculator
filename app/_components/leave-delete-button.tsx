@@ -13,8 +13,8 @@ import {
 import { DialogHeader } from "./ui/dialog";
 import { useTranslations } from "next-intl";
 import { useTransition } from "react";
-import { deleteLeave } from "../[locale]/(private)/actions";
-
+import { leaveActions } from "@/app/actions";
+import { toast } from "sonner";
 export function LeaveDeleteButton({
   id,
   startDate,
@@ -32,10 +32,11 @@ export function LeaveDeleteButton({
     if (loading) return;
 
     startTransition(async () => {
-      const res = await deleteLeave(id);
+      const res = await leaveActions.deleteLeave(id);
       if (res && res.error) {
-        // setError(res.error);
-        console.log(res.error);
+        toast.error(res.error);
+      } else {
+        toast.success(t("success"));
       }
     });
   };

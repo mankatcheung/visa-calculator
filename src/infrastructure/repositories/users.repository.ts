@@ -5,10 +5,11 @@ import { db } from "@/drizzle";
 import { users } from "@/drizzle/schema";
 import { IUsersRepository } from "@/src/application/repositories/users.repository.interface";
 import { DatabaseOperationError } from "@/src/entities/errors/common";
-import type { CreateUser, User } from "@/src/entities/models/user";
+import type { CreateUser, UpdateUser, User } from "@/src/entities/models/user";
 import type { IInstrumentationService } from "@/src/application/services/instrumentation.service.interface";
 import type { ICrashReporterService } from "@/src/application/services/crash-reporter.service.interface";
 import { PASSWORD_SALT_ROUNDS } from "@/config";
+import { ITransaction } from "@/src/entities/models/transaction.interface";
 
 export class UsersRepository implements IUsersRepository {
   constructor(
@@ -101,6 +102,55 @@ export class UsersRepository implements IUsersRepository {
         } catch (err) {
           this.crashReporterService.report(err);
           throw err; // TODO: convert to Entities error
+        }
+      },
+    );
+  }
+
+  async updateUser(
+    id: string,
+    input: Partial<UpdateUser>,
+    tx?: ITransaction,
+  ): Promise<User> {
+    return await this.instrumentationService.startSpan(
+      { name: "UsersRepository > updateUser" },
+      async () => {
+        const invoker = db ?? tx;
+        try {
+          let newPasswordHash;
+          if (input.password) {
+            newPasswordHash = await this.instrumentationService.startSpan(
+              { name: "hash password", op: "function" },
+              () => hash(input.password!, PASSWORD_SALT_ROUNDS),
+            );
+          }
+          const updateData: { password_hash?: string; email?: string } = {};
+          if (newPasswordHash) updateData.password_hash = newPasswordHash;
+          if (input.email) updateData.email = input.email;
+
+          const query = invoker
+            .update(users)
+            .set(updateData)
+            .where(eq(users.id, id))
+            .returning();
+
+          const [updated] = await this.instrumentationService.startSpan(
+            {
+              name: query.toSQL().sql,
+              op: "db.query",
+              attributes: { "db.system": "sqlite" },
+            },
+            () => query.execute(),
+          );
+
+          if (updated) {
+            return updated;
+          } else {
+            throw new DatabaseOperationError("Cannot update user.");
+          }
+        } catch (err) {
+          this.crashReporterService.report(err);
+          throw err;
         }
       },
     );

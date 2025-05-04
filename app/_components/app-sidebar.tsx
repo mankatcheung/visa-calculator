@@ -12,11 +12,12 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from "@/app/_components/ui/sidebar";
-import { Link } from "@/i18n/navigation";
+import { Link, usePathname } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const t = useTranslations();
+  const pathname = usePathname();
   const data = {
     navMain: [
       {
@@ -26,7 +27,16 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           {
             title: t("visaCalculator"),
             url: "/",
-            isActive: true,
+          },
+        ],
+      },
+      {
+        title: t("user"),
+        url: "#",
+        items: [
+          {
+            title: t("settings"),
+            url: "/users/settings",
           },
         ],
       },
@@ -46,7 +56,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               <SidebarMenu>
                 {item.items.map((item) => (
                   <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton asChild isActive={item.isActive}>
+                    <SidebarMenuButton asChild isActive={item.url === pathname}>
                       <Link href={item.url}>{item.title}</Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>

@@ -14,8 +14,9 @@ import { Input } from "./ui/input";
 import { Link } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { useTransition } from "react";
-import { signUp } from "../[locale]/(auth)/actions";
 import { Separator } from "./ui/separator";
+import { authActions } from "@/app/actions";
+import { toast } from "sonner";
 
 export function SignUpForm({
   className,
@@ -30,10 +31,11 @@ export function SignUpForm({
     const formData = new FormData(event.currentTarget);
 
     startTransition(async () => {
-      const res = await signUp(formData);
+      const res = await authActions.signUp(formData);
       if (res && res.error) {
-        // setError(res.error);
-        console.log(res.error);
+        toast.error(res.error);
+      } else {
+        toast.success(t("success"));
       }
     });
   };

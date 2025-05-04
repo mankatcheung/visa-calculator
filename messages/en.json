@@ -32,5 +32,16 @@
   "solid": "Solid",
   "gradient": "gradient",
   "totalLeaves": "Total Leave Days",
-  "leavesWithinCount": "Leave days within {count} days"
+  "leavesWithinCount": "Leave days within {count} days",
+  "signOut": "Sign Out",
+  "changePassword": "Change Password",
+  "updateEmail": "Update Email",
+  "currentPassword": "Current Password",
+  "newPassword": "New Password",
+  "passwordNotMatched": "Passwords do not match",
+  "user": "User",
+  "settings": "Settings",
+  "pleaseInput": "Please input",
+  "edit": "Edit",
+  "success": "Success"
 }

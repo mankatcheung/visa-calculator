@@ -15,7 +15,7 @@ import { Link } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { Separator } from "./ui/separator";
 import { useTransition } from "react";
-import { signIn } from "../[locale]/(auth)/actions";
+import { authActions } from "@/app/actions";
 
 export function SignInForm({
   className,
@@ -30,7 +30,7 @@ export function SignInForm({
     const formData = new FormData(event.currentTarget);
 
     startTransition(async () => {
-      const res = await signIn(formData);
+      const res = await authActions.signIn(formData);
       if (res && res.error) {
         // setError(res.error);
         console.log(res.error);

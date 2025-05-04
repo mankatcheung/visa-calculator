@@ -23,9 +23,10 @@ import {
 } from "./ui/form";
 import { Textarea } from "./ui/textarea";
 import { SelectSingleEventHandler } from "react-day-picker";
-import { createLeave, updateLeave } from "../[locale]/(private)/actions";
+import { leaveActions } from "@/app/actions";
 import { useRouter } from "@/i18n/navigation";
 import { GradientPicker } from "./color-picker";
+import { toast } from "sonner";
 
 const DateInput = ({
   value,
@@ -122,14 +123,14 @@ export function LeaveForm({ leave }: LeaveFormProps) {
       let res;
       if (leave) {
         formData.set("id", String(leave.id));
-        res = await updateLeave(formData);
+        res = await leaveActions.updateLeave(formData);
       } else {
-        res = await createLeave(formData);
+        res = await leaveActions.createLeave(formData);
       }
       if (res && res.error) {
-        // setError(res.error);
-        console.log(res.error);
+        toast.error(res.error);
       } else {
+        toast.success(t("success"));
         router.push("/");
       }
     });

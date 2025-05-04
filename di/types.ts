@@ -13,6 +13,9 @@ import { IDeleteLeaveUseCase } from "@/src/application/use-cases/leaves/delete-l
 import { IGetLeaveUseCase } from "@/src/application/use-cases/leaves/get-leave.use-case";
 import { IGetLeavesForUserUseCase } from "@/src/application/use-cases/leaves/get-leaves-for-user.use-case";
 import { IUpdateLeaveUseCase } from "@/src/application/use-cases/leaves/update-leave.use-case";
+import { IGetUserUseCase } from "@/src/application/use-cases/users/get-user.use-case";
+import { IUpdateUserEmailUseCase } from "@/src/application/use-cases/users/update-user-email.use-case";
+import { IUpdateUserPasswordUseCase } from "@/src/application/use-cases/users/update-user-password.use-case";
 import { ISignInController } from "@/src/interface-adapters/controllers/auth/sign-in.controller";
 import { ISignOutController } from "@/src/interface-adapters/controllers/auth/sign-out.controller";
 import { ISignUpController } from "@/src/interface-adapters/controllers/auth/sign-up.controller";
@@ -21,6 +24,9 @@ import { IDeleteLeaveController } from "@/src/interface-adapters/controllers/lea
 import { IGetLeaveController } from "@/src/interface-adapters/controllers/leaves/get-leave.controller";
 import { IGetLeavesForUserController } from "@/src/interface-adapters/controllers/leaves/get-leaves-for-user.controller";
 import { IUpdateLeaveController } from "@/src/interface-adapters/controllers/leaves/update-leave.controller";
+import { IGetSelfUserController } from "@/src/interface-adapters/controllers/users/get-self-user.controller";
+import { IUpdateUserEmailController } from "@/src/interface-adapters/controllers/users/update-user-email.controller";
+import { IUpdateUserPasswordController } from "@/src/interface-adapters/controllers/users/update-user-password.controller";
 
 export const DI_SYMBOLS = {
   // Services
@@ -43,6 +49,9 @@ export const DI_SYMBOLS = {
   ISignInUseCase: Symbol.for("ISignInUseCase"),
   ISignOutUseCase: Symbol.for("ISignOutUseCase"),
   ISignUpUseCase: Symbol.for("ISignUpUseCase"),
+  IGetUserUseCase: Symbol.for("IGetUserUseCase"),
+  IUpdateUserEmailUseCase: Symbol.for("IUpdateUserEmailUseCase"),
+  IUpdateUserPasswordUseCase: Symbol.for("IUpdateUserPasswordUseCase"),
 
   // Controllers
   ISignInController: Symbol.for("ISignInController"),
@@ -53,6 +62,9 @@ export const DI_SYMBOLS = {
   IGetLeavesForUserController: Symbol.for("IGetLeavesForUserController"),
   IGetLeaveController: Symbol.for("IGetLeaveController"),
   IUpdateLeaveController: Symbol.for("IUpdateLeaveController"),
+  IGetSelfUserController: Symbol.for("IGetSelfUserController"),
+  IUpdateUserEmailController: Symbol.for("IUpdateUserEmailController"),
+  IUpdateUserPasswordController: Symbol.for("IUpdateUserPasswordController"),
 };
 
 export interface DI_RETURN_TYPES {
@@ -76,6 +88,9 @@ export interface DI_RETURN_TYPES {
   ISignInUseCase: ISignInUseCase;
   ISignOutUseCase: ISignOutUseCase;
   ISignUpUseCase: ISignUpUseCase;
+  IGetUserUseCase: IGetUserUseCase;
+  IUpdateUserEmailUseCase: IUpdateUserEmailUseCase;
+  IUpdateUserPasswordUseCase: IUpdateUserPasswordUseCase;
 
   // Controllers
   ISignInController: ISignInController;
@@ -86,4 +101,7 @@ export interface DI_RETURN_TYPES {
   IGetLeaveController: IGetLeaveController;
   IGetLeavesForUserController: IGetLeavesForUserController;
   IUpdateLeaveController: IUpdateLeaveController;
+  IGetSelfUserController: IGetSelfUserController;
+  IUpdateUserEmailController: IUpdateUserEmailController;
+  IUpdateUserPasswordController: IUpdateUserPasswordController;
 }
