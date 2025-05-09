@@ -53,7 +53,6 @@
     "zod": "^3.24.3"
   },
   "devDependencies": {
-    "@codecov/vite-plugin": "^1.9.0",
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4.1.4",
     "@trivago/prettier-plugin-sort-imports": "^5.2.2",
