@@ -1,4 +1,4 @@
-import { Avatar } from "@radix-ui/react-avatar";
+import { Avatar } from './ui/avatar';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -6,12 +6,12 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "./ui/dropdown-menu";
-import { useTranslations } from "next-intl";
-import { BadgeCheck, CreditCard, LogOut } from "lucide-react";
-import { Link } from "@/i18n/navigation";
-import { authActions } from "@/app/actions";
-import useUser from "@/hooks/use-user";
+} from './ui/dropdown-menu';
+import { useTranslations } from 'next-intl';
+import { BadgeCheck, LogOut } from 'lucide-react';
+import { Link } from '@/i18n/navigation';
+import { authActions } from '@/app/actions';
+import useUser from '@/hooks/use-user';
 
 export function UserAvatar() {
   const t = useTranslations();
@@ -32,7 +32,7 @@ export function UserAvatar() {
       <DropdownMenuTrigger asChild>{avatar}</DropdownMenuTrigger>
       <DropdownMenuContent
         className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
-        side={"bottom"}
+        side={'bottom'}
         align="start"
         sideOffset={4}
       >
@@ -40,14 +40,14 @@ export function UserAvatar() {
           <Link href="/users/settings">
             <DropdownMenuItem>
               <BadgeCheck />
-              {t("settings")}
+              {t('settings')}
             </DropdownMenuItem>
           </Link>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={onSignOut}>
           <LogOut />
-          {t("signOut")}
+          {t('signOut')}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

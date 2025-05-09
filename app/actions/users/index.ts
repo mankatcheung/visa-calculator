@@ -1,22 +1,21 @@
-"use server";
+'use server';
 
-import { cookies } from "next/headers";
+import { cookies } from 'next/headers';
 
-import { SESSION_COOKIE } from "@/config";
-import { AuthenticationError } from "@/src/entities/errors/auth";
-import { getInjection } from "@/di/container";
-import { InputParseError } from "@/src/entities/errors/common";
-import { revalidateTag } from "next/cache";
-import { revalidatePath } from "next/cache";
+import { SESSION_COOKIE } from '@/config';
+import { AuthenticationError } from '@/src/entities/errors/auth';
+import { getInjection } from '@/di/container';
+import { InputParseError } from '@/src/entities/errors/common';
+import { revalidatePath } from 'next/cache';
 
 export async function getSelfUser() {
-  const instrumentationService = getInjection("IInstrumentationService");
+  const instrumentationService = getInjection('IInstrumentationService');
   return await instrumentationService.instrumentServerAction(
-    "getSelfUser",
+    'getSelfUser',
     { recordResponse: true },
     async () => {
       try {
-        const getSelfUserController = getInjection("IGetSelfUserController");
+        const getSelfUserController = getInjection('IGetSelfUserController');
         const cookieStore = await cookies();
         const token = cookieStore.get(SESSION_COOKIE)?.value;
         const user = await getSelfUserController(token);
@@ -31,28 +30,28 @@ export async function getSelfUser() {
             error: err.message,
           };
         }
-        const crashReporterService = getInjection("ICrashReporterService");
+        const crashReporterService = getInjection('ICrashReporterService');
         crashReporterService.report(err);
 
         return {
           error:
-            "An error happened. The developers have been notified. Please try again later. Message: " +
+            'An error happened. The developers have been notified. Please try again later. Message: ' +
             (err as Error).message,
         };
       }
-    },
+    }
   );
 }
 
 export async function changePassword(formData: FormData) {
-  const instrumentationService = getInjection("IInstrumentationService");
+  const instrumentationService = getInjection('IInstrumentationService');
   return await instrumentationService.instrumentServerAction(
-    "changePassword",
+    'changePassword',
     { recordResponse: true },
     async () => {
       try {
         const updateUserPasswordController = getInjection(
-          "IUpdateUserPasswordController",
+          'IUpdateUserPasswordController'
         );
         const cookieStore = await cookies();
         const token = cookieStore.get(SESSION_COOKIE)?.value;
@@ -69,35 +68,35 @@ export async function changePassword(formData: FormData) {
             error: err.message,
           };
         }
-        const crashReporterService = getInjection("ICrashReporterService");
+        const crashReporterService = getInjection('ICrashReporterService');
         crashReporterService.report(err);
 
         return {
           error:
-            "An error happened. The developers have been notified. Please try again later. Message: " +
+            'An error happened. The developers have been notified. Please try again later. Message: ' +
             (err as Error).message,
         };
       }
-    },
+    }
   );
 }
 
 export async function updateEmail(formData: FormData) {
-  const instrumentationService = getInjection("IInstrumentationService");
+  const instrumentationService = getInjection('IInstrumentationService');
   return await instrumentationService.instrumentServerAction(
-    "updateEmail",
+    'updateEmail',
     { recordResponse: true },
     async () => {
       try {
         const updateUserEmailController = getInjection(
-          "IUpdateUserEmailController",
+          'IUpdateUserEmailController'
         );
         const cookieStore = await cookies();
         const token = cookieStore.get(SESSION_COOKIE)?.value;
         const data = Object.fromEntries(formData.entries());
         const user = await updateUserEmailController(data, token);
 
-        revalidatePath("/[locale]");
+        revalidatePath('/[locale]');
         return { result: user };
       } catch (err) {
         if (err instanceof InputParseError) {
@@ -108,15 +107,15 @@ export async function updateEmail(formData: FormData) {
             error: err.message,
           };
         }
-        const crashReporterService = getInjection("ICrashReporterService");
+        const crashReporterService = getInjection('ICrashReporterService');
         crashReporterService.report(err);
 
         return {
           error:
-            "An error happened. The developers have been notified. Please try again later. Message: " +
+            'An error happened. The developers have been notified. Please try again later. Message: ' +
             (err as Error).message,
         };
       }
-    },
+    }
   );
 }

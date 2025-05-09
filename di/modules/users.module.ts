@@ -1,24 +1,29 @@
-import { createModule } from "@evyweb/ioctopus";
+import { createModule } from '@evyweb/ioctopus';
 
-import { UsersRepository } from "@/src/infrastructure/repositories/users.repository";
+import { UsersRepository } from '@/src/infrastructure/repositories/users.repository';
 
-import { DI_SYMBOLS } from "@/di/types";
-import { getUserUseCase } from "@/src/application/use-cases/users/get-user.use-case";
-import { updateUserPasswordUseCase } from "@/src/application/use-cases/users/update-user-password.use-case";
-import { updateUserEmailUseCase } from "@/src/application/use-cases/users/update-user-email.use-case";
-import { getSelfUserController } from "@/src/interface-adapters/controllers/users/get-self-user.controller";
-import { updateUserEmailController } from "@/src/interface-adapters/controllers/users/update-user-email.controller";
-import { updateUserPasswordController } from "@/src/interface-adapters/controllers/users/update-user-password.controller";
+import { DI_SYMBOLS } from '@/di/types';
+import { getUserUseCase } from '@/src/application/use-cases/users/get-user.use-case';
+import { updateUserPasswordUseCase } from '@/src/application/use-cases/users/update-user-password.use-case';
+import { updateUserEmailUseCase } from '@/src/application/use-cases/users/update-user-email.use-case';
+import { getSelfUserController } from '@/src/interface-adapters/controllers/users/get-self-user.controller';
+import { updateUserEmailController } from '@/src/interface-adapters/controllers/users/update-user-email.controller';
+import { updateUserPasswordController } from '@/src/interface-adapters/controllers/users/update-user-password.controller';
+import { MockUsersRepository } from '@/src/infrastructure/repositories/users.repository.mock';
 
 export function createUsersModule() {
   const usersModule = createModule();
 
-  usersModule
-    .bind(DI_SYMBOLS.IUsersRepository)
-    .toClass(UsersRepository, [
-      DI_SYMBOLS.IInstrumentationService,
-      DI_SYMBOLS.ICrashReporterService,
-    ]);
+  if (process.env.NODE_ENV === 'test') {
+    usersModule.bind(DI_SYMBOLS.IUsersRepository).toClass(MockUsersRepository);
+  } else {
+    usersModule
+      .bind(DI_SYMBOLS.IUsersRepository)
+      .toClass(UsersRepository, [
+        DI_SYMBOLS.IInstrumentationService,
+        DI_SYMBOLS.ICrashReporterService,
+      ]);
+  }
 
   usersModule
     .bind(DI_SYMBOLS.IGetUserUseCase)
@@ -31,6 +36,7 @@ export function createUsersModule() {
     .bind(DI_SYMBOLS.IUpdateUserPasswordUseCase)
     .toHigherOrderFunction(updateUserPasswordUseCase, [
       DI_SYMBOLS.IInstrumentationService,
+      DI_SYMBOLS.IAuthenticationService,
       DI_SYMBOLS.IUsersRepository,
     ]);
 

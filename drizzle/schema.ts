@@ -1,30 +1,30 @@
-import { sql } from "drizzle-orm";
-import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import { sql } from 'drizzle-orm';
+import { integer, sqliteTable, text } from 'drizzle-orm/sqlite-core';
 
-export const users = sqliteTable("users", {
-  id: text("id").primaryKey().notNull(),
-  email: text("email").notNull(),
-  password_hash: text("password_hash").notNull(),
+export const users = sqliteTable('users', {
+  id: text('id').primaryKey().notNull(),
+  email: text('email').notNull(),
+  passwordHash: text('password_hash').notNull(),
 });
 
-export const sessions = sqliteTable("sessions", {
-  id: text("id").primaryKey().notNull(),
-  user_id: text("user_id")
+export const sessions = sqliteTable('sessions', {
+  id: text('id').primaryKey().notNull(),
+  userId: text('user_id')
     .references(() => users.id)
     .notNull(),
-  expires_at: integer("expires_at", { mode: "timestamp" }).notNull(),
+  expiresAt: integer('expires_at', { mode: 'timestamp' }).notNull(),
 });
 
-export const leaves = sqliteTable("leaves", {
-  id: integer("id").primaryKey({ autoIncrement: true }).notNull(),
-  created_at: integer("created_at", { mode: "timestamp" })
+export const leaves = sqliteTable('leaves', {
+  id: integer('id').primaryKey({ autoIncrement: true }).notNull(),
+  createdAt: integer('created_at', { mode: 'timestamp' })
     .notNull()
     .default(sql`(unixepoch())`),
-  start_date: integer("start_date", { mode: "timestamp" }).notNull(),
-  end_date: integer("end_date", { mode: "timestamp" }).notNull(),
-  color: text("color"),
-  remarks: text("remarks"),
-  user_id: text("user_id")
+  startDate: integer('start_date', { mode: 'timestamp' }).notNull(),
+  endDate: integer('end_date', { mode: 'timestamp' }).notNull(),
+  color: text('color'),
+  remarks: text('remarks'),
+  userId: text('user_id')
     .references(() => users.id)
     .notNull(),
 });

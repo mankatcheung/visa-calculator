@@ -1,21 +1,21 @@
-"use client";
+'use client';
 
-import { Button } from "./ui/button";
-import { useTranslations } from "next-intl";
-import { useState, useTransition } from "react";
-import { Loader2, CircleX } from "lucide-react";
+import { Button } from './ui/button';
+import { useTranslations } from 'next-intl';
+import { useState, useTransition } from 'react';
+import { Loader2, CircleX } from 'lucide-react';
 
-import { z } from "zod";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Form, FormField, FormItem, FormControl, FormMessage } from "./ui/form";
-import { userActions } from "@/app/actions";
-import { Input } from "./ui/input";
-import { toast } from "sonner";
+import { z } from 'zod';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Form, FormField, FormItem, FormControl, FormMessage } from './ui/form';
+import { userActions } from '@/app/actions';
+import { Input } from './ui/input';
+import { toast } from 'sonner';
 
 type UpdateEmailFormProps = {
-  email: string;
-} & React.ComponentPropsWithoutRef<"div">;
+  email?: string;
+} & React.ComponentPropsWithoutRef<'div'>;
 
 export function UpdateEmailForm({ email }: UpdateEmailFormProps) {
   const t = useTranslations();
@@ -25,7 +25,7 @@ export function UpdateEmailForm({ email }: UpdateEmailFormProps) {
   const FormSchema = z.object({
     email: z
       .string({
-        required_error: t("pleaseInput"),
+        required_error: t('pleaseInput'),
       })
       .email(),
   });
@@ -41,12 +41,12 @@ export function UpdateEmailForm({ email }: UpdateEmailFormProps) {
     if (loading) return;
     startTransition(async () => {
       const formData = new FormData();
-      formData.set("email", data.email);
+      formData.set('email', data.email);
       const res = await userActions.updateEmail(formData);
       if (res && res.error) {
         toast.error(res.error);
       } else {
-        toast.success(t("success"));
+        toast.success(t('success'));
         setIsEditing(false);
       }
     });
@@ -67,14 +67,14 @@ export function UpdateEmailForm({ email }: UpdateEmailFormProps) {
                   <FormControl className="flex-1">
                     <Input
                       type="email"
-                      placeholder={t("email")}
+                      placeholder={t('email')}
                       value={field.value}
                       onChange={(e) => field.onChange(e.target.value)}
                     />
                   </FormControl>
                   <Button type="submit" disabled={loading}>
                     {loading && <Loader2 className="animate-spin" />}
-                    {t("submit")}
+                    {t('submit')}
                   </Button>
                   <Button
                     variant="outline"
@@ -99,7 +99,7 @@ export function UpdateEmailForm({ email }: UpdateEmailFormProps) {
     <div className="flex flex-row items-center gap-2">
       <div className="flex-1">{email}</div>
       <Button variant="outline" onClick={() => setIsEditing(true)}>
-        {t("edit")}
+        {t('edit')}
       </Button>
     </div>
   );

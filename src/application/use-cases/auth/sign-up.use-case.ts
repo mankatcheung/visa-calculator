@@ -1,10 +1,10 @@
-import { AuthenticationError } from "@/src/entities/errors/auth";
-import { Cookie } from "@/src/entities/models/cookie";
-import { Session } from "@/src/entities/models/session";
-import { User } from "@/src/entities/models/user";
-import type { IInstrumentationService } from "@/src/application/services/instrumentation.service.interface";
-import type { IAuthenticationService } from "@/src/application/services/authentication.service.interface";
-import type { IUsersRepository } from "@/src/application/repositories/users.repository.interface";
+import { AuthenticationError } from '@/src/entities/errors/auth';
+import { Cookie } from '@/src/entities/models/cookie';
+import { Session } from '@/src/entities/models/session';
+import { User } from '@/src/entities/models/user';
+import type { IInstrumentationService } from '@/src/application/services/instrumentation.service.interface';
+import type { IAuthenticationService } from '@/src/application/services/authentication.service.interface';
+import type { IUsersRepository } from '@/src/application/repositories/users.repository.interface';
 
 export type ISignUpUseCase = ReturnType<typeof signUpUseCase>;
 
@@ -12,7 +12,7 @@ export const signUpUseCase =
   (
     instrumentationService: IInstrumentationService,
     authenticationService: IAuthenticationService,
-    usersRepository: IUsersRepository,
+    usersRepository: IUsersRepository
   ) =>
   (input: {
     email: string;
@@ -20,14 +20,14 @@ export const signUpUseCase =
   }): Promise<{
     session: Session;
     cookie: Cookie;
-    user: Pick<User, "id" | "email">;
+    user: User;
   }> => {
     return instrumentationService.startSpan(
-      { name: "signUp Use Case", op: "function" },
+      { name: 'signUp Use Case', op: 'function' },
       async () => {
         const existingUser = await usersRepository.getUserByEmail(input.email);
         if (existingUser) {
-          throw new AuthenticationError("Username taken");
+          throw new AuthenticationError('Email taken');
         }
 
         const userId = authenticationService.generateUserId();
@@ -44,11 +44,8 @@ export const signUpUseCase =
         return {
           cookie,
           session,
-          user: {
-            id: newUser.id,
-            email: newUser.email,
-          },
+          user: newUser,
         };
-      },
+      }
     );
   };

@@ -1,41 +1,41 @@
-"use server";
+'use server';
 
-import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
+import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
 
-import { Cookie } from "@/src/entities/models/cookie";
-import { SESSION_COOKIE } from "@/config";
-import { InputParseError } from "@/src/entities/errors/common";
+import { Cookie } from '@/src/entities/models/cookie';
+import { SESSION_COOKIE } from '@/config';
+import { InputParseError } from '@/src/entities/errors/common';
 import {
   AuthenticationError,
   UnauthenticatedError,
-} from "@/src/entities/errors/auth";
-import { getInjection } from "@/di/container";
+} from '@/src/entities/errors/auth';
+import { getInjection } from '@/di/container';
 
 export async function signUp(formData: FormData) {
-  const instrumentationService = getInjection("IInstrumentationService");
+  const instrumentationService = getInjection('IInstrumentationService');
   return await instrumentationService.instrumentServerAction(
-    "signUp",
+    'signUp',
     { recordResponse: true },
     async () => {
-      const email = formData.get("email")?.toString();
-      const password = formData.get("password")?.toString();
-      const confirmPassword = formData.get("confirmPassword")?.toString();
+      const email = formData.get('email')?.toString();
+      const password = formData.get('password')?.toString();
+      const confirmPassword = formData.get('confirmPassword')?.toString();
 
       let sessionCookie: Cookie;
       try {
-        const signUpController = getInjection("ISignUpController");
+        const signUpController = getInjection('ISignUpController');
         const { cookie } = await signUpController({
           email,
           password,
-          confirm_password: confirmPassword,
+          confirmPassword,
         });
         sessionCookie = cookie;
       } catch (err) {
         if (err instanceof InputParseError) {
           return {
             error:
-              "Invalid data. Make sure the Password and Confirm Password match.",
+              'Invalid data. Make sure the Password and Confirm Password match.',
           };
         }
         if (err instanceof AuthenticationError) {
@@ -43,12 +43,12 @@ export async function signUp(formData: FormData) {
             error: err.message,
           };
         }
-        const crashReporterService = getInjection("ICrashReporterService");
+        const crashReporterService = getInjection('ICrashReporterService');
         crashReporterService.report(err);
 
         return {
           error:
-            "An error happened. The developers have been notified. Please try again later. Message: " +
+            'An error happened. The developers have been notified. Please try again later. Message: ' +
             (err as Error).message,
         };
       }
@@ -58,26 +58,26 @@ export async function signUp(formData: FormData) {
       cookieStore.set(
         sessionCookie.name,
         sessionCookie.value,
-        sessionCookie.attributes,
+        sessionCookie.attributes
       );
 
-      redirect("/");
-    },
+      redirect('/');
+    }
   );
 }
 
 export async function signIn(formData: FormData) {
-  const instrumentationService = getInjection("IInstrumentationService");
+  const instrumentationService = getInjection('IInstrumentationService');
   return await instrumentationService.instrumentServerAction(
-    "signIn",
+    'signIn',
     { recordResponse: true },
     async () => {
-      const email = formData.get("email")?.toString();
-      const password = formData.get("password")?.toString();
+      const email = formData.get('email')?.toString();
+      const password = formData.get('password')?.toString();
 
       let sessionCookie: Cookie;
       try {
-        const signInController = getInjection("ISignInController");
+        const signInController = getInjection('ISignInController');
         sessionCookie = await signInController({ email, password });
       } catch (err) {
         if (
@@ -85,14 +85,14 @@ export async function signIn(formData: FormData) {
           err instanceof AuthenticationError
         ) {
           return {
-            error: "Incorrect email or password",
+            error: 'Incorrect email or password',
           };
         }
-        const crashReporterService = getInjection("ICrashReporterService");
+        const crashReporterService = getInjection('ICrashReporterService');
         crashReporterService.report(err);
         return {
           error:
-            "An error happened. The developers have been notified. Please try again later.",
+            'An error happened. The developers have been notified. Please try again later.',
         };
       }
 
@@ -101,18 +101,18 @@ export async function signIn(formData: FormData) {
       cookieStore.set(
         sessionCookie.name,
         sessionCookie.value,
-        sessionCookie.attributes,
+        sessionCookie.attributes
       );
 
-      redirect("/");
-    },
+      redirect('/');
+    }
   );
 }
 
 export async function signOut() {
-  const instrumentationService = getInjection("IInstrumentationService");
+  const instrumentationService = getInjection('IInstrumentationService');
   return await instrumentationService.instrumentServerAction(
-    "signOut",
+    'signOut',
     { recordResponse: true },
     async () => {
       const cookiesStore = await cookies();
@@ -120,16 +120,16 @@ export async function signOut() {
 
       let blankCookie: Cookie;
       try {
-        const signOutController = getInjection("ISignOutController");
+        const signOutController = getInjection('ISignOutController');
         blankCookie = await signOutController(sessionId);
       } catch (err) {
         if (
           err instanceof UnauthenticatedError ||
           err instanceof InputParseError
         ) {
-          redirect("/sign-in");
+          redirect('/sign-in');
         }
-        const crashReporterService = getInjection("ICrashReporterService");
+        const crashReporterService = getInjection('ICrashReporterService');
         crashReporterService.report(err);
         throw err;
       }
@@ -137,10 +137,10 @@ export async function signOut() {
       cookiesStore.set(
         blankCookie.name,
         blankCookie.value,
-        blankCookie.attributes,
+        blankCookie.attributes
       );
 
-      redirect("/sign-in");
-    },
+      redirect('/sign-in');
+    }
   );
 }

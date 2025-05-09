@@ -1,7 +1,8 @@
-import { InputParseError } from "@/src/entities/errors/common";
-import type { IInstrumentationService } from "@/src/application/services/instrumentation.service.interface";
-import { IUsersRepository } from "../../repositories/users.repository.interface";
-import { User } from "@/src/entities/models/user";
+import type { IInstrumentationService } from '@/src/application/services/instrumentation.service.interface';
+import { IUsersRepository } from '../../repositories/users.repository.interface';
+import { User } from '@/src/entities/models/user';
+import { IAuthenticationService } from '../../services/authentication.service.interface';
+import { AuthenticationError } from '@/src/entities/errors/auth';
 
 export type IUpdateUserPasswordUseCase = ReturnType<
   typeof updateUserPasswordUseCase
@@ -10,35 +11,38 @@ export type IUpdateUserPasswordUseCase = ReturnType<
 export const updateUserPasswordUseCase =
   (
     instrumentationService: IInstrumentationService,
-    usersRepository: IUsersRepository,
+    authenticationService: IAuthenticationService,
+    usersRepository: IUsersRepository
   ) =>
   (
     input: {
-      password: string;
+      currentPassword: string;
+      newPassword: string;
+      currentPasswordHash: string;
     },
     userId: string,
-    tx?: any,
+    tx?: any
   ): Promise<User> => {
     return instrumentationService.startSpan(
-      { name: "updateUserPassword Use Case", op: "function" },
+      { name: 'updateUserPassword Use Case', op: 'function' },
       async () => {
-        // HINT: this is where you'd do authorization checks - is this user authorized to create a leave
-        // for example: free users are allowed only 5 leaves, throw an UnauthorizedError if more than 5
+        const matched = await authenticationService.validatePasswords(
+          input.currentPassword,
+          input.currentPasswordHash
+        );
 
-        // check if same email is being updated
-        if (input.password.length <= 6) {
-          throw new InputParseError("Wrong password format");
+        if (!matched) {
+          throw new AuthenticationError('Current password is incorrect');
         }
-
         const newUser = await usersRepository.updateUser(
           userId,
           {
-            password: input.password,
+            password: input.newPassword,
           },
-          tx,
+          tx
         );
 
         return newUser;
-      },
+      }
     );
   };

@@ -1,25 +1,25 @@
-import { IGetLeavesForUserUseCase } from "@/src/application/use-cases/leaves/get-leaves-for-user.use-case";
-import { UnauthenticatedError } from "@/src/entities/errors/auth";
-import { Leave } from "@/src/entities/models/leave";
-import { IInstrumentationService } from "@/src/application/services/instrumentation.service.interface";
-import { IAuthenticationService } from "@/src/application/services/authentication.service.interface";
-import { IGetLeaveUseCase } from "@/src/application/use-cases/leaves/get-leave.use-case";
-import { InputParseError } from "@/src/entities/errors/common";
+import { UnauthenticatedError } from '@/src/entities/errors/auth';
+import { Leave } from '@/src/entities/models/leave';
+import { IInstrumentationService } from '@/src/application/services/instrumentation.service.interface';
+import { IAuthenticationService } from '@/src/application/services/authentication.service.interface';
+import { IGetLeaveUseCase } from '@/src/application/use-cases/leaves/get-leave.use-case';
+import { InputParseError } from '@/src/entities/errors/common';
 
 function presenter(
   leave: Leave,
-  instrumentationService: IInstrumentationService,
+  instrumentationService: IInstrumentationService
 ) {
   return instrumentationService.startSpan(
-    { name: "getLeavesForUser Presenter", op: "serialize" },
+    { name: 'getLeavesForUser Presenter', op: 'serialize' },
     () => ({
       id: leave.id,
-      startDate: new Date(leave.start_date),
-      endDate: new Date(leave.end_date),
+      startDate: leave.startDate,
+      endDate: leave.endDate,
       color: leave.color,
       remarks: leave.remarks,
-      createdAt: new Date(leave.created_at),
-    }),
+      createdAt: leave.createdAt,
+      userId: leave.userId,
+    })
   );
 }
 
@@ -29,28 +29,28 @@ export const getLeaveController =
   (
     instrumentationService: IInstrumentationService,
     authenticationService: IAuthenticationService,
-    getLeaveUseCase: IGetLeaveUseCase,
+    getLeaveUseCase: IGetLeaveUseCase
   ) =>
   async (
     leaveId: number | undefined,
-    token: string | undefined,
+    token: string | undefined
   ): Promise<ReturnType<typeof presenter>> => {
     return await instrumentationService.startSpan(
-      { name: "getLeavesForUser Controller" },
+      { name: 'getLeavesForUser Controller' },
       async () => {
         if (!token) {
-          throw new UnauthenticatedError("Must be logged in to create a leave");
+          throw new UnauthenticatedError('Must be logged in to create a leave');
         }
 
         if (!leaveId) {
-          throw new InputParseError("Please provide the leave id");
+          throw new InputParseError('Please provide the leave id');
         }
 
         const { session } = await authenticationService.validateSession(token);
 
-        const leave = await getLeaveUseCase(leaveId, session.user_id);
+        const leave = await getLeaveUseCase(leaveId, session.userId);
 
         return presenter(leave, instrumentationService);
-      },
+      }
     );
   };

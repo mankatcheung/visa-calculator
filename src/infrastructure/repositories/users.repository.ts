@@ -1,24 +1,24 @@
-import { eq } from "drizzle-orm";
-import { hash } from "bcrypt-ts";
+import { eq } from 'drizzle-orm';
+import { hash } from 'bcrypt-ts';
 
-import { db } from "@/drizzle";
-import { users } from "@/drizzle/schema";
-import { IUsersRepository } from "@/src/application/repositories/users.repository.interface";
-import { DatabaseOperationError } from "@/src/entities/errors/common";
-import type { CreateUser, UpdateUser, User } from "@/src/entities/models/user";
-import type { IInstrumentationService } from "@/src/application/services/instrumentation.service.interface";
-import type { ICrashReporterService } from "@/src/application/services/crash-reporter.service.interface";
-import { PASSWORD_SALT_ROUNDS } from "@/config";
-import { ITransaction } from "@/src/entities/models/transaction.interface";
+import { db } from '@/drizzle';
+import { users } from '@/drizzle/schema';
+import { IUsersRepository } from '@/src/application/repositories/users.repository.interface';
+import { DatabaseOperationError } from '@/src/entities/errors/common';
+import type { CreateUser, UpdateUser, User } from '@/src/entities/models/user';
+import type { IInstrumentationService } from '@/src/application/services/instrumentation.service.interface';
+import type { ICrashReporterService } from '@/src/application/services/crash-reporter.service.interface';
+import { PASSWORD_SALT_ROUNDS } from '@/config';
+import { ITransaction } from '@/src/entities/models/transaction.interface';
 
 export class UsersRepository implements IUsersRepository {
   constructor(
     private readonly instrumentationService: IInstrumentationService,
-    private readonly crashReporterService: ICrashReporterService,
+    private readonly crashReporterService: ICrashReporterService
   ) {}
   async getUser(id: string): Promise<User | undefined> {
     return await this.instrumentationService.startSpan(
-      { name: "UsersRepository > getUser" },
+      { name: 'UsersRepository > getUser' },
       async () => {
         try {
           const query = db.query.users.findFirst({
@@ -28,10 +28,10 @@ export class UsersRepository implements IUsersRepository {
           const user = await this.instrumentationService.startSpan(
             {
               name: query.toSQL().sql,
-              op: "db.query",
-              attributes: { "db.system": "sqlite" },
+              op: 'db.query',
+              attributes: { 'db.system': 'sqlite' },
             },
-            () => query.execute(),
+            () => query.execute()
           );
 
           return user;
@@ -39,12 +39,12 @@ export class UsersRepository implements IUsersRepository {
           this.crashReporterService.report(err);
           throw err; // TODO: convert to Entities error
         }
-      },
+      }
     );
   }
   async getUserByEmail(email: string): Promise<User | undefined> {
     return await this.instrumentationService.startSpan(
-      { name: "UsersRepository > getUserByEmail" },
+      { name: 'UsersRepository > getUserByEmail' },
       async () => {
         try {
           const query = db.query.users.findFirst({
@@ -54,10 +54,10 @@ export class UsersRepository implements IUsersRepository {
           const user = await this.instrumentationService.startSpan(
             {
               name: query.toSQL().sql,
-              op: "db.query",
-              attributes: { "db.system": "sqlite" },
+              op: 'db.query',
+              attributes: { 'db.system': 'sqlite' },
             },
-            () => query.execute(),
+            () => query.execute()
           );
 
           return user;
@@ -65,63 +65,63 @@ export class UsersRepository implements IUsersRepository {
           this.crashReporterService.report(err);
           throw err; // TODO: convert to Entities error
         }
-      },
+      }
     );
   }
   async createUser(input: CreateUser): Promise<User> {
     return await this.instrumentationService.startSpan(
-      { name: "UsersRepository > createUser" },
+      { name: 'UsersRepository > createUser' },
       async () => {
         try {
-          const password_hash = await this.instrumentationService.startSpan(
-            { name: "hash password", op: "function" },
-            () => hash(input.password, PASSWORD_SALT_ROUNDS),
+          const passwordHash = await this.instrumentationService.startSpan(
+            { name: 'hash password', op: 'function' },
+            () => hash(input.password, PASSWORD_SALT_ROUNDS)
           );
 
           const newUser: User = {
             id: input.id,
             email: input.email,
-            password_hash,
+            passwordHash,
           };
           const query = db.insert(users).values(newUser).returning();
 
           const [created] = await this.instrumentationService.startSpan(
             {
               name: query.toSQL().sql,
-              op: "db.query",
-              attributes: { "db.system": "sqlite" },
+              op: 'db.query',
+              attributes: { 'db.system': 'sqlite' },
             },
-            () => query.execute(),
+            () => query.execute()
           );
 
           if (created) {
             return created;
           } else {
-            throw new DatabaseOperationError("Cannot create user.");
+            throw new DatabaseOperationError('Cannot create user.');
           }
         } catch (err) {
           this.crashReporterService.report(err);
           throw err; // TODO: convert to Entities error
         }
-      },
+      }
     );
   }
 
   async updateUser(
     id: string,
     input: Partial<UpdateUser>,
-    tx?: ITransaction,
+    tx?: ITransaction
   ): Promise<User> {
     return await this.instrumentationService.startSpan(
-      { name: "UsersRepository > updateUser" },
+      { name: 'UsersRepository > updateUser' },
       async () => {
         const invoker = db ?? tx;
         try {
           let newPasswordHash;
           if (input.password) {
             newPasswordHash = await this.instrumentationService.startSpan(
-              { name: "hash password", op: "function" },
-              () => hash(input.password!, PASSWORD_SALT_ROUNDS),
+              { name: 'hash password', op: 'function' },
+              () => hash(input.password!, PASSWORD_SALT_ROUNDS)
             );
           }
           const updateData: { password_hash?: string; email?: string } = {};
@@ -137,22 +137,22 @@ export class UsersRepository implements IUsersRepository {
           const [updated] = await this.instrumentationService.startSpan(
             {
               name: query.toSQL().sql,
-              op: "db.query",
-              attributes: { "db.system": "sqlite" },
+              op: 'db.query',
+              attributes: { 'db.system': 'sqlite' },
             },
-            () => query.execute(),
+            () => query.execute()
           );
 
           if (updated) {
             return updated;
           } else {
-            throw new DatabaseOperationError("Cannot update user.");
+            throw new DatabaseOperationError('Cannot update user.');
           }
         } catch (err) {
           this.crashReporterService.report(err);
           throw err;
         }
-      },
+      }
     );
   }
 }

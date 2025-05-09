@@ -1,13 +1,13 @@
-"use client";
+'use client';
 
-import { Button } from "./ui/button";
-import { useTranslations } from "next-intl";
-import { useTransition } from "react";
-import { Loader2 } from "lucide-react";
+import { Button } from './ui/button';
+import { useTranslations } from 'next-intl';
+import { useTransition } from 'react';
+import { Loader2 } from 'lucide-react';
 
-import { z } from "zod";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from 'zod';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Form,
   FormField,
@@ -15,10 +15,10 @@ import {
   FormLabel,
   FormControl,
   FormMessage,
-} from "./ui/form";
-import { userActions } from "@/app/actions";
-import { Input } from "./ui/input";
-import { toast } from "sonner";
+} from './ui/form';
+import { userActions } from '@/app/actions';
+import { Input } from './ui/input';
+import { toast } from 'sonner';
 
 const DataInput = ({
   value,
@@ -45,7 +45,7 @@ const DataInput = ({
   );
 };
 
-type ChangePasswordFormProps = React.ComponentPropsWithoutRef<"div">;
+type ChangePasswordFormProps = React.ComponentPropsWithoutRef<'div'>;
 
 export function ChangePasswordForm({}: ChangePasswordFormProps) {
   const t = useTranslations();
@@ -54,26 +54,26 @@ export function ChangePasswordForm({}: ChangePasswordFormProps) {
   const FormSchema = z
     .object({
       currentPassword: z.string({
-        required_error: t("pleaseInput"),
+        required_error: t('pleaseInput'),
       }),
       newPassword: z.string({
-        required_error: t("pleaseInput"),
+        required_error: t('pleaseInput'),
       }),
       confirmPassword: z.string({
-        required_error: t("pleaseInput"),
+        required_error: t('pleaseInput'),
       }),
     })
     .refine((data) => data.newPassword === data.confirmPassword, {
-      message: t("passwordNotMatched"),
-      path: ["confirmPassword"], // This sets which field the error is attached to
+      message: t('passwordNotMatched'),
+      path: ['confirmPassword'], // This sets which field the error is attached to
     });
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      currentPassword: "",
-      newPassword: "",
-      confirmPassword: "",
+      currentPassword: '',
+      newPassword: '',
+      confirmPassword: '',
     },
   });
 
@@ -81,14 +81,14 @@ export function ChangePasswordForm({}: ChangePasswordFormProps) {
     if (loading) return;
     startTransition(async () => {
       const formData = new FormData();
-      formData.set("currentPassword", data.currentPassword);
-      formData.set("newPassword", data.newPassword);
-      formData.set("confirmPassword", data.confirmPassword);
+      formData.set('currentPassword', data.currentPassword);
+      formData.set('newPassword', data.newPassword);
+      formData.set('confirmPassword', data.confirmPassword);
       const res = await userActions.changePassword(formData);
       if (res && res.error) {
         toast.error(res.error);
       } else {
-        toast.success(t("success"));
+        toast.success(t('success'));
       }
     });
   };
@@ -103,7 +103,7 @@ export function ChangePasswordForm({}: ChangePasswordFormProps) {
             <DataInput
               value={field.value}
               onChange={field.onChange}
-              label={t("currentPassword")}
+              label={t('currentPassword')}
             />
           )}
         />
@@ -114,7 +114,7 @@ export function ChangePasswordForm({}: ChangePasswordFormProps) {
             <DataInput
               value={field.value}
               onChange={field.onChange}
-              label={t("newPassword")}
+              label={t('newPassword')}
             />
           )}
         />
@@ -125,13 +125,13 @@ export function ChangePasswordForm({}: ChangePasswordFormProps) {
             <DataInput
               value={field.value}
               onChange={field.onChange}
-              label={t("confirmPassword")}
+              label={t('confirmPassword')}
             />
           )}
         />
         <Button type="submit" disabled={loading}>
           {loading && <Loader2 className="animate-spin" />}
-          {t("submit")}
+          {t('submit')}
         </Button>
       </form>
     </Form>

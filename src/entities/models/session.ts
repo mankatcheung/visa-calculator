@@ -1,10 +1,10 @@
-import { z } from "zod";
-import { User } from "./user";
+import { z } from 'zod';
+import { User } from './user';
 
 export const sessionSchema = z.object({
   id: z.string(),
-  user_id: z.string(),
-  expires_at: z.date(),
+  userId: z.string(),
+  expiresAt: z.date(),
 });
 
 export type Session = z.infer<typeof sessionSchema>;
