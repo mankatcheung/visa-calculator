@@ -43,5 +43,10 @@
   "settings": "Settings",
   "pleaseInput": "Please input",
   "edit": "Edit",
-  "success": "Success"
+  "success": "Success",
+  "light": "Light",
+  "dark": "Dark",
+  "system": "System",
+  "english": "English",
+  "traditionalChinese": "Traditional Chinese"
 }

@@ -3,6 +3,7 @@ import * as React from 'react';
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
@@ -14,6 +15,8 @@ import {
 } from '@/app/_components/ui/sidebar';
 import { Link, usePathname } from '@/i18n/navigation';
 import { useTranslations } from 'next-intl';
+import { ThemePicker } from './theme-picker';
+import { LocalePicker } from './locale-picker';
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const t = useTranslations();
@@ -66,6 +69,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           </SidebarGroup>
         ))}
       </SidebarContent>
+      <SidebarFooter className="flex flex-row justify-between items-center p-4">
+        <LocalePicker />
+        <ThemePicker />
+      </SidebarFooter>
       <SidebarRail />
     </Sidebar>
   );

@@ -1,4 +1,3 @@
-import { Avatar } from './ui/avatar';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -22,9 +21,9 @@ export function UserAvatar() {
   };
 
   const avatar = (
-    <Avatar className="h-8 w-8 rounded-full border-white border-1 text-center cursor-pointer">
+    <div className="h-8 w-8 rounded-full border-white border-1 text-center cursor-pointer">
       {user?.email?.substring(0, 1).toUpperCase()}
-    </Avatar>
+    </div>
   );
 
   return (
