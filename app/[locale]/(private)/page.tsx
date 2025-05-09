@@ -1,34 +1,34 @@
-import { SESSION_COOKIE } from "@/config";
-import { getInjection } from "@/di/container";
+import { SESSION_COOKIE } from '@/config';
+import { getInjection } from '@/di/container';
 import {
   AuthenticationError,
   UnauthenticatedError,
-} from "@/src/entities/errors/auth";
-import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
-import { Button } from "@/app/_components/ui/button";
-import { getTranslations } from "next-intl/server";
-import { Link } from "@/i18n/navigation";
-import { Pencil } from "lucide-react";
-import { LeaveDeleteButton } from "@/app/_components/leave-delete-button";
+} from '@/src/entities/errors/auth';
+import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
+import { Button } from '@/app/_components/ui/button';
+import { getTranslations } from 'next-intl/server';
+import { Link } from '@/i18n/navigation';
+import { Pencil } from 'lucide-react';
+import { LeaveDeleteButton } from '@/app/_components/leave-delete-button';
 import {
   Card,
   CardHeader,
   CardDescription,
   CardTitle,
-} from "@/app/_components/ui/card";
+} from '@/app/_components/ui/card';
 
 async function getLeavesForUser() {
-  const instrumentationService = getInjection("IInstrumentationService");
+  const instrumentationService = getInjection('IInstrumentationService');
   return await instrumentationService.startSpan(
     {
-      name: "getLeavesForUser",
-      op: "function.nextjs",
+      name: 'getLeavesForUser',
+      op: 'function.nextjs',
     },
     async () => {
       try {
         const getLeaveForUserController = getInjection(
-          "IGetLeavesForUserController",
+          'IGetLeavesForUserController'
         );
         const cookieStore = await cookies();
         const token = cookieStore.get(SESSION_COOKIE)?.value;
@@ -39,14 +39,14 @@ async function getLeavesForUser() {
           err instanceof UnauthenticatedError ||
           err instanceof AuthenticationError
         ) {
-          redirect("/sign-in");
+          redirect('/sign-in');
         }
-        const crashReporterService = getInjection("ICrashReporterService");
+        const crashReporterService = getInjection('ICrashReporterService');
         crashReporterService.report(err);
 
         throw err;
       }
-    },
+    }
   );
 }
 
@@ -64,7 +64,7 @@ const getTotalLeaveDays = (leaves: { startDate: Date; endDate: Date }[]) => {
 
 const getLeaveDaysSince = (
   leaves: { startDate: Date; endDate: Date }[],
-  beforeDays: number,
+  beforeDays: number
 ) => {
   const upperLimitDate = new Date();
   upperLimitDate.setDate(upperLimitDate.getDate() - beforeDays);
@@ -101,7 +101,7 @@ export default async function Home() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <Card>
           <CardHeader className="relative">
-            <CardDescription>{t("totalLeaves")}</CardDescription>
+            <CardDescription>{t('totalLeaves')}</CardDescription>
             <CardTitle className="@[250px]/card:text-3xl text-2xl font-semibold tabular-nums">
               {getTotalLeaveDays(leaves)}
             </CardTitle>
@@ -110,7 +110,7 @@ export default async function Home() {
         <Card>
           <CardHeader className="relative">
             <CardDescription>
-              {t("leavesWithinCount", { count: 365 })}
+              {t('leavesWithinCount', { count: 365 })}
             </CardDescription>
             <CardTitle className="@[250px]/card:text-3xl text-2xl font-semibold tabular-nums">
               {getLeaveDaysSince(leaves, 365)}
@@ -127,7 +127,7 @@ export default async function Home() {
             >
               <div
                 className={
-                  "rounded-full h-6 w-6 cursor-pointer active:scale-105"
+                  'rounded-full h-6 w-6 cursor-pointer active:scale-105'
                 }
                 style={{
                   backgroundColor: leave.color!,
@@ -162,7 +162,7 @@ export default async function Home() {
       </div>
       <Link href="/leaves/create">
         <Button variant="secondary" className="w-full cursor-pointer">
-          {t("addNewEntry")}
+          {t('addNewEntry')}
         </Button>
       </Link>
     </div>

@@ -1,17 +1,17 @@
-"use client";
+'use client';
 
-import { cn } from "@/lib/utils";
-import { Button } from "./ui/button";
-import { useTranslations } from "next-intl";
-import { useTransition } from "react";
-import { CalendarIcon, Loader2 } from "lucide-react";
+import { cn } from '@/lib/utils';
+import { Button } from './ui/button';
+import { useTranslations } from 'next-intl';
+import { useTransition } from 'react';
+import { CalendarIcon, Loader2 } from 'lucide-react';
 
-import { Calendar } from "./ui/calendar";
-import { format } from "date-fns";
-import { z } from "zod";
-import { Popover, PopoverTrigger, PopoverContent } from "./ui/popover";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { Calendar } from './ui/calendar';
+import { format } from 'date-fns';
+import { z } from 'zod';
+import { Popover, PopoverTrigger, PopoverContent } from './ui/popover';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Form,
   FormField,
@@ -20,13 +20,13 @@ import {
   FormControl,
   FormDescription,
   FormMessage,
-} from "./ui/form";
-import { Textarea } from "./ui/textarea";
-import { SelectSingleEventHandler } from "react-day-picker";
-import { leaveActions } from "@/app/actions";
-import { useRouter } from "@/i18n/navigation";
-import { GradientPicker } from "./color-picker";
-import { toast } from "sonner";
+} from './ui/form';
+import { Textarea } from './ui/textarea';
+import { SelectSingleEventHandler } from 'react-day-picker';
+import { leaveActions } from '@/app/actions';
+import { useRouter } from '@/i18n/navigation';
+import { GradientPicker } from './color-picker';
+import { toast } from 'sonner';
 
 const DateInput = ({
   value,
@@ -47,13 +47,13 @@ const DateInput = ({
         <PopoverTrigger asChild>
           <FormControl>
             <Button
-              variant={"outline"}
+              variant={'outline'}
               className={cn(
-                "w-[240px] pl-3 text-left font-normal",
-                !value && "text-muted-foreground",
+                'w-[240px] pl-3 text-left font-normal',
+                !value && 'text-muted-foreground'
               )}
             >
-              {value ? format(value, "PPP") : <span>{t("pickADate")}</span>}
+              {value ? format(value, 'PPP') : <span>{t('pickADate')}</span>}
               <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
             </Button>
           </FormControl>
@@ -82,7 +82,7 @@ type Leave = {
 
 type LeaveFormProps = {
   leave?: Leave;
-} & React.ComponentPropsWithoutRef<"div">;
+} & React.ComponentPropsWithoutRef<'div'>;
 
 export function LeaveForm({ leave }: LeaveFormProps) {
   const t = useTranslations();
@@ -92,23 +92,23 @@ export function LeaveForm({ leave }: LeaveFormProps) {
   const FormSchema = z
     .object({
       startDate: z.date({
-        required_error: t("startDateRequiredWarning"),
+        required_error: t('startDateRequiredWarning'),
       }),
       endDate: z.date({
-        required_error: t("endDateRequiredWarning"),
+        required_error: t('endDateRequiredWarning'),
       }),
       color: z.string(),
       remarks: z.string().optional(),
     })
     .refine((data) => data.startDate <= data.endDate, {
-      message: t("wrongDateRange"),
-      path: ["endDate"], // This sets which field the error is attached to
+      message: t('wrongDateRange'),
+      path: ['endDate'], // This sets which field the error is attached to
     });
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: leave ?? {
-      color: "#123212",
+      color: '#123212',
     },
   });
 
@@ -116,13 +116,13 @@ export function LeaveForm({ leave }: LeaveFormProps) {
     if (loading) return;
     startTransition(async () => {
       const formData = new FormData();
-      formData.set("startDate", data.startDate.toUTCString());
-      formData.set("endDate", data.endDate.toUTCString());
-      formData.set("color", data.color ?? "");
-      formData.set("remarks", data.remarks ?? "");
+      formData.set('startDate', data.startDate.toUTCString());
+      formData.set('endDate', data.endDate.toUTCString());
+      formData.set('color', data.color ?? '');
+      formData.set('remarks', data.remarks ?? '');
       let res;
       if (leave) {
-        formData.set("id", String(leave.id));
+        formData.set('id', String(leave.id));
         res = await leaveActions.updateLeave(formData);
       } else {
         res = await leaveActions.createLeave(formData);
@@ -130,8 +130,8 @@ export function LeaveForm({ leave }: LeaveFormProps) {
       if (res && res.error) {
         toast.error(res.error);
       } else {
-        toast.success(t("success"));
-        router.push("/");
+        toast.success(t('success'));
+        router.push('/');
       }
     });
   };
@@ -146,8 +146,8 @@ export function LeaveForm({ leave }: LeaveFormProps) {
             <DateInput
               value={field.value}
               onChange={field.onChange}
-              label={t("startDate")}
-              description={t("startDateDescription")}
+              label={t('startDate')}
+              description={t('startDateDescription')}
             />
           )}
         />
@@ -158,8 +158,8 @@ export function LeaveForm({ leave }: LeaveFormProps) {
             <DateInput
               value={field.value}
               onChange={field.onChange}
-              label={t("endDate")}
-              description={t("endDateDescription")}
+              label={t('endDate')}
+              description={t('endDateDescription')}
             />
           )}
         />
@@ -168,7 +168,7 @@ export function LeaveForm({ leave }: LeaveFormProps) {
           name="color"
           render={({ field }) => (
             <FormItem className="flex flex-col">
-              <FormLabel>{t("color")}</FormLabel>
+              <FormLabel>{t('color')}</FormLabel>
               <FormControl>
                 <GradientPicker
                   background={field.value}
@@ -185,10 +185,10 @@ export function LeaveForm({ leave }: LeaveFormProps) {
           name="remarks"
           render={({ field }) => (
             <FormItem className="flex flex-col">
-              <FormLabel>{t("remarks")}</FormLabel>
+              <FormLabel>{t('remarks')}</FormLabel>
               <FormControl>
                 <Textarea
-                  placeholder={t("remarks")}
+                  placeholder={t('remarks')}
                   className="resize-none"
                   {...field}
                 />
@@ -199,7 +199,7 @@ export function LeaveForm({ leave }: LeaveFormProps) {
         />
         <Button type="submit" disabled={loading}>
           {loading && <Loader2 className="animate-spin" />}
-          {t("submit")}
+          {t('submit')}
         </Button>
       </form>
     </Form>

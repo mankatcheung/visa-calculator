@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { Loader2, Trash2 } from "lucide-react";
-import { Button } from "@/app/_components/ui/button";
+import { Loader2, Trash2 } from 'lucide-react';
+import { Button } from '@/app/_components/ui/button';
 import {
   Dialog,
   DialogTrigger,
@@ -9,12 +9,12 @@ import {
   DialogTitle,
   DialogDescription,
   DialogFooter,
-} from "@/app/_components/ui/dialog";
-import { DialogHeader } from "./ui/dialog";
-import { useTranslations } from "next-intl";
-import { useTransition } from "react";
-import { leaveActions } from "@/app/actions";
-import { toast } from "sonner";
+} from '@/app/_components/ui/dialog';
+import { DialogHeader } from './ui/dialog';
+import { useTranslations } from 'next-intl';
+import { useTransition } from 'react';
+import { leaveActions } from '@/app/actions';
+import { toast } from 'sonner';
 export function LeaveDeleteButton({
   id,
   startDate,
@@ -36,7 +36,7 @@ export function LeaveDeleteButton({
       if (res && res.error) {
         toast.error(res.error);
       } else {
-        toast.success(t("success"));
+        toast.success(t('success'));
       }
     });
   };
@@ -50,15 +50,15 @@ export function LeaveDeleteButton({
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>{t("deleteLeave")}</DialogTitle>
-          <DialogDescription>{t("deleteReminder")}</DialogDescription>
+          <DialogTitle>{t('deleteLeave')}</DialogTitle>
+          <DialogDescription>{t('deleteReminder')}</DialogDescription>
         </DialogHeader>
         <div>{`${startDate.toDateString()} - ${endDate.toDateString()}`}</div>
         <DialogFooter>
           <form onSubmit={handleSubmit}>
             <Button variant="destructive" type="submit" disabled={loading}>
               {loading && <Loader2 className="animate-spin" />}
-              {t("confirm")}
+              {t('confirm')}
             </Button>
           </form>
         </DialogFooter>

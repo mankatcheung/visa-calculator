@@ -2,7 +2,7 @@ import type {
   Leave,
   LeaveInsert,
   LeaveUpdate,
-} from "@/src/entities/models/leave";
+} from '@/src/entities/models/leave';
 
 export interface ILeavesRepository {
   createLeave(leave: LeaveInsert, tx?: any): Promise<Leave>;
@@ -11,7 +11,7 @@ export interface ILeavesRepository {
   updateLeave(
     id: number,
     input: Partial<LeaveUpdate>,
-    tx?: any,
+    tx?: any
   ): Promise<Leave>;
   deleteLeave(id: number, tx?: any): Promise<void>;
 }

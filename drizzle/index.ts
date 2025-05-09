@@ -1,14 +1,14 @@
-import { ExtractTablesWithRelations } from "drizzle-orm";
-import { drizzle } from "drizzle-orm/libsql";
-import { sessions, users, leaves } from "./schema";
+import { ExtractTablesWithRelations } from 'drizzle-orm';
+import { drizzle } from 'drizzle-orm/libsql';
+import { sessions, users, leaves } from './schema';
 
-import { SQLiteTransaction } from "drizzle-orm/sqlite-core";
-import { createClient, ResultSet } from "@libsql/client";
+import { SQLiteTransaction } from 'drizzle-orm/sqlite-core';
+import { createClient, ResultSet } from '@libsql/client';
 
 const connectionString = process.env.DATABASE_URL;
 const databaseToken = process.env.DATABASE_AUTH_TOKEN;
 const client = createClient({
-  url: connectionString ?? "file:sqlite.db",
+  url: connectionString ?? 'file:sqlite.db',
   authToken: databaseToken,
 });
 
@@ -21,7 +21,7 @@ type Schema = {
 };
 
 export type Transaction = SQLiteTransaction<
-  "async",
+  'async',
   ResultSet,
   Schema,
   ExtractTablesWithRelations<Schema>

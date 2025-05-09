@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "prettier": "prettier",
+    "prettier": "prettier . \"!**/*.{js,jsx,vue}\" --write",
     "test": "vitest",
     "coverage": "vitest run --coverage --reporter=junit --outputFile=test-report.junit.xml",
     "db:generate": "drizzle-kit generate",

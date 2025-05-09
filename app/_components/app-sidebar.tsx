@@ -1,4 +1,4 @@
-import * as React from "react";
+import * as React from 'react';
 
 import {
   Sidebar,
@@ -11,9 +11,9 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarRail,
-} from "@/app/_components/ui/sidebar";
-import { Link, usePathname } from "@/i18n/navigation";
-import { useTranslations } from "next-intl";
+} from '@/app/_components/ui/sidebar';
+import { Link, usePathname } from '@/i18n/navigation';
+import { useTranslations } from 'next-intl';
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const t = useTranslations();
@@ -21,22 +21,22 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const data = {
     navMain: [
       {
-        title: t("general"),
-        url: "#",
+        title: t('general'),
+        url: '#',
         items: [
           {
-            title: t("visaCalculator"),
-            url: "/",
+            title: t('visaCalculator'),
+            url: '/',
           },
         ],
       },
       {
-        title: t("user"),
-        url: "#",
+        title: t('user'),
+        url: '#',
         items: [
           {
-            title: t("settings"),
-            url: "/users/settings",
+            title: t('settings'),
+            url: '/users/settings',
           },
         ],
       },

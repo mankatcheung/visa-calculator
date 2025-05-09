@@ -1,27 +1,27 @@
-"use client";
+'use client';
 
-import { cn } from "@/lib/utils";
-import { Label } from "@radix-ui/react-label";
-import { Button } from "./ui/button";
+import { cn } from '@/lib/utils';
+import { Label } from '@radix-ui/react-label';
+import { Button } from './ui/button';
 import {
   Card,
   CardHeader,
   CardTitle,
   CardDescription,
   CardContent,
-} from "./ui/card";
-import { Input } from "./ui/input";
-import { Link } from "@/i18n/navigation";
-import { useTranslations } from "next-intl";
-import { useTransition } from "react";
-import { Separator } from "./ui/separator";
-import { authActions } from "@/app/actions";
-import { toast } from "sonner";
+} from './ui/card';
+import { Input } from './ui/input';
+import { Link } from '@/i18n/navigation';
+import { useTranslations } from 'next-intl';
+import { useTransition } from 'react';
+import { Separator } from './ui/separator';
+import { authActions } from '@/app/actions';
+import { toast } from 'sonner';
 
 export function SignUpForm({
   className,
   ...props
-}: React.ComponentPropsWithoutRef<"div">) {
+}: React.ComponentPropsWithoutRef<'div'>) {
   const t = useTranslations();
   const [loading, startTransition] = useTransition();
 
@@ -35,23 +35,23 @@ export function SignUpForm({
       if (res && res.error) {
         toast.error(res.error);
       } else {
-        toast.success(t("success"));
+        toast.success(t('success'));
       }
     });
   };
 
   return (
-    <div className={cn("flex flex-col gap-6", className)} {...props}>
+    <div className={cn('flex flex-col gap-6', className)} {...props}>
       <Card>
         <CardHeader>
-          <CardTitle className="text-2xl">{t("signUp")}</CardTitle>
-          <CardDescription>{t("signUpDescription")}</CardDescription>
+          <CardTitle className="text-2xl">{t('signUp')}</CardTitle>
+          <CardDescription>{t('signUpDescription')}</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit}>
             <div className="flex flex-col gap-6">
               <div className="grid gap-2">
-                <Label htmlFor="email">{t("email")}</Label>
+                <Label htmlFor="email">{t('email')}</Label>
                 <Input
                   id="email"
                   name="email"
@@ -62,14 +62,14 @@ export function SignUpForm({
               </div>
               <div className="grid gap-2">
                 <div className="flex items-center">
-                  <Label htmlFor="password">{t("password")}</Label>
+                  <Label htmlFor="password">{t('password')}</Label>
                 </div>
                 <Input id="password" name="password" type="password" required />
               </div>
               <div className="grid gap-2">
                 <div className="flex items-center">
                   <Label htmlFor="confirmPassword">
-                    {t("confirmPassword")}
+                    {t('confirmPassword')}
                   </Label>
                 </div>
                 <Input
@@ -80,13 +80,13 @@ export function SignUpForm({
                 />
               </div>
               <Button type="submit" className="w-full">
-                {t("signUp")}
+                {t('signUp')}
               </Button>
             </div>
             <div className="mt-4 text-center text-sm">
-              {t("alreadyHaveAnAccount")}
+              {t('alreadyHaveAnAccount')}
               <Link href="/sign-in" className="underline underline-offset-4">
-                {t("signIn")}
+                {t('signIn')}
               </Link>
             </div>
             <div className="mt-4 w-full flex flex-row justify-center space-x-2 text-sm">

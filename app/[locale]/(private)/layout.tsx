@@ -1,14 +1,14 @@
-"use client";
+'use client';
 
-import { Separator } from "@radix-ui/react-separator";
+import { Separator } from '@radix-ui/react-separator';
 
 import {
   SidebarProvider,
   SidebarInset,
   SidebarTrigger,
-} from "../../_components/ui/sidebar";
-import { AppSidebar } from "../../_components/app-sidebar";
-import { UserAvatar } from "@/app/_components/user-avatar";
+} from '../../_components/ui/sidebar';
+import { AppSidebar } from '../../_components/app-sidebar';
+import { UserAvatar } from '@/app/_components/user-avatar';
 
 export default function PrivateLayout({
   children,

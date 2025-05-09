@@ -1,5 +1,5 @@
-import { Session } from "@/src/entities/models/session";
-import { User } from "@/src/entities/models/user";
+import { Session } from '@/src/entities/models/session';
+import { User } from '@/src/entities/models/user';
 
 export interface ISessionsRepository {
   createSession(session: Session): Promise<Session>;
@@ -7,7 +7,7 @@ export interface ISessionsRepository {
   getUserSession(userId: string): Promise<{ session: Session; user: User }>;
   updateSessionExpiresAt(
     sessionId: string,
-    newExpiresAt: Date,
+    newExpiresAt: Date
   ): Promise<Session>;
   deleteSession(sessionId: string): Promise<void>;
   deleteUserSession(userId: string): Promise<void>;

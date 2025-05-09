@@ -1,4 +1,4 @@
-import { LeaveForm } from "@/app/_components/leave-form";
+import { LeaveForm } from '@/app/_components/leave-form';
 import {
   Breadcrumb,
   BreadcrumbList,
@@ -6,27 +6,27 @@ import {
   BreadcrumbLink,
   BreadcrumbSeparator,
   BreadcrumbPage,
-} from "@/app/_components/ui/breadcrumb";
-import { SESSION_COOKIE } from "@/config";
-import { getInjection } from "@/di/container";
+} from '@/app/_components/ui/breadcrumb';
+import { SESSION_COOKIE } from '@/config';
+import { getInjection } from '@/di/container';
 import {
   UnauthenticatedError,
   AuthenticationError,
-} from "@/src/entities/errors/auth";
-import { getTranslations } from "next-intl/server";
-import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
+} from '@/src/entities/errors/auth';
+import { getTranslations } from 'next-intl/server';
+import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
 
 async function getLeave(id: number) {
-  const instrumentationService = getInjection("IInstrumentationService");
+  const instrumentationService = getInjection('IInstrumentationService');
   return await instrumentationService.startSpan(
     {
-      name: "getLeave",
-      op: "function.nextjs",
+      name: 'getLeave',
+      op: 'function.nextjs',
     },
     async () => {
       try {
-        const getLeaveController = getInjection("IGetLeaveController");
+        const getLeaveController = getInjection('IGetLeaveController');
         const cookieStore = await cookies();
         const token = cookieStore.get(SESSION_COOKIE)?.value;
         const leaves = await getLeaveController(id, token);
@@ -36,14 +36,14 @@ async function getLeave(id: number) {
           err instanceof UnauthenticatedError ||
           err instanceof AuthenticationError
         ) {
-          redirect("/sign-in");
+          redirect('/sign-in');
         }
-        const crashReporterService = getInjection("ICrashReporterService");
+        const crashReporterService = getInjection('ICrashReporterService');
         crashReporterService.report(err);
 
         throw err;
       }
-    },
+    }
   );
 }
 export default async function LeaveEditPage({
@@ -64,11 +64,11 @@ export default async function LeaveEditPage({
       <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem>
-            <BreadcrumbLink href="/">{t("visaCalculator")}</BreadcrumbLink>
+            <BreadcrumbLink href="/">{t('visaCalculator')}</BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
-            <BreadcrumbPage>{t("editLeave")}</BreadcrumbPage>
+            <BreadcrumbPage>{t('editLeave')}</BreadcrumbPage>
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>

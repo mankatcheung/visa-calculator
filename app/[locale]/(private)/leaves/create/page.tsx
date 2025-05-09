@@ -1,4 +1,4 @@
-import { LeaveForm } from "@/app/_components/leave-form";
+import { LeaveForm } from '@/app/_components/leave-form';
 import {
   Breadcrumb,
   BreadcrumbList,
@@ -6,8 +6,8 @@ import {
   BreadcrumbLink,
   BreadcrumbSeparator,
   BreadcrumbPage,
-} from "@/app/_components/ui/breadcrumb";
-import { getTranslations } from "next-intl/server";
+} from '@/app/_components/ui/breadcrumb';
+import { getTranslations } from 'next-intl/server';
 
 export default async function LeaveCreatePage() {
   const t = await getTranslations();
@@ -16,11 +16,11 @@ export default async function LeaveCreatePage() {
       <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem>
-            <BreadcrumbLink href="/">{t("visaCalculator")}</BreadcrumbLink>
+            <BreadcrumbLink href="/">{t('visaCalculator')}</BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
-            <BreadcrumbPage>{t("createLeave")}</BreadcrumbPage>
+            <BreadcrumbPage>{t('createLeave')}</BreadcrumbPage>
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
