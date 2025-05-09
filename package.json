@@ -9,7 +9,7 @@
     "lint": "next lint",
     "prettier": "prettier",
     "test": "vitest",
-    "coverage": "vitest run --coverage",
+    "coverage": "vitest run --coverage --reporter=junit --outputFile=test-report.junit.xml",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:studio": "drizzle-kit studio"

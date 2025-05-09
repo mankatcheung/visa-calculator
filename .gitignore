@@ -14,6 +14,9 @@
 /coverage
 /tests/coverage
 
+# Codecov
+test-report.junit.xml
+
 # next.js
 /.next/
 /out/
