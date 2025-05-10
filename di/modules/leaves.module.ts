@@ -15,23 +15,16 @@ import { updateLeaveController } from '@/src/interface-adapters/controllers/leav
 import { deleteLeaveController } from '@/src/interface-adapters/controllers/leaves/delete-leave.controller';
 import { getLeaveUseCase } from '@/src/application/use-cases/leaves/get-leave.use-case';
 import { getLeaveController } from '@/src/interface-adapters/controllers/leaves/get-leave.controller';
-import { MockLeavesRepository } from '@/src/infrastructure/repositories/leaves.repository.mock';
 
 export function createLeavesModule() {
   const leavesModule = createModule();
 
-  if (process.env.NODE_ENV === 'test') {
-    leavesModule
-      .bind(DI_SYMBOLS.ILeavesRepository)
-      .toClass(MockLeavesRepository);
-  } else {
-    leavesModule
-      .bind(DI_SYMBOLS.ILeavesRepository)
-      .toClass(LeavesRepository, [
-        DI_SYMBOLS.IInstrumentationService,
-        DI_SYMBOLS.ICrashReporterService,
-      ]);
-  }
+  leavesModule
+    .bind(DI_SYMBOLS.ILeavesRepository)
+    .toClass(LeavesRepository, [
+      DI_SYMBOLS.IInstrumentationService,
+      DI_SYMBOLS.ICrashReporterService,
+    ]);
 
   leavesModule
     .bind(DI_SYMBOLS.ICreateLeaveUseCase)

@@ -9,21 +9,16 @@ import { updateUserEmailUseCase } from '@/src/application/use-cases/users/update
 import { getSelfUserController } from '@/src/interface-adapters/controllers/users/get-self-user.controller';
 import { updateUserEmailController } from '@/src/interface-adapters/controllers/users/update-user-email.controller';
 import { updateUserPasswordController } from '@/src/interface-adapters/controllers/users/update-user-password.controller';
-import { MockUsersRepository } from '@/src/infrastructure/repositories/users.repository.mock';
 
 export function createUsersModule() {
   const usersModule = createModule();
 
-  if (process.env.NODE_ENV === 'test') {
-    usersModule.bind(DI_SYMBOLS.IUsersRepository).toClass(MockUsersRepository);
-  } else {
-    usersModule
-      .bind(DI_SYMBOLS.IUsersRepository)
-      .toClass(UsersRepository, [
-        DI_SYMBOLS.IInstrumentationService,
-        DI_SYMBOLS.ICrashReporterService,
-      ]);
-  }
+  usersModule
+    .bind(DI_SYMBOLS.IUsersRepository)
+    .toClass(UsersRepository, [
+      DI_SYMBOLS.IInstrumentationService,
+      DI_SYMBOLS.ICrashReporterService,
+    ]);
 
   usersModule
     .bind(DI_SYMBOLS.IGetUserUseCase)

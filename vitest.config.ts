@@ -4,6 +4,13 @@ import env from 'vite-plugin-env-compatible';
 
 export default defineConfig({
   test: {
+    pool: 'threads', // Use threads to ensure isolation
+    poolOptions: {
+      threads: {
+        singleThread: true, // Run tests in a single thread
+      },
+    },
+    setupFiles: ['./tests/setup.ts'],
     coverage: {
       provider: 'istanbul',
       reportsDirectory: './tests/coverage',

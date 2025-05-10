@@ -19,7 +19,6 @@ it('returns cookie', async () => {
   expect(user).toBeDefined();
   expect(cookie).toMatchObject({
     name: SESSION_COOKIE,
-    value: `random_session_id_${user.id}`,
     attributes: {},
   });
 });

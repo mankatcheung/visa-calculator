@@ -14,7 +14,6 @@ it('signs in with valid input', async () => {
     signInController({ email: 'one@test.com', password: 'password-one' })
   ).resolves.toMatchObject({
     name: SESSION_COOKIE,
-    value: 'random_session_id_1',
     attributes: {},
   });
 });

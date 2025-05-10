@@ -7,10 +7,17 @@ import { createClient, ResultSet } from '@libsql/client';
 
 const connectionString = process.env.DATABASE_URL;
 const databaseToken = process.env.DATABASE_AUTH_TOKEN;
-const client = createClient({
-  url: connectionString ?? 'file:sqlite.db',
-  authToken: databaseToken,
-});
+
+export const client = createClient(
+  process.env.NODE_ENV === 'test'
+    ? {
+        url: 'file:sqlite.db',
+      }
+    : {
+        url: connectionString ?? 'file:sqlite.db',
+        authToken: databaseToken,
+      }
+);
 
 export const db = drizzle(client, { schema: { users, sessions, leaves } });
 

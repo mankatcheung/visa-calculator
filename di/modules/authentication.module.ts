@@ -11,23 +11,16 @@ import { signOutController } from '@/src/interface-adapters/controllers/auth/sig
 import { signUpController } from '@/src/interface-adapters/controllers/auth/sign-up.controller';
 
 import { DI_SYMBOLS } from '@/di/types';
-import { MockAuthenticationService } from '@/src/infrastructure/services/authentication.service.mock';
 
 export function createAuthenticationModule() {
   const authenticationModule = createModule();
 
-  if (process.env.NODE_ENV === 'test') {
-    authenticationModule
-      .bind(DI_SYMBOLS.IAuthenticationService)
-      .toClass(MockAuthenticationService, [DI_SYMBOLS.ISessionRepository]);
-  } else {
-    authenticationModule
-      .bind(DI_SYMBOLS.IAuthenticationService)
-      .toClass(AuthenticationService, [
-        DI_SYMBOLS.ISessionRepository,
-        DI_SYMBOLS.IInstrumentationService,
-      ]);
-  }
+  authenticationModule
+    .bind(DI_SYMBOLS.IAuthenticationService)
+    .toClass(AuthenticationService, [
+      DI_SYMBOLS.ISessionRepository,
+      DI_SYMBOLS.IInstrumentationService,
+    ]);
 
   authenticationModule
     .bind(DI_SYMBOLS.ISignInUseCase)
