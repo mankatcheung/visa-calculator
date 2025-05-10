@@ -99,12 +99,17 @@ export class LeavesRepository implements ILeavesRepository {
     );
   }
 
-  async updateLeave(id: number, input: Partial<LeaveUpdate>): Promise<Leave> {
+  async updateLeave(
+    id: number,
+    input: Partial<LeaveUpdate>,
+    tx?: Transaction
+  ): Promise<Leave> {
+    const invoker = tx ?? db;
     return await this.instrumentationService.startSpan(
       { name: 'LeavesRepository > updateLeave' },
       async () => {
         try {
-          const query = db
+          const query = invoker
             .update(leaves)
             .set(input)
             .where(eq(leaves.id, id))
