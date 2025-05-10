@@ -10,7 +10,7 @@ const updateLeaveController = getInjection('IUpdateLeaveController');
 
 // A great guide on test names
 // https://www.epicweb.dev/talks/how-to-write-better-test-names
-it('update todo', async () => {
+it('update leave', async () => {
   const { cookie } = await signInUseCase({
     email: 'one@test.com',
     password: 'password-one',
