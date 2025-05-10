@@ -124,8 +124,8 @@ export class UsersRepository implements IUsersRepository {
               () => hash(input.password!, PASSWORD_SALT_ROUNDS)
             );
           }
-          const updateData: { password_hash?: string; email?: string } = {};
-          if (newPasswordHash) updateData.password_hash = newPasswordHash;
+          const updateData: { passwordHash?: string; email?: string } = {};
+          if (newPasswordHash) updateData.passwordHash = newPasswordHash;
           if (input.email) updateData.email = input.email;
 
           const query = invoker
