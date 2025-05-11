@@ -61,7 +61,21 @@ it('update user', async () => {
   });
   const passwordMatched = await compare(
     'password-eight-new',
-    newUser?.passwordHash!
+    newUser?.passwordHash || ''
   );
-  expect(passwordMatched).toEqual(true);
+  expect(newUser).not.toBeNull();
+  expect(newUser?.passwordHash).toBeDefined();
+  expect(passwordMatched).toBe(true);
+});
+
+it('should return undefined when getting a non-existent user', async () => {
+  await expect(
+    usersRepository.getUser('non-existent-id')
+  ).resolves.toBeUndefined();
+});
+
+it('should return undefined when getting a user with non-existent email', async () => {
+  await expect(
+    usersRepository.getUserByEmail('non-existent@test.com')
+  ).resolves.toBeUndefined();
 });
