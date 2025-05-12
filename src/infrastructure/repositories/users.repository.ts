@@ -1,14 +1,15 @@
-import { eq } from 'drizzle-orm';
+import { Transaction, db } from '@/drizzle';
 import { hash } from 'bcrypt-ts';
+import { eq } from 'drizzle-orm';
 
-import { db, Transaction } from '@/drizzle';
+import { PASSWORD_SALT_ROUNDS } from '@/config';
+
 import { users } from '@/drizzle/schema';
 import { IUsersRepository } from '@/src/application/repositories/users.repository.interface';
+import type { ICrashReporterService } from '@/src/application/services/crash-reporter.service.interface';
+import type { IInstrumentationService } from '@/src/application/services/instrumentation.service.interface';
 import { DatabaseOperationError } from '@/src/entities/errors/common';
 import type { CreateUser, UpdateUser, User } from '@/src/entities/models/user';
-import type { IInstrumentationService } from '@/src/application/services/instrumentation.service.interface';
-import type { ICrashReporterService } from '@/src/application/services/crash-reporter.service.interface';
-import { PASSWORD_SALT_ROUNDS } from '@/config';
 
 export class UsersRepository implements IUsersRepository {
   constructor(

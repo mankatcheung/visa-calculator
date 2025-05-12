@@ -1,13 +1,14 @@
-import type { Metadata } from 'next';
 import '../globals.css';
-import { Inter as FontSans } from 'next/font/google';
-import { cn } from '@/lib/utils';
-import { hasLocale, NextIntlClientProvider } from 'next-intl';
-import { routing } from '@/i18n/routing';
-import { notFound } from 'next/navigation';
-import { ThemeProvider } from '@/app/_components/theme-provider';
 import { SpeedInsights } from '@vercel/speed-insights/next';
+import type { Metadata } from 'next';
+import { NextIntlClientProvider, hasLocale } from 'next-intl';
+import { Inter as FontSans } from 'next/font/google';
+import { notFound } from 'next/navigation';
+
+import { ThemeProvider } from '@/app/_components/theme-provider';
 import { Toaster } from '@/app/_components/ui/sonner';
+import { routing } from '@/i18n/routing';
+import { cn } from '@/lib/utils';
 
 const fontSans = FontSans({
   subsets: ['latin'],

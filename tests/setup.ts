@@ -1,8 +1,9 @@
 import { client, db } from '@/drizzle';
-import { seed } from './seed';
 import { migrate } from 'drizzle-orm/libsql/migrator';
-import { afterAll, beforeAll } from 'vitest';
 import { existsSync, unlinkSync } from 'fs';
+import { afterAll, beforeAll } from 'vitest';
+
+import { seed } from './seed';
 
 beforeAll(async () => {
   await migrate(db, { migrationsFolder: './drizzle/migrations' });

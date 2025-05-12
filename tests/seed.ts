@@ -1,7 +1,9 @@
-import { users } from '@/drizzle/schema';
-import { PASSWORD_SALT_ROUNDS } from '@/config';
-import { hashSync } from 'bcrypt-ts';
 import { db } from '@/drizzle';
+import { hashSync } from 'bcrypt-ts';
+
+import { PASSWORD_SALT_ROUNDS } from '@/config';
+
+import { users } from '@/drizzle/schema';
 
 export async function seed() {
   await db.insert(users).values([

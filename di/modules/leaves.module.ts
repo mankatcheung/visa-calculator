@@ -1,20 +1,17 @@
 import { createModule } from '@evyweb/ioctopus';
 
-import { LeavesRepository } from '@/src/infrastructure/repositories/leaves.repository';
-
+import { DI_SYMBOLS } from '@/di/types';
 import { createLeaveUseCase } from '@/src/application/use-cases/leaves/create-leave.use-case';
 import { deleteLeaveUseCase } from '@/src/application/use-cases/leaves/delete-leave.use-case';
-import { getLeavesForUserUseCase } from '@/src/application/use-cases/leaves/get-leaves-for-user.use-case';
-
-import { createLeaveController } from '@/src/interface-adapters/controllers/leaves/create-leave.controller';
-import { getLeavesForUserController } from '@/src/interface-adapters/controllers/leaves/get-leaves-for-user.controller';
-
-import { DI_SYMBOLS } from '@/di/types';
-import { updateLeaveUseCase } from '@/src/application/use-cases/leaves/update-leave.use-case';
-import { updateLeaveController } from '@/src/interface-adapters/controllers/leaves/update-leave.controller';
-import { deleteLeaveController } from '@/src/interface-adapters/controllers/leaves/delete-leave.controller';
 import { getLeaveUseCase } from '@/src/application/use-cases/leaves/get-leave.use-case';
+import { getLeavesForUserUseCase } from '@/src/application/use-cases/leaves/get-leaves-for-user.use-case';
+import { updateLeaveUseCase } from '@/src/application/use-cases/leaves/update-leave.use-case';
+import { LeavesRepository } from '@/src/infrastructure/repositories/leaves.repository';
+import { createLeaveController } from '@/src/interface-adapters/controllers/leaves/create-leave.controller';
+import { deleteLeaveController } from '@/src/interface-adapters/controllers/leaves/delete-leave.controller';
 import { getLeaveController } from '@/src/interface-adapters/controllers/leaves/get-leave.controller';
+import { getLeavesForUserController } from '@/src/interface-adapters/controllers/leaves/get-leaves-for-user.controller';
+import { updateLeaveController } from '@/src/interface-adapters/controllers/leaves/update-leave.controller';
 
 export function createLeavesModule() {
   const leavesModule = createModule();

@@ -1,6 +1,8 @@
 import { createModule } from '@evyweb/ioctopus';
-import { DI_SYMBOLS } from '../types';
+
 import { SessionsRepository } from '@/src/infrastructure/repositories/sessions.repository';
+
+import { DI_SYMBOLS } from '../types';
 
 export function createSessionModule() {
   const sessionsModule = createModule();

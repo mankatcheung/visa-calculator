@@ -1,5 +1,6 @@
 import createMiddleware from 'next-intl/middleware';
 import { NextRequest, NextResponse } from 'next/server';
+
 import { SESSION_COOKIE } from './config';
 import { getInjection } from './di/container';
 

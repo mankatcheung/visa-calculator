@@ -1,3 +1,7 @@
+import { Paintbrush } from 'lucide-react';
+import { useTranslations } from 'next-intl';
+import { useMemo } from 'react';
+
 import { Button } from '@/app/_components/ui/button';
 import { Input } from '@/app/_components/ui/input';
 import {
@@ -12,9 +16,6 @@ import {
   TabsTrigger,
 } from '@/app/_components/ui/tabs';
 import { cn } from '@/lib/utils';
-import { Paintbrush } from 'lucide-react';
-import { useTranslations } from 'next-intl';
-import { useMemo } from 'react';
 
 export function GradientPicker({
   background,

@@ -1,12 +1,13 @@
 'use server';
 
+import { revalidatePath } from 'next/cache';
 import { cookies } from 'next/headers';
 
 import { SESSION_COOKIE } from '@/config';
-import { AuthenticationError } from '@/src/entities/errors/auth';
+
 import { getInjection } from '@/di/container';
+import { AuthenticationError } from '@/src/entities/errors/auth';
 import { InputParseError } from '@/src/entities/errors/common';
-import { revalidatePath } from 'next/cache';
 
 export async function createLeave(formData: FormData) {
   const instrumentationService = getInjection('IInstrumentationService');

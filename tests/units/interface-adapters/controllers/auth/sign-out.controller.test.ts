@@ -1,7 +1,8 @@
 import { expect, it } from 'vitest';
 
-import { getInjection } from '@/di/container';
 import { SESSION_COOKIE } from '@/config';
+
+import { getInjection } from '@/di/container';
 import { InputParseError } from '@/src/entities/errors/common';
 
 const signInUseCase = getInjection('ISignInUseCase');

@@ -1,7 +1,6 @@
 import { expect, it } from 'vitest';
 
 import { getInjection } from '@/di/container';
-
 import { UnauthorizedError } from '@/src/entities/errors/auth';
 import { NotFoundError } from '@/src/entities/errors/common';
 

@@ -1,22 +1,24 @@
+import { Pencil } from 'lucide-react';
+import { getTranslations } from 'next-intl/server';
+import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
+
 import { SESSION_COOKIE } from '@/config';
+
+import { LeaveDeleteButton } from '@/app/_components/leave-delete-button';
+import { Button } from '@/app/_components/ui/button';
+import {
+  Card,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/app/_components/ui/card';
 import { getInjection } from '@/di/container';
+import { Link } from '@/i18n/navigation';
 import {
   AuthenticationError,
   UnauthenticatedError,
 } from '@/src/entities/errors/auth';
-import { cookies } from 'next/headers';
-import { redirect } from 'next/navigation';
-import { Button } from '@/app/_components/ui/button';
-import { getTranslations } from 'next-intl/server';
-import { Link } from '@/i18n/navigation';
-import { Pencil } from 'lucide-react';
-import { LeaveDeleteButton } from '@/app/_components/leave-delete-button';
-import {
-  Card,
-  CardHeader,
-  CardDescription,
-  CardTitle,
-} from '@/app/_components/ui/card';
 
 async function getLeavesForUser() {
   const instrumentationService = getInjection('IInstrumentationService');

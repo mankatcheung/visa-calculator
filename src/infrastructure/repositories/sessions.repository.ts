@@ -1,12 +1,13 @@
 import { db } from '@/drizzle';
+import { encodeBase32LowerCaseNoPadding } from '@oslojs/encoding';
+import { eq } from 'drizzle-orm';
+
 import { sessions, users } from '@/drizzle/schema';
 import { ISessionsRepository } from '@/src/application/repositories/sessions.repository.interface';
 import { ICrashReporterService } from '@/src/application/services/crash-reporter.service.interface';
 import { IInstrumentationService } from '@/src/application/services/instrumentation.service.interface';
 import { DatabaseOperationError } from '@/src/entities/errors/common';
 import { Session } from '@/src/entities/models/session';
-import { encodeBase32LowerCaseNoPadding } from '@oslojs/encoding';
-import { eq } from 'drizzle-orm';
 import { User } from '@/src/entities/models/user';
 
 export class SessionsRepository implements ISessionsRepository {

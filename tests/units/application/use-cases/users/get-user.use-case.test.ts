@@ -1,6 +1,7 @@
+import { expect, it } from 'vitest';
+
 import { getInjection } from '@/di/container';
 import { NotFoundError } from '@/src/entities/errors/common';
-import { expect, it } from 'vitest';
 
 const signInUseCase = getInjection('ISignInUseCase');
 const getUserUseCase = getInjection('IGetUserUseCase');

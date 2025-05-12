@@ -1,5 +1,5 @@
-import * as userActions from './users';
-import * as leaveActions from './leaves';
 import * as authActions from './auth';
+import * as leaveActions from './leaves';
+import * as userActions from './users';
 
 export { userActions, leaveActions, authActions };

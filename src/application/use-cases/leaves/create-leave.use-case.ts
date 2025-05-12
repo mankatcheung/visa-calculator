@@ -1,6 +1,6 @@
-import type { Leave } from '@/src/entities/models/leave';
-import type { IInstrumentationService } from '@/src/application/services/instrumentation.service.interface';
 import type { ILeavesRepository } from '@/src/application/repositories/leaves.repository.interface';
+import type { IInstrumentationService } from '@/src/application/services/instrumentation.service.interface';
+import type { Leave } from '@/src/entities/models/leave';
 
 export type ICreateLeaveUseCase = ReturnType<typeof createLeaveUseCase>;
 

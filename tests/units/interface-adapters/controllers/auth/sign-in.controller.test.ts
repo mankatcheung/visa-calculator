@@ -1,9 +1,10 @@
 import { expect, it } from 'vitest';
 
-import { getInjection } from '@/di/container';
 import { SESSION_COOKIE } from '@/config';
-import { InputParseError } from '@/src/entities/errors/common';
+
+import { getInjection } from '@/di/container';
 import { AuthenticationError } from '@/src/entities/errors/auth';
+import { InputParseError } from '@/src/entities/errors/common';
 
 const signInController = getInjection('ISignInController');
 

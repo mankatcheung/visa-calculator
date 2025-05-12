@@ -1,3 +1,6 @@
+import { BadgeCheck, LogOut } from 'lucide-react';
+import { useTranslations } from 'next-intl';
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -6,11 +9,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/app/_components/ui/dropdown-menu';
-import { useTranslations } from 'next-intl';
-import { BadgeCheck, LogOut } from 'lucide-react';
-import { Link } from '@/i18n/navigation';
 import { authActions } from '@/app/actions';
 import useUser from '@/hooks/use-user';
+import { Link } from '@/i18n/navigation';
 
 export function UserAvatar() {
   const t = useTranslations();

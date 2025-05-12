@@ -1,11 +1,10 @@
 import { createModule } from '@evyweb/ioctopus';
 
-import { UsersRepository } from '@/src/infrastructure/repositories/users.repository';
-
 import { DI_SYMBOLS } from '@/di/types';
 import { getUserUseCase } from '@/src/application/use-cases/users/get-user.use-case';
-import { updateUserPasswordUseCase } from '@/src/application/use-cases/users/update-user-password.use-case';
 import { updateUserEmailUseCase } from '@/src/application/use-cases/users/update-user-email.use-case';
+import { updateUserPasswordUseCase } from '@/src/application/use-cases/users/update-user-password.use-case';
+import { UsersRepository } from '@/src/infrastructure/repositories/users.repository';
 import { getSelfUserController } from '@/src/interface-adapters/controllers/users/get-self-user.controller';
 import { updateUserEmailController } from '@/src/interface-adapters/controllers/users/update-user-email.controller';
 import { updateUserPasswordController } from '@/src/interface-adapters/controllers/users/update-user-password.controller';

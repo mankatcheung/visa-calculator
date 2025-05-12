@@ -1,6 +1,6 @@
 import { URL, fileURLToPath } from 'node:url';
-import { defineConfig } from 'vitest/config';
 import env from 'vite-plugin-env-compatible';
+import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
   test: {

@@ -1,20 +1,22 @@
 'use client';
 
 import { Loader2, Trash2 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
+import { useTransition } from 'react';
+import { toast } from 'sonner';
+
 import { Button } from '@/app/_components/ui/button';
 import {
   Dialog,
-  DialogTrigger,
   DialogContent,
-  DialogTitle,
   DialogDescription,
   DialogFooter,
+  DialogTitle,
+  DialogTrigger,
 } from '@/app/_components/ui/dialog';
 import { DialogHeader } from '@/app/_components/ui/dialog';
-import { useTranslations } from 'next-intl';
-import { useTransition } from 'react';
 import { leaveActions } from '@/app/actions';
-import { toast } from 'sonner';
+
 export function LeaveDeleteButton({
   id,
   startDate,
