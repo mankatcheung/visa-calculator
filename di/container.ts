@@ -9,7 +9,7 @@ import { createAuthenticationModule } from '@/di/modules/authentication.module';
 import { createTransactionManagerModule } from '@/di/modules/database.module';
 import { createLeavesModule } from '@/di/modules/leaves.module';
 import { createUsersModule } from '@/di/modules/users.module';
-import { createSessionModule } from './modules/sessions.module';
+import { createSessionModule } from '@/di//modules/sessions.module';
 
 const ApplicationContainer = createContainer();
 
