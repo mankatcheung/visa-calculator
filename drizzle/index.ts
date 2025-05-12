@@ -1,9 +1,9 @@
+import { ResultSet, createClient } from '@libsql/client';
 import { ExtractTablesWithRelations } from 'drizzle-orm';
 import { drizzle } from 'drizzle-orm/libsql';
-import { sessions, users, leaves } from './schema';
-
 import { SQLiteTransaction } from 'drizzle-orm/sqlite-core';
-import { createClient, ResultSet } from '@libsql/client';
+
+import { leaves, sessions, users } from './schema';
 
 const connectionString = process.env.DATABASE_URL;
 const databaseToken = process.env.DATABASE_AUTH_TOKEN;

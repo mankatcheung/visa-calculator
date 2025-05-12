@@ -1,12 +1,12 @@
 import { z } from 'zod';
 
+import { IAuthenticationService } from '@/src/application/services/authentication.service.interface';
+import { IInstrumentationService } from '@/src/application/services/instrumentation.service.interface';
+import { ITransactionManagerService } from '@/src/application/services/transaction-manager.service.interface';
+import { IUpdateLeaveUseCase } from '@/src/application/use-cases/leaves/update-leave.use-case';
 import { UnauthenticatedError } from '@/src/entities/errors/auth';
 import { InputParseError } from '@/src/entities/errors/common';
 import { Leave } from '@/src/entities/models/leave';
-import { IInstrumentationService } from '@/src/application/services/instrumentation.service.interface';
-import { IAuthenticationService } from '@/src/application/services/authentication.service.interface';
-import { ITransactionManagerService } from '@/src/application/services/transaction-manager.service.interface';
-import { IUpdateLeaveUseCase } from '@/src/application/use-cases/leaves/update-leave.use-case';
 
 function presenter(
   leave: Leave,
@@ -96,7 +96,7 @@ export const updateLeaveController =
                   user.id,
                   tx
                 );
-              } catch (err) {
+              } catch {
                 console.error('Rolling back!');
                 tx.rollback();
               }

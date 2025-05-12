@@ -1,6 +1,7 @@
 import { expect, it } from 'vitest';
 
 import { SESSION_COOKIE } from '@/config';
+
 import { getInjection } from '@/di/container';
 
 const signInUseCase = getInjection('ISignInUseCase');

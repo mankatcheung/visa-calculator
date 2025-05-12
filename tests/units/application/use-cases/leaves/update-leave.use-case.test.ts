@@ -1,5 +1,6 @@
-import { getInjection } from '@/di/container';
 import { expect, it } from 'vitest';
+
+import { getInjection } from '@/di/container';
 
 const signInUseCase = getInjection('ISignInUseCase');
 const createLeaveUseCase = getInjection('ICreateLeaveUseCase');

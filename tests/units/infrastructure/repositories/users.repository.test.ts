@@ -1,7 +1,7 @@
+import { compare } from 'bcrypt-ts';
 import { expect, it } from 'vitest';
 
 import { getInjection } from '@/di/container';
-import { compare } from 'bcrypt-ts';
 
 const usersRepository = getInjection('IUsersRepository');
 

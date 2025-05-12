@@ -1,11 +1,11 @@
 import { z } from 'zod';
 
-import { UnauthenticatedError } from '@/src/entities/errors/auth';
-import { InputParseError } from '@/src/entities/errors/common';
-import { IInstrumentationService } from '@/src/application/services/instrumentation.service.interface';
 import { IAuthenticationService } from '@/src/application/services/authentication.service.interface';
+import { IInstrumentationService } from '@/src/application/services/instrumentation.service.interface';
 import { ITransactionManagerService } from '@/src/application/services/transaction-manager.service.interface';
 import { IUpdateUserEmailUseCase } from '@/src/application/use-cases/users/update-user-email.use-case';
+import { UnauthenticatedError } from '@/src/entities/errors/auth';
+import { InputParseError } from '@/src/entities/errors/common';
 import { User } from '@/src/entities/models/user';
 
 function presenter(
@@ -70,7 +70,7 @@ export const updateUserEmailController =
                   user.id,
                   tx
                 );
-              } catch (err) {
+              } catch {
                 console.error('Rolling back!');
                 tx.rollback();
               }

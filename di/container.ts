@@ -1,15 +1,13 @@
 import { createContainer } from '@evyweb/ioctopus';
 
-import { DI_RETURN_TYPES, DI_SYMBOLS } from '@/di/types';
-
-import { IInstrumentationService } from '@/src/application/services/instrumentation.service.interface';
-
-import { createMonitoringModule } from '@/di/modules/monitoring.module';
+import { createSessionModule } from '@/di//modules/sessions.module';
 import { createAuthenticationModule } from '@/di/modules/authentication.module';
 import { createTransactionManagerModule } from '@/di/modules/database.module';
 import { createLeavesModule } from '@/di/modules/leaves.module';
+import { createMonitoringModule } from '@/di/modules/monitoring.module';
 import { createUsersModule } from '@/di/modules/users.module';
-import { createSessionModule } from '@/di//modules/sessions.module';
+import { DI_RETURN_TYPES, DI_SYMBOLS } from '@/di/types';
+import { IInstrumentationService } from '@/src/application/services/instrumentation.service.interface';
 
 const ApplicationContainer = createContainer();
 

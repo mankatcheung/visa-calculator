@@ -1,6 +1,6 @@
+import { IUsersRepository } from '@/src/application/repositories/users.repository.interface';
 import type { IInstrumentationService } from '@/src/application/services/instrumentation.service.interface';
 import { NotFoundError } from '@/src/entities/errors/common';
-import { IUsersRepository } from '@/src/application/repositories/users.repository.interface';
 import { User } from '@/src/entities/models/user';
 
 export type IGetUserUseCase = ReturnType<typeof getUserUseCase>;

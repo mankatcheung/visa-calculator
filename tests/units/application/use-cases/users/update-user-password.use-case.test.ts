@@ -1,6 +1,7 @@
+import { expect, it } from 'vitest';
+
 import { getInjection } from '@/di/container';
 import { AuthenticationError } from '@/src/entities/errors/auth';
-import { expect, it } from 'vitest';
 
 const signInUseCase = getInjection('ISignInUseCase');
 const signUpUseCase = getInjection('ISignUpUseCase');

@@ -1,3 +1,8 @@
+import { Moon } from 'lucide-react';
+import { useTranslations } from 'next-intl';
+import { useTheme } from 'next-themes';
+
+import { Button } from '@/app/_components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -5,10 +10,6 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
 } from '@/app/_components/ui/dropdown-menu';
-import { useTranslations } from 'next-intl';
-import { Moon } from 'lucide-react';
-import { useTheme } from 'next-themes';
-import { Button } from '@/app/_components/ui/button';
 
 export function ThemePicker() {
   const t = useTranslations();

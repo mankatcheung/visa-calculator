@@ -1,5 +1,8 @@
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
+import { LocalePicker } from '@/app/_components/locale-picker';
+import { ThemePicker } from '@/app/_components/theme-picker';
 import {
   Sidebar,
   SidebarContent,
@@ -14,9 +17,6 @@ import {
   SidebarRail,
 } from '@/app/_components/ui/sidebar';
 import { Link, usePathname } from '@/i18n/navigation';
-import { useTranslations } from 'next-intl';
-import { ThemePicker } from '@/app/_components/theme-picker';
-import { LocalePicker } from '@/app/_components/locale-picker';
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const t = useTranslations();

@@ -3,14 +3,15 @@
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 
-import { Cookie } from '@/src/entities/models/cookie';
 import { SESSION_COOKIE } from '@/config';
-import { InputParseError } from '@/src/entities/errors/common';
+
+import { getInjection } from '@/di/container';
 import {
   AuthenticationError,
   UnauthenticatedError,
 } from '@/src/entities/errors/auth';
-import { getInjection } from '@/di/container';
+import { InputParseError } from '@/src/entities/errors/common';
+import { Cookie } from '@/src/entities/models/cookie';
 
 export async function signUp(formData: FormData) {
   const instrumentationService = getInjection('IInstrumentationService');

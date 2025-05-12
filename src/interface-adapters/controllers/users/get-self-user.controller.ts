@@ -1,7 +1,7 @@
-import { UnauthenticatedError } from '@/src/entities/errors/auth';
-import { IInstrumentationService } from '@/src/application/services/instrumentation.service.interface';
 import { IAuthenticationService } from '@/src/application/services/authentication.service.interface';
+import { IInstrumentationService } from '@/src/application/services/instrumentation.service.interface';
 import { IGetUserUseCase } from '@/src/application/use-cases/users/get-user.use-case';
+import { UnauthenticatedError } from '@/src/entities/errors/auth';
 import { User } from '@/src/entities/models/user';
 
 function presenter(

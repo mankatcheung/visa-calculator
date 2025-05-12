@@ -1,13 +1,14 @@
+import { getTranslations } from 'next-intl/server';
+
 import { LeaveForm } from '@/app/_components/leave-form';
 import {
   Breadcrumb,
-  BreadcrumbList,
   BreadcrumbItem,
   BreadcrumbLink,
-  BreadcrumbSeparator,
+  BreadcrumbList,
   BreadcrumbPage,
+  BreadcrumbSeparator,
 } from '@/app/_components/ui/breadcrumb';
-import { getTranslations } from 'next-intl/server';
 
 export default async function LeaveCreatePage() {
   const t = await getTranslations();

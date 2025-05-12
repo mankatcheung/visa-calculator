@@ -1,8 +1,10 @@
+import { getTranslations } from 'next-intl/server';
+
 import { ChangePasswordForm } from '@/app/_components/change-password-form';
 import { Separator } from '@/app/_components/ui/separator';
 import { UpdateEmailForm } from '@/app/_components/update-email-form';
 import { getSelfUser } from '@/app/actions/users';
-import { getTranslations } from 'next-intl/server';
+
 export default async function UserSettingsPage() {
   const t = await getTranslations();
   const res = await getSelfUser();

@@ -1,22 +1,23 @@
 'use client';
 
-import { cn } from '@/lib/utils';
 import { Label } from '@radix-ui/react-label';
+import { useTranslations } from 'next-intl';
+import { useTransition } from 'react';
+import { toast } from 'sonner';
+
 import { Button } from '@/app/_components/ui/button';
 import {
   Card,
+  CardContent,
+  CardDescription,
   CardHeader,
   CardTitle,
-  CardDescription,
-  CardContent,
 } from '@/app/_components/ui/card';
 import { Input } from '@/app/_components/ui/input';
-import { Link } from '@/i18n/navigation';
-import { useTranslations } from 'next-intl';
-import { useTransition } from 'react';
 import { Separator } from '@/app/_components/ui/separator';
 import { authActions } from '@/app/actions';
-import { toast } from 'sonner';
+import { Link } from '@/i18n/navigation';
+import { cn } from '@/lib/utils';
 
 export function SignUpForm({
   className,

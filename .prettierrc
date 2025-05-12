@@ -6,9 +6,11 @@
   "trailingComma": "es5",
   "singleQuote": true,
   "proseWrap": "always",
+  "plugins": ["@trivago/prettier-plugin-sort-imports"],
   "importOrder": [
     "<THIRD_PARTY_MODULES>",
-    "^@internal/(.*)$",
+    "@/config",
+    "^@/(app|di|drizzle|hooks|i18n|lib|src)/(.*)$",
     "^[./].*(?<!\\.(c|le|sc)ss)$",
     "^[.]/[-a-zA-Z0-9_]+[.](module)[.](css|scss|less)$"
   ],

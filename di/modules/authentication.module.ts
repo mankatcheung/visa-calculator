@@ -1,16 +1,13 @@
 import { createModule } from '@evyweb/ioctopus';
 
-import { AuthenticationService } from '@/src/infrastructure/services/authentication.service';
-
+import { DI_SYMBOLS } from '@/di/types';
 import { signInUseCase } from '@/src/application/use-cases/auth/sign-in.use-case';
-import { signUpUseCase } from '@/src/application/use-cases/auth/sign-up.use-case';
 import { signOutUseCase } from '@/src/application/use-cases/auth/sign-out.use-case';
-
+import { signUpUseCase } from '@/src/application/use-cases/auth/sign-up.use-case';
+import { AuthenticationService } from '@/src/infrastructure/services/authentication.service';
 import { signInController } from '@/src/interface-adapters/controllers/auth/sign-in.controller';
 import { signOutController } from '@/src/interface-adapters/controllers/auth/sign-out.controller';
 import { signUpController } from '@/src/interface-adapters/controllers/auth/sign-up.controller';
-
-import { DI_SYMBOLS } from '@/di/types';
 
 export function createAuthenticationModule() {
   const authenticationModule = createModule();

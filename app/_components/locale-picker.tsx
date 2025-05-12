@@ -1,3 +1,7 @@
+import { Languages } from 'lucide-react';
+import { useLocale, useTranslations } from 'next-intl';
+
+import { Button } from '@/app/_components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -5,9 +9,6 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
 } from '@/app/_components/ui/dropdown-menu';
-import { useLocale, useTranslations } from 'next-intl';
-import { Languages } from 'lucide-react';
-import { Button } from '@/app/_components/ui/button';
 import { usePathname, useRouter } from '@/i18n/navigation';
 
 export function LocalePicker() {

@@ -1,23 +1,23 @@
 'use client';
 
-import { Button } from '@/app/_components/ui/button';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { CircleX, Loader2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useState, useTransition } from 'react';
-import { Loader2, CircleX } from 'lucide-react';
-
-import { z } from 'zod';
 import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
+import { toast } from 'sonner';
+import { z } from 'zod';
+
+import { Button } from '@/app/_components/ui/button';
 import {
   Form,
+  FormControl,
   FormField,
   FormItem,
-  FormControl,
   FormMessage,
 } from '@/app/_components/ui/form';
-import { userActions } from '@/app/actions';
 import { Input } from '@/app/_components/ui/input';
-import { toast } from 'sonner';
+import { userActions } from '@/app/actions';
 
 type UpdateEmailFormProps = {
   email?: string;

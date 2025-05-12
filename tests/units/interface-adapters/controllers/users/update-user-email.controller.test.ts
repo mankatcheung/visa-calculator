@@ -1,8 +1,8 @@
 import { expect, it } from 'vitest';
 
 import { getInjection } from '@/di/container';
-import { InputParseError } from '@/src/entities/errors/common';
 import { UnauthenticatedError } from '@/src/entities/errors/auth';
+import { InputParseError } from '@/src/entities/errors/common';
 
 const signInUseCase = getInjection('ISignInUseCase');
 const updateUserEmailController = getInjection('IUpdateUserEmailController');

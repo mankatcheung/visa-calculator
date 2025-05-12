@@ -1,18 +1,19 @@
-import { compare } from 'bcrypt-ts';
-
-import { SESSION_COOKIE } from '@/config';
-import { IAuthenticationService } from '@/src/application/services/authentication.service.interface';
-import { UnauthenticatedError } from '@/src/entities/errors/auth';
-import { Cookie } from '@/src/entities/models/cookie';
-import { Session } from '@/src/entities/models/session';
-import { User } from '@/src/entities/models/user';
-import type { IInstrumentationService } from '@/src/application/services/instrumentation.service.interface';
-import { ISessionsRepository } from '@/src/application/repositories/sessions.repository.interface';
+import { sha256 } from '@oslojs/crypto/sha2';
 import {
   encodeBase32LowerCaseNoPadding,
   encodeHexLowerCase,
 } from '@oslojs/encoding';
-import { sha256 } from '@oslojs/crypto/sha2';
+import { compare } from 'bcrypt-ts';
+
+import { SESSION_COOKIE } from '@/config';
+
+import { ISessionsRepository } from '@/src/application/repositories/sessions.repository.interface';
+import { IAuthenticationService } from '@/src/application/services/authentication.service.interface';
+import type { IInstrumentationService } from '@/src/application/services/instrumentation.service.interface';
+import { UnauthenticatedError } from '@/src/entities/errors/auth';
+import { Cookie } from '@/src/entities/models/cookie';
+import { Session } from '@/src/entities/models/session';
+import { User } from '@/src/entities/models/user';
 
 function generateIdFromEntropySize(entropyBytes: number): string {
   // Ensure entropyBytes is a positive integer
