@@ -1,7 +1,7 @@
 import { InputParseError } from '@/src/entities/errors/common';
 import type { IInstrumentationService } from '@/src/application/services/instrumentation.service.interface';
-import { IUsersRepository } from '../../repositories/users.repository.interface';
 import { User } from '@/src/entities/models/user';
+import { IUsersRepository } from '@/src/application/repositories/users.repository.interface';
 
 export type IUpdateUserEmailUseCase = ReturnType<typeof updateUserEmailUseCase>;
 

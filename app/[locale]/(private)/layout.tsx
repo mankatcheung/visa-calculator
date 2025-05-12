@@ -2,13 +2,13 @@
 
 import { Separator } from '@radix-ui/react-separator';
 
+import { UserAvatar } from '@/app/_components/user-avatar';
 import {
   SidebarProvider,
   SidebarInset,
   SidebarTrigger,
-} from '../../_components/ui/sidebar';
-import { AppSidebar } from '../../_components/app-sidebar';
-import { UserAvatar } from '@/app/_components/user-avatar';
+} from '@/app/_components/ui/sidebar';
+import { AppSidebar } from '@/app/_components/app-sidebar';
 
 export default function PrivateLayout({
   children,
