@@ -1,6 +1,6 @@
 'use client';
 
-import { Button } from './ui/button';
+import { Button } from '@/app/_components/ui/button';
 import { useTranslations } from 'next-intl';
 import { useTransition } from 'react';
 import { Loader2 } from 'lucide-react';
@@ -15,9 +15,9 @@ import {
   FormLabel,
   FormControl,
   FormMessage,
-} from './ui/form';
+} from '@/app/_components/ui/form';
 import { userActions } from '@/app/actions';
-import { Input } from './ui/input';
+import { Input } from '@/app/_components/ui/input';
 import { toast } from 'sonner';
 
 const DataInput = ({

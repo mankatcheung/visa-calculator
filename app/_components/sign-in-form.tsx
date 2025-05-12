@@ -2,18 +2,18 @@
 
 import { cn } from '@/lib/utils';
 import { Label } from '@radix-ui/react-label';
-import { Button } from './ui/button';
+import { Button } from '@/app/_components/ui/button';
 import {
   Card,
   CardHeader,
   CardTitle,
   CardDescription,
   CardContent,
-} from './ui/card';
-import { Input } from './ui/input';
+} from '@/app/_components/ui/card';
+import { Input } from '@/app/_components/ui/input';
 import { Link } from '@/i18n/navigation';
 import { useTranslations } from 'next-intl';
-import { Separator } from './ui/separator';
+import { Separator } from '@/app/_components/ui/separator';
 import { useTransition } from 'react';
 import { authActions } from '@/app/actions';
 import { toast } from 'sonner';

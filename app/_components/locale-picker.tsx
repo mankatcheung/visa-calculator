@@ -4,10 +4,10 @@ import {
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
-} from './ui/dropdown-menu';
+} from '@/app/_components/ui/dropdown-menu';
 import { useLocale, useTranslations } from 'next-intl';
 import { Languages } from 'lucide-react';
-import { Button } from './ui/button';
+import { Button } from '@/app/_components/ui/button';
 import { usePathname, useRouter } from '@/i18n/navigation';
 
 export function LocalePicker() {

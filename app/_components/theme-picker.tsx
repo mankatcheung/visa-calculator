@@ -4,11 +4,11 @@ import {
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
-} from './ui/dropdown-menu';
+} from '@/app/_components/ui/dropdown-menu';
 import { useTranslations } from 'next-intl';
 import { Moon } from 'lucide-react';
 import { useTheme } from 'next-themes';
-import { Button } from './ui/button';
+import { Button } from '@/app/_components/ui/button';
 
 export function ThemePicker() {
   const t = useTranslations();
