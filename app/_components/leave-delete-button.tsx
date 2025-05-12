@@ -10,7 +10,7 @@ import {
   DialogDescription,
   DialogFooter,
 } from '@/app/_components/ui/dialog';
-import { DialogHeader } from './ui/dialog';
+import { DialogHeader } from '@/app/_components/ui/dialog';
 import { useTranslations } from 'next-intl';
 import { useTransition } from 'react';
 import { leaveActions } from '@/app/actions';

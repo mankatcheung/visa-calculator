@@ -1,6 +1,6 @@
 'use client';
 
-import { Button } from './ui/button';
+import { Button } from '@/app/_components/ui/button';
 import { useTranslations } from 'next-intl';
 import { useState, useTransition } from 'react';
 import { Loader2, CircleX } from 'lucide-react';
@@ -8,9 +8,15 @@ import { Loader2, CircleX } from 'lucide-react';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Form, FormField, FormItem, FormControl, FormMessage } from './ui/form';
+import {
+  Form,
+  FormField,
+  FormItem,
+  FormControl,
+  FormMessage,
+} from '@/app/_components/ui/form';
 import { userActions } from '@/app/actions';
-import { Input } from './ui/input';
+import { Input } from '@/app/_components/ui/input';
 import { toast } from 'sonner';
 
 type UpdateEmailFormProps = {

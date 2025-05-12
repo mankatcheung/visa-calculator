@@ -5,7 +5,7 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from './ui/dropdown-menu';
+} from '@/app/_components/ui/dropdown-menu';
 import { useTranslations } from 'next-intl';
 import { BadgeCheck, LogOut } from 'lucide-react';
 import { Link } from '@/i18n/navigation';

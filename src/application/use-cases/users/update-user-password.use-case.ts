@@ -1,8 +1,8 @@
 import type { IInstrumentationService } from '@/src/application/services/instrumentation.service.interface';
-import { IUsersRepository } from '../../repositories/users.repository.interface';
 import { User } from '@/src/entities/models/user';
-import { IAuthenticationService } from '../../services/authentication.service.interface';
 import { AuthenticationError } from '@/src/entities/errors/auth';
+import { IUsersRepository } from '@/src/application/repositories/users.repository.interface';
+import { IAuthenticationService } from '@/src/application/services/authentication.service.interface';
 
 export type IUpdateUserPasswordUseCase = ReturnType<
   typeof updateUserPasswordUseCase
