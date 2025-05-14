@@ -92,11 +92,9 @@ export async function deleteLeave(id: number) {
         const deleteLeaveController = getInjection('IDeleteLeaveController');
         const cookieStore = await cookies();
         const token = cookieStore.get(SESSION_COOKIE)?.value;
-        console.log(id);
         await deleteLeaveController({ leaveId: id }, token);
         revalidatePath('/');
       } catch (err) {
-        console.log(err);
         if (err instanceof InputParseError) {
           return { error: err.message };
         }
