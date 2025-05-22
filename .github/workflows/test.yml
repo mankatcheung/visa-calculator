@@ -15,6 +15,26 @@ jobs:
         run: yarn run lint
       - name: Run tests with coverage
         run: yarn run coverage
+      - name: Install Turso CLI
+        run: curl -sSfL https://get.turso.io | bash
+      - name: Run local SQLite database with Turso
+        run: turso dev
+      - name: Run database migrations
+        run: yarn db:migrate
+        env:
+          E2E_DATABASE_URL: http://127.0.0.1:8080
+      - name: Build Nextjs Project
+        run: yarn build
+        env:
+          E2E_DATABASE_URL: http://127.0.0.1:8080
+      - name: Start Nextjs project
+        run: yarn start &
+        env:
+          E2E_DATABASE_URL: http://127.0.0.1:8080
+      - name: Wait for Next.js to be ready
+        run: npx wait-on http://localhost:3000 --timeout 30000
+      - name: Run Cypress e2e tests
+        run: yarn cy:run
       - name: Upload test results to Codecov
         if: ${{ !cancelled() }}
         uses: codecov/test-results-action@v1
