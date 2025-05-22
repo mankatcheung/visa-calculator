@@ -1,7 +1,7 @@
 'use client';
 
 import { Label } from '@radix-ui/react-label';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { useTransition } from 'react';
 import { toast } from 'sonner';
 
@@ -24,6 +24,7 @@ export function SignInForm({
   ...props
 }: React.ComponentPropsWithoutRef<'div'>) {
   const t = useTranslations();
+  const locale = useLocale();
   const [loading, startTransition] = useTransition();
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -32,7 +33,7 @@ export function SignInForm({
     const formData = new FormData(event.currentTarget);
 
     startTransition(async () => {
-      const res = await authActions.signIn(formData);
+      const res = await authActions.signIn(formData, `/${locale}`);
       if (res && res.error) {
         toast.error(res.error);
       } else {
@@ -54,9 +55,9 @@ export function SignInForm({
               <div className="grid gap-2">
                 <Label htmlFor="email">{t('email')}</Label>
                 <Input
-                  id="email"
                   type="email"
                   name="email"
+                  data-cy="email"
                   placeholder="m@example.com"
                   required
                 />
@@ -71,15 +72,24 @@ export function SignInForm({
                     {t('forgotPassword')}
                   </a>
                 </div>
-                <Input id="password" name="password" type="password" required />
+                <Input
+                  data-cy="password"
+                  name="password"
+                  type="password"
+                  required
+                />
               </div>
-              <Button type="submit" className="w-full">
+              <Button type="submit" data-cy="submit" className="w-full">
                 {t('signIn')}
               </Button>
             </div>
             <div className="mt-4 text-center text-sm">
               {t('dontHaveAnAccount')}{' '}
-              <Link href="/sign-up" className="underline underline-offset-4">
+              <Link
+                href="/sign-up"
+                data-cy="sign-up"
+                className="underline underline-offset-4"
+              >
                 {t('signUp')}
               </Link>
             </div>
@@ -87,6 +97,7 @@ export function SignInForm({
               <Link
                 href="/sign-in"
                 locale="en"
+                data-cy="locale-en"
                 className="underline underline-offset-4"
               >
                 En
@@ -95,6 +106,7 @@ export function SignInForm({
               <Link
                 href="/sign-in"
                 locale="zh-Hant-HK"
+                data-cy="locale-zh-Hant-HK"
                 className="underline underline-offset-4"
               >
                 繁

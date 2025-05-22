@@ -73,17 +73,19 @@ export function UpdateEmailForm({ email }: UpdateEmailFormProps) {
                   <FormControl className="flex-1">
                     <Input
                       type="email"
+                      data-cy="email"
                       placeholder={t('email')}
                       value={field.value}
                       onChange={(e) => field.onChange(e.target.value)}
                     />
                   </FormControl>
-                  <Button type="submit" disabled={loading}>
+                  <Button type="submit" data-cy="submit" disabled={loading}>
                     {loading && <Loader2 className="animate-spin" />}
                     {t('submit')}
                   </Button>
                   <Button
                     variant="outline"
+                    data-cy="cancel"
                     disabled={loading}
                     onClick={() => {
                       setIsEditing(false);
@@ -104,7 +106,11 @@ export function UpdateEmailForm({ email }: UpdateEmailFormProps) {
   return (
     <div className="flex flex-row items-center gap-2">
       <div className="flex-1">{email}</div>
-      <Button variant="outline" onClick={() => setIsEditing(true)}>
+      <Button
+        variant="outline"
+        data-cy="edit-email"
+        onClick={() => setIsEditing(true)}
+      >
         {t('edit')}
       </Button>
     </div>
