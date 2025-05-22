@@ -16,7 +16,7 @@ jobs:
       - name: Run tests with coverage
         run: yarn run coverage
       - name: Install Turso CLI
-        run: curl -sSfL https://get.turso.io | bash
+        run: curl -sSfL https://get.tur.so | bash
       - name: Run local SQLite database with Turso
         run: turso dev
       - name: Run database migrations
