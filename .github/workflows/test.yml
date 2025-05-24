@@ -15,22 +15,62 @@ jobs:
         run: yarn run lint
       - name: Run tests with coverage
         run: yarn run coverage
-      - name: Install Turso CLI
-        run: curl -sSfL https://get.tur.so/install.sh | bash
-      - name: Run local SQLite database with Turso
-        run: turso dev
+      - name: Create testing database via Turos API
+        shell: bash
+        run: |
+          RESPONSE=$(curl -s -f -X POST \
+            -H "Authorization: Bearer ${{ secrets.TURSO_API_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d '{"name": "${{ secrets.TURSO_TESTING_DATABASE_NAME }}", "group": "${{ secrets.TURSO_GROUP_NAME }}" }' \
+                "https://api.turso.tech/v1/organizations/${{ secrets.TURSO_ORGANIZATION_NAME }}/databases")
+
+          if [ $? -ne 0 ]; then
+            echo "API call failed"
+            exit 1
+          fi
+
+          HOSTNAME=$(echo $RESPONSE | jq -r '.database.Hostname')
+          if [ -z "$HOSTNAME" ]; then
+            echo "Hostname not found in response"
+            exit 1
+          fi
+
+          echo "database_hostname=$HOSTNAME" >> $GITHUB_ENV
+      - name: Generate auth tokebn for database created
+        shell: bash
+        run: |
+          RESPONSE=$(curl -s -f -X POST \
+            -H "Authorization: Bearer ${{ secrets.TURSO_API_TOKEN }}" \
+            -H "Content-Type: application/json" \
+                "https://api.turso.tech/v1/organizations/${{ secrets.TURSO_ORGANIZATION_NAME }}/databases/${{ secrets.TURSO_TESTING_DATABASE_NAME }}/auth/tokens?expiration=2w&authorization=full-access")
+
+          if [ $? -ne 0 ]; then
+            echo "API call failed"
+            exit 1
+          fi
+
+          AUTH_TOKEN=$(echo $RESPONSE | jq -r '.jwt')
+          if [ -z "$AUTH_TOKEN" ]; then
+            echo "AUTH_TOKEN not found in response"
+            exit 1
+          fi
+
+          echo "database_auth_token=$AUTH_TOKEN" >> $GITHUB_ENV
       - name: Run database migrations
         run: yarn db:migrate
         env:
-          E2E_DATABASE_URL: http://127.0.0.1:8080
+          DATABASE_URL: libsql://${{ env.database_hostname }}
+          DATABASE_AUTH_TOKEN: ${{ env.database_auth_token }}
       - name: Build Nextjs Project
         run: yarn build
         env:
-          E2E_DATABASE_URL: http://127.0.0.1:8080
+          DATABASE_URL: libsql://${{ env.database_hostname }}
+          DATABASE_AUTH_TOKEN: ${{ env.database_auth_token }}
       - name: Start Nextjs project
         run: yarn start &
         env:
-          E2E_DATABASE_URL: http://127.0.0.1:8080
+          DATABASE_URL: libsql://${{ env.database_hostname }}
+          DATABASE_AUTH_TOKEN: ${{ env.database_auth_token }}
       - name: Wait for Next.js to be ready
         run: npx wait-on http://localhost:3000 --timeout 30000
       - name: Run Cypress e2e tests
