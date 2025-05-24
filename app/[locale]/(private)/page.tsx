@@ -70,7 +70,6 @@ const getLeaveDaysSince = (
 ) => {
   const upperLimitDate = new Date();
   upperLimitDate.setDate(upperLimitDate.getDate() - beforeDays);
-  console.log(upperLimitDate);
   let result = 0;
   for (let i = 0; i < leaves.length; i++) {
     const { startDate, endDate } = leaves[i];

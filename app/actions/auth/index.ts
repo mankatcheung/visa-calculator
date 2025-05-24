@@ -67,7 +67,7 @@ export async function signUp(formData: FormData) {
   );
 }
 
-export async function signIn(formData: FormData) {
+export async function signIn(formData: FormData, redirectPath: string) {
   const instrumentationService = getInjection('IInstrumentationService');
   return await instrumentationService.instrumentServerAction(
     'signIn',
@@ -105,7 +105,7 @@ export async function signIn(formData: FormData) {
         sessionCookie.attributes
       );
 
-      redirect('/');
+      redirect(redirectPath);
     }
   );
 }

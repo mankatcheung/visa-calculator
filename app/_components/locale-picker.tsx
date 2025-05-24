@@ -23,7 +23,12 @@ export function LocalePicker() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button className="cursor-pointer" variant="outline" size="icon">
+        <Button
+          data-cy="locale-picker"
+          className="cursor-pointer"
+          variant="outline"
+          size="icon"
+        >
           <Languages />
         </Button>
       </DropdownMenuTrigger>
@@ -34,10 +39,13 @@ export function LocalePicker() {
         sideOffset={4}
       >
         <DropdownMenuRadioGroup value={locale} onValueChange={onChange}>
-          <DropdownMenuRadioItem value="en">
+          <DropdownMenuRadioItem value="en" data-cy="locale-picker-en">
             {t('english')}
           </DropdownMenuRadioItem>
-          <DropdownMenuRadioItem value="zh-Hant-HK">
+          <DropdownMenuRadioItem
+            value="zh-Hant-HK"
+            data-cy="locale-picker-zh-Hant-HK"
+          >
             {t('traditionalChinese')}
           </DropdownMenuRadioItem>
         </DropdownMenuRadioGroup>

@@ -21,8 +21,6 @@ export async function createLeave(formData: FormData) {
         const token = cookieStore.get(SESSION_COOKIE)?.value;
         const data = Object.fromEntries(formData.entries());
         const leave = await createLeaveController(data, token);
-
-        revalidatePath('/');
         return { result: leave };
       } catch (err) {
         if (err instanceof InputParseError) {
@@ -58,7 +56,6 @@ export async function updateLeave(formData: FormData) {
         const token = cookieStore.get(SESSION_COOKIE)?.value;
         const data = Object.fromEntries(formData.entries());
         const leave = await updateLeaveController(data, token);
-        revalidatePath('/');
         return { result: leave };
       } catch (err) {
         if (err instanceof InputParseError) {
@@ -92,11 +89,8 @@ export async function deleteLeave(id: number) {
         const deleteLeaveController = getInjection('IDeleteLeaveController');
         const cookieStore = await cookies();
         const token = cookieStore.get(SESSION_COOKIE)?.value;
-        console.log(id);
         await deleteLeaveController({ leaveId: id }, token);
-        revalidatePath('/');
       } catch (err) {
-        console.log(err);
         if (err instanceof InputParseError) {
           return { error: err.message };
         }
