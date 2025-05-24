@@ -63,13 +63,6 @@ jobs:
           fi
 
           echo "database_auth_token=$AUTH_TOKEN" >> $GITHUB_ENV
-      - name: Debug database env vars
-        run: |
-          echo "DATABASE_URL: libsql://${{ env.database_hostname }}"
-          echo "DATABASE_AUTH_TOKEN: ${{ env.database_auth_token }}"
-        env:
-          DATABASE_URL: libsql://${{ env.database_hostname }}
-          DATABASE_AUTH_TOKEN: ${{ env.database_auth_token }}
       - name: Run database migrations
         run: yarn db:migrate
         env:
@@ -86,7 +79,7 @@ jobs:
           DATABASE_URL: libsql://${{ env.database_hostname }}
           DATABASE_AUTH_TOKEN: ${{ env.database_auth_token }}
       - name: Wait for Next.js to be ready
-        run: npx wait-on http://localhost:3000 --timeout 30000
+        run: npx wait-on http://localhost:3000 --timeout 60000
       - name: Debug server availability
         run: curl -v http://localhost:3000 || echo "Server not responding"
       - name: Run Cypress e2e tests
