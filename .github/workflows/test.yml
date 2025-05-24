@@ -15,6 +15,13 @@ jobs:
         run: yarn run lint
       - name: Run tests with coverage
         run: yarn run coverage
+      - name: Clean up existing database
+        shell: bash
+        run: |
+          curl -s -X DELETE \
+            -H "Authorization: Bearer ${{ secrets.TURSO_API_TOKEN }}" \
+            "https://api.turso.tech/v1/organizations/${{ secrets.TURSO_ORGANIZATION_NAME }}/databases/${{ secrets.TURSO_TESTING_DATABASE_NAME }}" || true
+        continue-on-error: true
       - name: Create testing database via Turos API
         shell: bash
         run: |
@@ -36,13 +43,13 @@ jobs:
           fi
 
           echo "database_hostname=$HOSTNAME" >> $GITHUB_ENV
-      - name: Generate auth tokebn for database created
+      - name: Generate auth token for database created
         shell: bash
         run: |
           RESPONSE=$(curl -s -f -X POST \
             -H "Authorization: Bearer ${{ secrets.TURSO_API_TOKEN }}" \
             -H "Content-Type: application/json" \
-                "https://api.turso.tech/v1/organizations/${{ secrets.TURSO_ORGANIZATION_NAME }}/databases/${{ secrets.TURSO_TESTING_DATABASE_NAME }}/auth/tokens?expiration=2w&authorization=full-access")
+                "https://api.turso.tech/v1/organizations/${{ secrets.TURSO_ORGANIZATION_NAME }}/databases/${{ secrets.TURSO_TESTING_DATABASE_NAME }}/auth/tokens?expiration=30m&authorization=full-access")
 
           if [ $? -ne 0 ]; then
             echo "API call failed"
@@ -86,3 +93,9 @@ jobs:
           verbose: true
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+      - name: Remove Testing database
+        shell: bash
+        run: |
+          RESPONSE=$(curl -s -f -X DELETE \
+            -H "Authorization: Bearer ${{ secrets.TURSO_API_TOKEN }}" \
+                "https://api.turso.tech/v1/organizations/${{ secrets.TURSO_ORGANIZATION_NAME }}/databases/${{ secrets.TURSO_TESTING_DATABASE_NAME }}")
