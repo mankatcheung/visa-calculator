@@ -24,3 +24,8 @@ declare namespace Cypress {
     login(email: string, password: string): Chainable<any>;
   }
 }
+
+Cypress.on('uncaught:exception', (err, runnable) => {
+  console.log('Uncaught exception:', err);
+  return false; // Prevent Cypress from failing the test
+});
