@@ -1,103 +1,134 @@
 name: Test
 on: [push]
+# Centralize environment variables
+env:
+  NODE_VERSION: '20.x'
+  TURSO_API_URL: 'https://api.turso.tech/v1'
+  DATABASE_URL: libsql://${{ env.database_hostname }}
+  DATABASE_AUTH_TOKEN: ${{ env.database_auth_token }}
 jobs:
-  test:
+  # Job for linting
+  lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
         with:
-          node-version: '20.x'
+          node-version: ${{ env.NODE_VERSION }}
           cache: 'yarn'
       - name: Install dependencies
-        run: yarn install
+        run: yarn install --frozen-lockfile
       - name: Run lint
         run: yarn run lint
+
+  # Job for unit tests and coverage
+  unit-tests:
+    runs-on: ubuntu-latest
+    needs: lint
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'yarn'
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
       - name: Run tests with coverage
         run: yarn run coverage
-      - name: Clean up existing database
-        shell: bash
-        run: |
-          curl -s -X DELETE \
-            -H "Authorization: Bearer ${{ secrets.TURSO_API_TOKEN }}" \
-            "https://api.turso.tech/v1/organizations/${{ secrets.TURSO_ORGANIZATION_NAME }}/databases/${{ secrets.TURSO_TESTING_DATABASE_NAME }}" || true
-        continue-on-error: true
-      - name: Create testing database via Turos API
-        shell: bash
-        run: |
-          RESPONSE=$(curl -s -f -X POST \
-            -H "Authorization: Bearer ${{ secrets.TURSO_API_TOKEN }}" \
-            -H "Content-Type: application/json" \
-            -d '{"name": "${{ secrets.TURSO_TESTING_DATABASE_NAME }}", "group": "${{ secrets.TURSO_GROUP_NAME }}" }' \
-                "https://api.turso.tech/v1/organizations/${{ secrets.TURSO_ORGANIZATION_NAME }}/databases")
-
-          if [ $? -ne 0 ]; then
-            echo "API call failed"
-            exit 1
-          fi
-
-          HOSTNAME=$(echo $RESPONSE | jq -r '.database.Hostname')
-          if [ -z "$HOSTNAME" ]; then
-            echo "Hostname not found in response"
-            exit 1
-          fi
-
-          echo "database_hostname=$HOSTNAME" >> $GITHUB_ENV
-      - name: Generate auth token for database created
-        shell: bash
-        run: |
-          RESPONSE=$(curl -s -f -X POST \
-            -H "Authorization: Bearer ${{ secrets.TURSO_API_TOKEN }}" \
-            -H "Content-Type: application/json" \
-                "https://api.turso.tech/v1/organizations/${{ secrets.TURSO_ORGANIZATION_NAME }}/databases/${{ secrets.TURSO_TESTING_DATABASE_NAME }}/auth/tokens?expiration=30m&authorization=full-access")
-
-          if [ $? -ne 0 ]; then
-            echo "API call failed"
-            exit 1
-          fi
-
-          AUTH_TOKEN=$(echo $RESPONSE | jq -r '.jwt')
-          if [ -z "$AUTH_TOKEN" ]; then
-            echo "AUTH_TOKEN not found in response"
-            exit 1
-          fi
-
-          echo "database_auth_token=$AUTH_TOKEN" >> $GITHUB_ENV
-      - name: Run database migrations
-        run: yarn db:migrate
-        env:
-          DATABASE_URL: libsql://${{ env.database_hostname }}
-          DATABASE_AUTH_TOKEN: ${{ env.database_auth_token }}
-      - name: Build Nextjs Project
-        run: yarn build
-        env:
-          DATABASE_URL: libsql://${{ env.database_hostname }}
-          DATABASE_AUTH_TOKEN: ${{ env.database_auth_token }}
-      - name: Start Nextjs project
-        run: yarn start &
-        env:
-          DATABASE_URL: libsql://${{ env.database_hostname }}
-          DATABASE_AUTH_TOKEN: ${{ env.database_auth_token }}
-      - name: Wait for Next.js to be ready
-        run: npx wait-on http://localhost:3000 --timeout 60000
-      - name: Debug server availability
-        run: curl -v http://localhost:3000 || echo "Server not responding"
-      - name: Run Cypress e2e tests
-        run: yarn cy:run
-      - name: Upload test results to Codecov
-        if: ${{ !cancelled() }}
-        uses: codecov/test-results-action@v1
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
       - name: Upload coverage to Codecov
+        if: ${{ !cancelled() }}
         uses: codecov/codecov-action@v5
         with:
           verbose: true
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-      - name: Remove Testing database
-        shell: bash
+
+  # Job for E2E tests with database setup
+  e2e-tests:
+    runs-on: ubuntu-latest
+    needs: lint
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'yarn'
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+      - name: Validate secrets
         run: |
-          RESPONSE=$(curl -s -f -X DELETE \
+          if [ -z "${{ secrets.TURSO_API_TOKEN }}" ] || [ -z "${{ secrets.TURSO_ORGANIZATION_NAME }}" ] || [ -z "${{ secrets.TURSO_TESTING_DATABASE_NAME }}" ] || [ -z "${{ secrets.TURSO_GROUP_NAME }}" ]; then
+            echo "Missing required secrets"
+            exit 1
+          fi
+      - name: Clean up existing database
+        continue-on-error: true
+        run: |
+          curl -s -X DELETE \
             -H "Authorization: Bearer ${{ secrets.TURSO_API_TOKEN }}" \
-                "https://api.turso.tech/v1/organizations/${{ secrets.TURSO_ORGANIZATION_NAME }}/databases/${{ secrets.TURSO_TESTING_DATABASE_NAME }}")
+            "${{ env.TURSO_API_URL }}/organizations/${{ secrets.TURSO_ORGANIZATION_NAME }}/databases/${{ secrets.TURSO_TESTING_DATABASE_NAME }}"
+      - name: Create testing database
+        run: |
+          RESPONSE=$(curl -s -f -X POST \
+            -H "Authorization: Bearer ${{ secrets.TURSO_API_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d '{"name": "${{ secrets.TURSO_TESTING_DATABASE_NAME }}", "group": "${{ secrets.TURSO_GROUP_NAME }}" }' \
+            "${{ env.TURSO_API_URL }}/organizations/${{ secrets.TURSO_ORGANIZATION_NAME }}/databases" || echo "API call failed" && exit 1)
+          HOSTNAME=$(echo $RESPONSE | jq -r '.database.Hostname')
+          if [ -z "$HOSTNAME" ]; then
+            echo "Hostname not found in response"
+            exit 1
+          fi
+          echo "database_hostname=$HOSTNAME" >> $GITHUB_ENV
+        env:
+          database_hostname: ${{ env.database_hostname }}
+      - name: Generate auth token for database
+        run: |
+          RESPONSE=$(curl -s -f -X POST \
+            -H "Authorization: Bearer ${{ secrets.TURSO_API_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            "${{ env.TURSO_API_URL }}/organizations/${{ secrets.TURSO_ORGANIZATION_NAME }}/databases/${{ secrets.TURSO_TESTING_DATABASE_NAME }}/auth/tokens?expiration=30m&authorization=full-access" || echo "API call failed" && exit 1)
+          AUTH_TOKEN=$(echo $RESPONSE | jq -r '.jwt')
+          if [ -z "$AUTH_TOKEN" ]; then
+            echo "AUTH_TOKEN not found in response"
+            exit 1
+          fi
+          echo "database_auth_token=$AUTH_TOKEN" >> $GITHUB_ENV
+        env:
+          database_auth_token: ${{ env.database_auth_token }}
+      - name: Run database migrations
+        run: yarn db:migrate
+      - name: Build Next.js project
+        run: yarn build
+      - name: Start Next.js project
+        run: yarn start > nextjs.log 2>&1 &
+      - name: Wait for Next.js to be ready
+        run:
+          npx wait-on http://localhost:3000 --timeout 60000 --verbose || (cat
+          nextjs.log && exit 1)
+      - name: Debug server availability
+        run: curl -v http://localhost:3000 || echo "Server not responding"
+      - name: Run Cypress E2E tests
+        run: yarn cy:run
+      - name: Upload Cypress artifacts on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cypress-artifacts
+          path: |
+            cypress/screenshots/
+            cypress/videos/
+            nextjs.log
+          retention-days: 7
+      - name: Remove testing database
+        if: always()
+        run: |
+          curl -s -X DELETE \
+            -H "Authorization: Bearer ${{ secrets.TURSO_API_TOKEN }}" \
+            "${{ env.TURSO_API_URL }}/organizations/${{ secrets.TURSO_ORGANIZATION_NAME }}/databases/${{ secrets.TURSO_TESTING_DATABASE_NAME }}"
