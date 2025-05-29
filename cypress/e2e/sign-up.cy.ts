@@ -16,7 +16,6 @@ describe('Sign Up Flow', () => {
     cy.getBySel('password').type('admin123');
     cy.getBySel('confirmPassword').type('admin123');
     cy.getBySel('submit').click();
-    cy.wait(5000);
-    cy.contains('Total Leave Days');
+    cy.getBySel('dashboard-content').should('be.visible');
   });
 });

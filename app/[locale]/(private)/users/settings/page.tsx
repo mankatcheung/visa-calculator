@@ -10,7 +10,10 @@ export default async function UserSettingsPage() {
   const res = await getSelfUser();
   const user = res.result;
   return (
-    <div className="flex flex-col items-stretch gap-4 p-4">
+    <div
+      className="flex flex-col items-stretch gap-4 p-4"
+      data-cy="user-settings-content"
+    >
       <div className="text-lg font-bold">{t('updateEmail')}</div>
       <UpdateEmailForm email={user?.email} />
       <Separator />

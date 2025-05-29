@@ -56,6 +56,7 @@ export function SignUpForm({
                 <Input
                   name="email"
                   type="email"
+                  id="email"
                   data-cy="email"
                   placeholder="m@example.com"
                   required
@@ -68,6 +69,7 @@ export function SignUpForm({
                 <Input
                   name="password"
                   type="password"
+                  id="password"
                   data-cy="password"
                   required
                 />

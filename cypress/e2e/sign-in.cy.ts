@@ -7,10 +7,8 @@ describe('Sign In Flow', () => {
 
   it('login', () => {
     cy.visit('/en/sign-in');
-    cy.getBySel('email').type('test@test.com');
-    cy.getBySel('password').type('admin123');
-    cy.getBySel('submit').click();
-    cy.wait(5000);
-    cy.url().should('equal', 'http://localhost:3000/en');
+    cy.login('test@test.com', 'admin123');
+    cy.url().should('include', '/en');
+    cy.getBySel('dashboard-content').should('be.visible');
   });
 });
