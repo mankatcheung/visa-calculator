@@ -4,8 +4,6 @@ on: [push]
 env:
   NODE_VERSION: '20.x'
   TURSO_API_URL: 'https://api.turso.tech/v1'
-  DATABASE_URL: libsql://${{ env.database_hostname }}
-  DATABASE_AUTH_TOKEN: ${{ env.database_auth_token }}
 jobs:
   # Job for linting
   lint:
@@ -104,10 +102,19 @@ jobs:
           database_auth_token: ${{ env.database_auth_token }}
       - name: Run database migrations
         run: yarn db:migrate
+        env:
+          DATABASE_URL: libsql://${{ env.database_hostname }}
+          DATABASE_AUTH_TOKEN: ${{ env.database_auth_token }}
       - name: Build Next.js project
         run: yarn build
+        env:
+          DATABASE_URL: libsql://${{ env.database_hostname }}
+          DATABASE_AUTH_TOKEN: ${{ env.database_auth_token }}
       - name: Start Next.js project
         run: yarn start > nextjs.log 2>&1 &
+        env:
+          DATABASE_URL: libsql://${{ env.database_hostname }}
+          DATABASE_AUTH_TOKEN: ${{ env.database_auth_token }}
       - name: Wait for Next.js to be ready
         run:
           npx wait-on http://localhost:3000 --timeout 60000 --verbose || (cat
@@ -116,6 +123,9 @@ jobs:
         run: curl -v http://localhost:3000 || echo "Server not responding"
       - name: Run Cypress E2E tests
         run: yarn cy:run
+        env:
+          DATABASE_URL: libsql://${{ env.database_hostname }}
+          DATABASE_AUTH_TOKEN: ${{ env.database_auth_token }}
       - name: Upload Cypress artifacts on failure
         if: failure()
         uses: actions/upload-artifact@v4
