@@ -84,8 +84,6 @@ jobs:
             exit 1
           fi
           echo "database_hostname=$HOSTNAME" >> $GITHUB_ENV
-        env:
-          database_hostname: ${{ env.database_hostname }}
       - name: Generate auth token for database
         run: |
           RESPONSE=$(curl -s -f -X POST \
@@ -98,8 +96,6 @@ jobs:
             exit 1
           fi
           echo "database_auth_token=$AUTH_TOKEN" >> $GITHUB_ENV
-        env:
-          database_auth_token: ${{ env.database_auth_token }}
       - name: Run database migrations
         run: yarn db:migrate
         env:
