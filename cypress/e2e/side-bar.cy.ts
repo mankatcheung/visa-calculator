@@ -8,6 +8,6 @@ describe('Navigation', () => {
   it('navigates to english', () => {
     cy.login('test@test.com', 'admin123');
     cy.getBySel('side-bar-item-users-settings').click();
-    cy.url().should('include', 'users/setting123');
+    cy.url().should('include', 'users/settings');
   });
 });
