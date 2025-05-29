@@ -71,13 +71,17 @@ jobs:
           curl -s -X DELETE \
             -H "Authorization: Bearer ${{ secrets.TURSO_API_TOKEN }}" \
             "${{ env.TURSO_API_URL }}/organizations/${{ secrets.TURSO_ORGANIZATION_NAME }}/databases/${{ secrets.TURSO_TESTING_DATABASE_NAME }}"
-      - name: Create testing database
+      - name: Create temporary database
         run: |
           RESPONSE=$(curl -s -f -X POST \
             -H "Authorization: Bearer ${{ secrets.TURSO_API_TOKEN }}" \
             -H "Content-Type: application/json" \
             -d '{"name": "${{ secrets.TURSO_TESTING_DATABASE_NAME }}", "group": "${{ secrets.TURSO_GROUP_NAME }}" }' \
-            "${{ env.TURSO_API_URL }}/organizations/${{ secrets.TURSO_ORGANIZATION_NAME }}/databases" || echo "API call failed" && exit 1)
+            "${{ env.TURSO_API_URL }}/organizations/${{ secrets.TURSO_ORGANIZATION_NAME }}/databases")
+          if [ $? -ne 0 ]; then
+            echo "API call failed"
+            exit 1
+          fi
           HOSTNAME=$(echo $RESPONSE | jq -r '.database.Hostname')
           if [ -z "$HOSTNAME" ]; then
             echo "Hostname not found in response"
@@ -89,7 +93,11 @@ jobs:
           RESPONSE=$(curl -s -f -X POST \
             -H "Authorization: Bearer ${{ secrets.TURSO_API_TOKEN }}" \
             -H "Content-Type: application/json" \
-            "${{ env.TURSO_API_URL }}/organizations/${{ secrets.TURSO_ORGANIZATION_NAME }}/databases/${{ secrets.TURSO_TESTING_DATABASE_NAME }}/auth/tokens?expiration=30m&authorization=full-access" || echo "API call failed" && exit 1)
+            "${{ env.TURSO_API_URL }}/organizations/${{ secrets.TURSO_ORGANIZATION_NAME }}/databases/${{ secrets.TURSO_TESTING_DATABASE_NAME }}/auth/tokens?expiration=30m&authorization=full-access")
+          if [ $? -ne 0 ]; then
+            echo "API call failed"
+            exit 1
+          fi
           AUTH_TOKEN=$(echo $RESPONSE | jq -r '.jwt')
           if [ -z "$AUTH_TOKEN" ]; then
             echo "AUTH_TOKEN not found in response"
