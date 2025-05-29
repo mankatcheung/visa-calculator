@@ -56,6 +56,7 @@ export function SignInForm({
                 <Label htmlFor="email">{t('email')}</Label>
                 <Input
                   type="email"
+                  id="email"
                   name="email"
                   data-cy="email"
                   placeholder="m@example.com"
@@ -74,6 +75,7 @@ export function SignInForm({
                 </div>
                 <Input
                   data-cy="password"
+                  id="password"
                   name="password"
                   type="password"
                   required

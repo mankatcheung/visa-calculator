@@ -10,7 +10,7 @@ if (isTesting) {
 } else {
   dbCredentials = {
     url: connectionString ?? fileBasedDatabasePath,
-    authToken: process.env.DATABASE_AUTH_TOKEN!,
+    authToken: process.env.DATABASE_AUTH_TOKEN || '',
   };
 }
 

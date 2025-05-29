@@ -82,6 +82,7 @@ export function SignUpForm({
                 </div>
                 <Input
                   name="confirmPassword"
+                  id="confirmPassword"
                   type="password"
                   data-cy="confirmPassword"
                   required
