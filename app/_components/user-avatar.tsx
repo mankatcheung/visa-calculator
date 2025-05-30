@@ -22,7 +22,10 @@ export function UserAvatar() {
   };
 
   const avatar = (
-    <div className="h-8 w-8 rounded-full border-white border-1 text-center cursor-pointer">
+    <div
+      data-cy="avatar"
+      className="h-8 w-8 rounded-full border-white border-1 text-center cursor-pointer"
+    >
       {user?.email?.substring(0, 1).toUpperCase()}
     </div>
   );
@@ -37,7 +40,7 @@ export function UserAvatar() {
         sideOffset={4}
       >
         <DropdownMenuGroup>
-          <Link href="/users/settings">
+          <Link href="/users/settings" data-cy="avatar-settings">
             <DropdownMenuItem>
               <BadgeCheck />
               {t('settings')}
@@ -45,7 +48,7 @@ export function UserAvatar() {
           </Link>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={onSignOut}>
+        <DropdownMenuItem onClick={onSignOut} data-cy="avatar-logout">
           <LogOut />
           {t('signOut')}
         </DropdownMenuItem>

@@ -54,9 +54,10 @@ export function SignUpForm({
               <div className="grid gap-2">
                 <Label htmlFor="email">{t('email')}</Label>
                 <Input
-                  id="email"
                   name="email"
                   type="email"
+                  id="email"
+                  data-cy="email"
                   placeholder="m@example.com"
                   required
                 />
@@ -65,7 +66,13 @@ export function SignUpForm({
                 <div className="flex items-center">
                   <Label htmlFor="password">{t('password')}</Label>
                 </div>
-                <Input id="password" name="password" type="password" required />
+                <Input
+                  name="password"
+                  type="password"
+                  id="password"
+                  data-cy="password"
+                  required
+                />
               </div>
               <div className="grid gap-2">
                 <div className="flex items-center">
@@ -74,19 +81,24 @@ export function SignUpForm({
                   </Label>
                 </div>
                 <Input
-                  id="confirmPassword"
                   name="confirmPassword"
+                  id="confirmPassword"
                   type="password"
+                  data-cy="confirmPassword"
                   required
                 />
               </div>
-              <Button type="submit" className="w-full">
+              <Button type="submit" data-cy="submit" className="w-full">
                 {t('signUp')}
               </Button>
             </div>
             <div className="mt-4 text-center text-sm">
               {t('alreadyHaveAnAccount')}
-              <Link href="/sign-in" className="underline underline-offset-4">
+              <Link
+                href="/sign-in"
+                data-cy="sign-in"
+                className="underline underline-offset-4"
+              >
                 {t('signIn')}
               </Link>
             </div>
@@ -94,6 +106,7 @@ export function SignUpForm({
               <Link
                 href="/sign-up"
                 locale="en"
+                data-cy="locale-en"
                 className="underline underline-offset-4"
               >
                 En
@@ -102,6 +115,7 @@ export function SignUpForm({
               <Link
                 href="/sign-up"
                 locale="zh-Hant-HK"
+                data-cy="locale-zh-Hant-HK"
                 className="underline underline-offset-4"
               >
                 繁

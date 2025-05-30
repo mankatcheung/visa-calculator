@@ -17,7 +17,12 @@ export function ThemePicker() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button className="cursor-pointer" variant="outline" size="icon">
+        <Button
+          data-cy="theme-picker"
+          className="cursor-pointer"
+          variant="outline"
+          size="icon"
+        >
           <Moon />
         </Button>
       </DropdownMenuTrigger>
@@ -28,13 +33,13 @@ export function ThemePicker() {
         sideOffset={4}
       >
         <DropdownMenuRadioGroup value={theme} onValueChange={setTheme}>
-          <DropdownMenuRadioItem value="light">
+          <DropdownMenuRadioItem value="light" data-cy="theme-picker-light">
             {t('light')}
           </DropdownMenuRadioItem>
-          <DropdownMenuRadioItem value="dark">
+          <DropdownMenuRadioItem value="dark" data-cy="theme-picker-dark">
             {t('dark')}
           </DropdownMenuRadioItem>
-          <DropdownMenuRadioItem value="system">
+          <DropdownMenuRadioItem value="system" data-cy="theme-picker-system">
             {t('system')}
           </DropdownMenuRadioItem>
         </DropdownMenuRadioGroup>

@@ -28,6 +28,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         url: '#',
         items: [
           {
+            key: 'visaCalculator',
             title: t('visaCalculator'),
             url: '/',
           },
@@ -38,6 +39,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         url: '#',
         items: [
           {
+            key: 'users-settings',
             title: t('settings'),
             url: '/users/settings',
           },
@@ -60,7 +62,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 {item.items.map((item) => (
                   <SidebarMenuItem key={item.title}>
                     <SidebarMenuButton asChild isActive={item.url === pathname}>
-                      <Link href={item.url}>{item.title}</Link>
+                      <Link
+                        data-cy={`side-bar-item-${item.key}`}
+                        href={item.url}
+                      >
+                        {item.title}
+                      </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 ))}

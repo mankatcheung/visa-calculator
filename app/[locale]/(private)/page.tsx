@@ -70,7 +70,6 @@ const getLeaveDaysSince = (
 ) => {
   const upperLimitDate = new Date();
   upperLimitDate.setDate(upperLimitDate.getDate() - beforeDays);
-  console.log(upperLimitDate);
   let result = 0;
   for (let i = 0; i < leaves.length; i++) {
     const { startDate, endDate } = leaves[i];
@@ -99,7 +98,7 @@ export default async function Home() {
   }
 
   return (
-    <div className="flex flex-1 flex-col gap-4 p-4">
+    <div className="flex flex-1 flex-col gap-4 p-4" data-cy="dashboard-content">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <Card>
           <CardHeader className="relative">
