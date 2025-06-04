@@ -40,7 +40,10 @@ export function DatePicker({ value, onChange }: DatePickerProps) {
           <SelectGroup>
             <SelectLabel>{t('year')}</SelectLabel>
             {[...Array(40).keys()].map((i) => (
-              <SelectItem value={`${2000 + i}`}>{`${2000 + i}`}</SelectItem>
+              <SelectItem
+                key={i}
+                value={`${2000 + i}`}
+              >{`${2000 + i}`}</SelectItem>
             ))}
           </SelectGroup>
         </SelectContent>
