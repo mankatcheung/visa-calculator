@@ -54,7 +54,7 @@ export function VisaStartDateForm({ visaStartDate }: VisaStartDateFormProps) {
       const formData = new FormData();
       formData.set('visaStartDate', data.visaStartDate.toUTCString());
       const res = await userSettingsActions.updateUserSettings(formData);
-      if (res && res.error) {
+      if (res?.error) {
         toast.error(res.error);
       } else {
         toast.success(t('success'));

@@ -79,7 +79,11 @@ export const updateUserSettingsController =
               }
             })
         );
-        return presenter(settings!, instrumentationService);
+
+        if (!settings) {
+          throw new Error('Failed to update user settings');
+        }
+        return presenter(settings, instrumentationService);
       }
     );
   };

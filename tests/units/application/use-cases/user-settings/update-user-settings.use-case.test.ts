@@ -9,6 +9,9 @@ const getUserSettingsForUserUseCase = getInjection(
 
 it('update user settings', async () => {
   const settings = await getUserSettingsForUserUseCase('1');
+  if (!settings) {
+    throw new Error('Test setup failed: User 1 should have existing settings');
+  }
   const updateValue = {
     visaStartDate: new Date(2025, 6, 1),
   };

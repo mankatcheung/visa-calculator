@@ -97,9 +97,15 @@ export default async function Home() {
   } catch (err) {
     throw err;
   }
-  const settingsRes = await getUserSettingsForUser();
-  const visaStartDate = settingsRes.result?.visaStartDate ?? new Date();
-
+  let visaStartDate = new Date();
+  try {
+    const settingsRes = await getUserSettingsForUser();
+    visaStartDate = settingsRes.result?.visaStartDate ?? new Date();
+  } catch (err) {
+    // Log error but continue with default date
+    console.error('Failed to fetch user settings:', err);
+    throw err;
+  }
   return (
     <div className="flex flex-1 flex-col gap-4 p-4" data-cy="dashboard-content">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

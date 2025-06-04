@@ -5,6 +5,7 @@ import { userSettings } from '@/drizzle/schema';
 import { IUserSettingsRepository } from '@/src/application/repositories/user-settings.repository.interface';
 import type { ICrashReporterService } from '@/src/application/services/crash-reporter.service.interface';
 import type { IInstrumentationService } from '@/src/application/services/instrumentation.service.interface';
+import { DatabaseOperationError } from '@/src/entities/errors/common';
 import {
   UserSetting,
   UserSettingUpdate,
@@ -31,7 +32,7 @@ export class UserSettingsRepository implements IUserSettingsRepository {
             {
               name: query.toSQL().sql,
               op: 'db.query',
-              attributes: { 'db.system': 'pgsql' },
+              attributes: { 'db.system': 'sqlite' },
             },
             () => query.execute()
           );
@@ -62,7 +63,7 @@ export class UserSettingsRepository implements IUserSettingsRepository {
             {
               name: query.toSQL().sql,
               op: 'db.query',
-              attributes: { 'db.system': 'pgsql' },
+              attributes: { 'db.system': 'sqlite' },
             },
             () => query.execute()
           );
@@ -96,11 +97,15 @@ export class UserSettingsRepository implements IUserSettingsRepository {
             {
               name: query.toSQL().sql,
               op: 'db.query',
-              attributes: { 'db.system': 'pgsql' },
+              attributes: { 'db.system': 'sqlite' },
             },
             () => query.execute()
           );
-          return updated;
+          if (updated) {
+            return updated;
+          } else {
+            throw new DatabaseOperationError('Cannot update user settings');
+          }
         } catch (err) {
           console.log(err);
           this.crashReporterService.report(err);

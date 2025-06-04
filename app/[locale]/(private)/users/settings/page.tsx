@@ -9,16 +9,10 @@ import { getSelfUser } from '@/app/actions/users';
 
 export default async function UserSettingsPage() {
   const t = await getTranslations();
-  let user;
-  let settings;
-  try {
-    const res = await getSelfUser();
-    user = res.result;
-    const settingsRes = await getUserSettingsForUser();
-    settings = settingsRes.result;
-  } catch (err) {
-    throw err;
-  }
+  const res = await getSelfUser();
+  const user = res.result;
+  const settingsRes = await getUserSettingsForUser();
+  const settings = settingsRes.result;
   return (
     <div
       className="flex flex-col items-stretch gap-4 p-4"

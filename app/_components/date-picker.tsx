@@ -26,7 +26,6 @@ export function DatePicker({ value, onChange }: DatePickerProps) {
     const newMonth = new Date(Number(v), displayMonth.getUTCMonth());
     setDisplayMonth(newMonth);
   };
-  console.log(defaultYearInString);
   return (
     <div className="flex flex-col items-center gap-2 py-2">
       <Select

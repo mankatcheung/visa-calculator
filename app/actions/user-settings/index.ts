@@ -6,7 +6,10 @@ import { cookies } from 'next/headers';
 import { SESSION_COOKIE } from '@/config';
 
 import { getInjection } from '@/di/container';
-import { AuthenticationError } from '@/src/entities/errors/auth';
+import {
+  AuthenticationError,
+  UnauthenticatedError,
+} from '@/src/entities/errors/auth';
 import { InputParseError } from '@/src/entities/errors/common';
 
 export async function getUserSettingsForUser() {
@@ -28,7 +31,10 @@ export async function getUserSettingsForUser() {
         if (err instanceof InputParseError) {
           return { error: err.message };
         }
-        if (err instanceof AuthenticationError) {
+        if (
+          err instanceof AuthenticationError ||
+          err instanceof UnauthenticatedError
+        ) {
           return {
             error: err.message,
           };
