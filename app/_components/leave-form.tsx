@@ -11,8 +11,8 @@ import { toast } from 'sonner';
 import { z } from 'zod';
 
 import { GradientPicker } from '@/app/_components/color-picker';
+import { DatePicker } from '@/app/_components/date-picker';
 import { Button } from '@/app/_components/ui/button';
-import { Calendar } from '@/app/_components/ui/calendar';
 import {
   Form,
   FormControl,
@@ -63,12 +63,7 @@ const DateInput = ({
           </FormControl>
         </PopoverTrigger>
         <PopoverContent className="w-auto p-0" align="start">
-          <Calendar
-            mode="single"
-            selected={value}
-            onSelect={onChange}
-            initialFocus
-          />
+          <DatePicker value={value} onChange={onChange} />
         </PopoverContent>
       </Popover>
       <FormDescription>{description}</FormDescription>

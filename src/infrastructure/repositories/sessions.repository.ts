@@ -35,7 +35,7 @@ export class SessionsRepository implements ISessionsRepository {
             {
               name: query.toSQL().sql,
               op: 'db.query',
-              attributes: { 'db.system': 'pgsql' },
+              attributes: { 'db.system': 'sqlite' },
             },
             () => query.execute()
           );
@@ -70,7 +70,7 @@ export class SessionsRepository implements ISessionsRepository {
             {
               name: query.toSQL().sql,
               op: 'db.query',
-              attributes: { 'db.system': 'pgsql' },
+              attributes: { 'db.system': 'sqlite' },
             },
             () => query.execute()
           );
@@ -100,7 +100,7 @@ export class SessionsRepository implements ISessionsRepository {
             {
               name: query.toSQL().sql,
               op: 'db.query',
-              attributes: { 'db.system': 'pgsql' },
+              attributes: { 'db.system': 'sqlite' },
             },
             () => query.execute()
           );
@@ -133,7 +133,7 @@ export class SessionsRepository implements ISessionsRepository {
             {
               name: query.toSQL().sql,
               op: 'db.query',
-              attributes: { 'db.system': 'pgsql' },
+              attributes: { 'db.system': 'sqlite' },
             },
             () => query.execute()
           );
@@ -159,7 +159,7 @@ export class SessionsRepository implements ISessionsRepository {
             {
               name: query.toSQL().sql,
               op: 'db.query',
-              attributes: { 'db.system': 'pgsql' },
+              attributes: { 'db.system': 'sqlite' },
             },
             () => query.execute()
           );
@@ -183,7 +183,7 @@ export class SessionsRepository implements ISessionsRepository {
             {
               name: query.toSQL().sql,
               op: 'db.query',
-              attributes: { 'db.system': 'pgsql' },
+              attributes: { 'db.system': 'sqlite' },
             },
             () => query.execute()
           );

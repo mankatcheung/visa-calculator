@@ -1,5 +1,6 @@
 import { ILeavesRepository } from '@/src/application/repositories/leaves.repository.interface';
 import { ISessionsRepository } from '@/src/application/repositories/sessions.repository.interface';
+import { IUserSettingsRepository } from '@/src/application/repositories/user-settings.repository.interface';
 import { IUsersRepository } from '@/src/application/repositories/users.repository.interface';
 import { IAuthenticationService } from '@/src/application/services/authentication.service.interface';
 import { ICrashReporterService } from '@/src/application/services/crash-reporter.service.interface';
@@ -13,6 +14,8 @@ import { IDeleteLeaveUseCase } from '@/src/application/use-cases/leaves/delete-l
 import { IGetLeaveUseCase } from '@/src/application/use-cases/leaves/get-leave.use-case';
 import { IGetLeavesForUserUseCase } from '@/src/application/use-cases/leaves/get-leaves-for-user.use-case';
 import { IUpdateLeaveUseCase } from '@/src/application/use-cases/leaves/update-leave.use-case';
+import { IGetUserSettingsForUserUseCase } from '@/src/application/use-cases/user-settings/get-user-settings-for-user.use-case';
+import { IUpdateUserSettingsUseCase } from '@/src/application/use-cases/user-settings/update-user-settings.use-case';
 import { IGetUserUseCase } from '@/src/application/use-cases/users/get-user.use-case';
 import { IUpdateUserEmailUseCase } from '@/src/application/use-cases/users/update-user-email.use-case';
 import { IUpdateUserPasswordUseCase } from '@/src/application/use-cases/users/update-user-password.use-case';
@@ -24,6 +27,8 @@ import { IDeleteLeaveController } from '@/src/interface-adapters/controllers/lea
 import { IGetLeaveController } from '@/src/interface-adapters/controllers/leaves/get-leave.controller';
 import { IGetLeavesForUserController } from '@/src/interface-adapters/controllers/leaves/get-leaves-for-user.controller';
 import { IUpdateLeaveController } from '@/src/interface-adapters/controllers/leaves/update-leave.controller';
+import { IGetUserSettingsForUserController } from '@/src/interface-adapters/controllers/user-settings/get-user-settings-for-user.controller';
+import { IUpdateUserSettingsController } from '@/src/interface-adapters/controllers/user-settings/update-user-settings.controller';
 import { IGetSelfUserController } from '@/src/interface-adapters/controllers/users/get-self-user.controller';
 import { IUpdateUserEmailController } from '@/src/interface-adapters/controllers/users/update-user-email.controller';
 import { IUpdateUserPasswordController } from '@/src/interface-adapters/controllers/users/update-user-password.controller';
@@ -39,6 +44,7 @@ export const DI_SYMBOLS = {
   ILeavesRepository: Symbol.for('ILeavesRepository'),
   IUsersRepository: Symbol.for('IUsersRepository'),
   ISessionRepository: Symbol.for('ISessionRepository'),
+  IUserSettingsRepository: Symbol.for('IUserSettingsRepository'),
 
   // Use Cases
   ICreateLeaveUseCase: Symbol.for('ICreateLeaveUseCase'),
@@ -52,6 +58,8 @@ export const DI_SYMBOLS = {
   IGetUserUseCase: Symbol.for('IGetUserUseCase'),
   IUpdateUserEmailUseCase: Symbol.for('IUpdateUserEmailUseCase'),
   IUpdateUserPasswordUseCase: Symbol.for('IUpdateUserPasswordUseCase'),
+  IGetUserSettingsForUserUseCase: Symbol.for('IGetUserSettingsForUserUseCase'),
+  IUpdateUserSettingsUseCase: Symbol.for('IUpdateUserSettingsUseCase'),
 
   // Controllers
   ISignInController: Symbol.for('ISignInController'),
@@ -65,6 +73,10 @@ export const DI_SYMBOLS = {
   IGetSelfUserController: Symbol.for('IGetSelfUserController'),
   IUpdateUserEmailController: Symbol.for('IUpdateUserEmailController'),
   IUpdateUserPasswordController: Symbol.for('IUpdateUserPasswordController'),
+  IGetUserSettingsForUserController: Symbol.for(
+    'IGetUserSettingsForUserController'
+  ),
+  IUpdateUserSettingsController: Symbol.for('IUpdateUserSettingsController'),
 };
 
 export interface DI_RETURN_TYPES {
@@ -78,6 +90,7 @@ export interface DI_RETURN_TYPES {
   ILeavesRepository: ILeavesRepository;
   IUsersRepository: IUsersRepository;
   ISessionRepository: ISessionsRepository;
+  IUserSettingsRepository: IUserSettingsRepository;
 
   // Use Cases
   ICreateLeaveUseCase: ICreateLeaveUseCase;
@@ -91,6 +104,8 @@ export interface DI_RETURN_TYPES {
   IGetUserUseCase: IGetUserUseCase;
   IUpdateUserEmailUseCase: IUpdateUserEmailUseCase;
   IUpdateUserPasswordUseCase: IUpdateUserPasswordUseCase;
+  IGetUserSettingsForUserUseCase: IGetUserSettingsForUserUseCase;
+  IUpdateUserSettingsUseCase: IUpdateUserSettingsUseCase;
 
   // Controllers
   ISignInController: ISignInController;
@@ -104,4 +119,6 @@ export interface DI_RETURN_TYPES {
   IGetSelfUserController: IGetSelfUserController;
   IUpdateUserEmailController: IUpdateUserEmailController;
   IUpdateUserPasswordController: IUpdateUserPasswordController;
+  IGetUserSettingsForUserController: IGetUserSettingsForUserController;
+  IUpdateUserSettingsController: IUpdateUserSettingsController;
 }

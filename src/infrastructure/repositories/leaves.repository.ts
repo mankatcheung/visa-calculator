@@ -27,7 +27,7 @@ export class LeavesRepository implements ILeavesRepository {
             {
               name: query.toSQL().sql,
               op: 'db.query',
-              attributes: { 'db.system': 'pgsql' },
+              attributes: { 'db.system': 'sqlite' },
             },
             () => query.execute()
           );
@@ -58,7 +58,7 @@ export class LeavesRepository implements ILeavesRepository {
             {
               name: query.toSQL().sql,
               op: 'db.query',
-              attributes: { 'db.system': 'pgsql' },
+              attributes: { 'db.system': 'sqlite' },
             },
             () => query.execute()
           );
@@ -86,7 +86,7 @@ export class LeavesRepository implements ILeavesRepository {
             {
               name: query.toSQL().sql,
               op: 'db.query',
-              attributes: { 'db.system': 'pgsql' },
+              attributes: { 'db.system': 'sqlite' },
             },
             () => query.execute()
           );
@@ -119,7 +119,7 @@ export class LeavesRepository implements ILeavesRepository {
             {
               name: query.toSQL().sql,
               op: 'db.query',
-              attributes: { 'db.system': 'pgsql' },
+              attributes: { 'db.system': 'sqlite' },
             },
             () => query.execute()
           );
@@ -148,7 +148,7 @@ export class LeavesRepository implements ILeavesRepository {
             {
               name: query.toSQL().sql,
               op: 'db.query',
-              attributes: { 'db.system': 'pgsql' },
+              attributes: { 'db.system': 'sqlite' },
             },
             () => query.execute()
           );

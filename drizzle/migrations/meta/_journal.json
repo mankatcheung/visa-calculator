@@ -29,6 +29,27 @@
       "when": 1746019842606,
       "tag": "0003_cold_tomorrow_man",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1748987625870,
+      "tag": "0004_serious_lorna_dane",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "6",
+      "when": 1748989565099,
+      "tag": "0005_youthful_whistler",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "6",
+      "when": 1749026921389,
+      "tag": "0006_aspiring_mojo",
+      "breakpoints": true
     }
   ]
 }
