@@ -9,8 +9,8 @@ import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
+import { DatePicker } from '@/app/_components/date-picker';
 import { Button } from '@/app/_components/ui/button';
-import { Calendar } from '@/app/_components/ui/calendar';
 import {
   Form,
   FormControl,
@@ -95,11 +95,9 @@ export function VisaStartDateForm({ visaStartDate }: VisaStartDateFormProps) {
                       </FormControl>
                     </PopoverTrigger>
                     <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar
-                        mode="single"
-                        selected={field.value}
-                        onSelect={field.onChange}
-                        initialFocus
+                      <DatePicker
+                        value={field.value}
+                        onChange={field.onChange}
                       />
                     </PopoverContent>
                   </Popover>

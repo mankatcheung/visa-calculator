@@ -49,5 +49,6 @@
   "system": "System",
   "english": "English",
   "traditionalChinese": "Traditional Chinese",
-  "visaStartDate": "Visa Start Date"
+  "visaStartDate": "Visa Start Date",
+  "year": "Year"
 }
