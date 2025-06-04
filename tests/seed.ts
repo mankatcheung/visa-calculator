@@ -3,7 +3,7 @@ import { hashSync } from 'bcrypt-ts';
 
 import { PASSWORD_SALT_ROUNDS } from '@/config';
 
-import { users } from '@/drizzle/schema';
+import { userSettings, users } from '@/drizzle/schema';
 
 export async function seed() {
   await db.insert(users).values([
@@ -21,6 +21,23 @@ export async function seed() {
       id: '3',
       email: 'three@test.com',
       passwordHash: hashSync('password-three', PASSWORD_SALT_ROUNDS),
+    },
+  ]);
+  await db.insert(userSettings).values([
+    {
+      id: 1,
+      visaStartDate: new Date(2025, 5, 5),
+      userId: '1',
+    },
+    {
+      id: 2,
+      visaStartDate: new Date(2025, 5, 5),
+      userId: '2',
+    },
+    {
+      id: 3,
+      visaStartDate: new Date(2025, 5, 5),
+      userId: '3',
     },
   ]);
 }
