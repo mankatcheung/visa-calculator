@@ -28,3 +28,11 @@ export const leaves = sqliteTable('leaves', {
     .references(() => users.id)
     .notNull(),
 });
+
+export const userSettings = sqliteTable('user_settings', {
+  id: integer('id').primaryKey({ autoIncrement: true }).notNull(),
+  visaStartDate: integer('visa_start_date', { mode: 'timestamp' }).notNull(),
+  userId: text('user_id')
+    .references(() => users.id)
+    .notNull(),
+});

@@ -13,6 +13,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/app/_components/ui/card';
+import { getUserSettingsForUser } from '@/app/actions/user-settings';
 import { getInjection } from '@/di/container';
 import { Link } from '@/i18n/navigation';
 import {
@@ -96,10 +97,20 @@ export default async function Home() {
   } catch (err) {
     throw err;
   }
+  const settingsRes = await getUserSettingsForUser();
+  const visaStartDate = settingsRes.result?.visaStartDate ?? new Date();
 
   return (
     <div className="flex flex-1 flex-col gap-4 p-4" data-cy="dashboard-content">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <Card>
+          <CardHeader className="relative">
+            <CardDescription>{t('visaStartDate')}</CardDescription>
+            <CardTitle className="@[250px]/card:text-3xl text-2xl font-semibold tabular-nums">
+              {visaStartDate.toDateString()}
+            </CardTitle>
+          </CardHeader>
+        </Card>
         <Card>
           <CardHeader className="relative">
             <CardDescription>{t('totalLeaves')}</CardDescription>

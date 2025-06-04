@@ -1,0 +1,1 @@
+ALTER TABLE `user_settings` ALTER COLUMN "visa_start_date" TO "visa_start_date" integer NOT NULL;
