@@ -1,3 +1,4 @@
+import { IUserSettingsRepository } from '@/src/application/repositories/user-settings.repository.interface';
 import type { IUsersRepository } from '@/src/application/repositories/users.repository.interface';
 import type { IAuthenticationService } from '@/src/application/services/authentication.service.interface';
 import type { IInstrumentationService } from '@/src/application/services/instrumentation.service.interface';
@@ -12,7 +13,8 @@ export const signUpUseCase =
   (
     instrumentationService: IInstrumentationService,
     authenticationService: IAuthenticationService,
-    usersRepository: IUsersRepository
+    usersRepository: IUsersRepository,
+    userSettingsRepository: IUserSettingsRepository
   ) =>
   (input: {
     email: string;
@@ -37,6 +39,8 @@ export const signUpUseCase =
           email: input.email,
           password: input.password,
         });
+
+        await userSettingsRepository.createUserSettings(userId);
 
         const { cookie, session } =
           await authenticationService.createSession(newUser);
