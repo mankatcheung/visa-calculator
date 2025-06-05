@@ -1,62 +1,64 @@
-import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { SelectSingleEventHandler } from 'react-day-picker';
 
+import { Button } from '@/app/_components/ui/button';
 import { Calendar } from '@/app/_components/ui/calendar';
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from '@/app/_components/ui/select';
 
 type DatePickerProps = {
   value?: Date;
   onChange: SelectSingleEventHandler;
 };
+
+const BASE_YEAR = 2019;
+
 export function DatePicker({ value, onChange }: DatePickerProps) {
-  const t = useTranslations();
+  const [mode, setMode] = useState<'year' | 'calendar'>('calendar');
+  const [year, setYear] = useState<number>(
+    value?.getUTCFullYear() || new Date().getUTCFullYear()
+  );
   const [displayMonth, setDisplayMonth] = useState(value || new Date());
-  const currentYear = new Date().getUTCFullYear();
-  const defaultYearInString = `${currentYear}`;
-  const handleOnYearChange = (v: string) => {
-    const newMonth = new Date(Number(v), displayMonth.getUTCMonth());
+  const handleOnYearChange = (v: number) => {
+    const newMonth = new Date(v, displayMonth.getUTCMonth());
+    setYear(v);
     setDisplayMonth(newMonth);
+    setMode('calendar');
+  };
+  const handleOnMonthChange = (d: Date) => {
+    setYear(d.getUTCFullYear());
+    setDisplayMonth(d);
   };
   return (
-    <div className="flex flex-col items-center gap-2 py-2">
-      <Select
-        onValueChange={handleOnYearChange}
-        defaultValue={defaultYearInString}
-      >
-        <SelectTrigger className="w-[180px]">
-          <SelectValue />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectGroup>
-            <SelectLabel>{t('year')}</SelectLabel>
-            {[...Array(40).keys()].map((i) => (
-              <SelectItem
-                key={i}
-                value={`${2000 + i}`}
-              >{`${2000 + i}`}</SelectItem>
-            ))}
-          </SelectGroup>
-        </SelectContent>
-      </Select>
-      <Calendar
-        mode="single"
-        captionLayout="dropdown"
-        selected={value}
-        defaultMonth={value}
-        month={displayMonth}
-        onMonthChange={setDisplayMonth}
-        onSelect={onChange}
-        initialFocus
-      />
+    <div className="flex flex-col items-center gap-2 my-3">
+      {mode === 'calendar' && (
+        <Button variant="outline" onClick={() => setMode('year')}>
+          {year}
+        </Button>
+      )}
+      {mode === 'year' && (
+        <div className="grid grid-cols-4 gap-2 p-3">
+          {[...Array(20).keys()].map((i) => (
+            <Button
+              key={i}
+              variant={BASE_YEAR + i === year ? 'default' : 'outline'}
+              value={`${BASE_YEAR + i}`}
+              onClick={() => handleOnYearChange(BASE_YEAR + i)}
+              size="sm"
+            >{`${BASE_YEAR + i}`}</Button>
+          ))}
+        </div>
+      )}
+      {mode === 'calendar' && (
+        <Calendar
+          mode="single"
+          captionLayout="dropdown"
+          selected={value}
+          defaultMonth={value}
+          month={displayMonth}
+          onMonthChange={handleOnMonthChange}
+          onSelect={onChange}
+          initialFocus
+        />
+      )}
     </div>
   );
 }
