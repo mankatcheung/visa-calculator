@@ -1,3 +1,5 @@
+import { tz } from '@date-fns/tz';
+import { format } from 'date-fns';
 import { Pencil } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 import { cookies } from 'next/headers';
@@ -16,6 +18,7 @@ import {
 import { getUserSettingsForUser } from '@/app/actions/user-settings';
 import { getInjection } from '@/di/container';
 import { Link } from '@/i18n/navigation';
+import { displayUKDateTime } from '@/lib/utils';
 import {
   AuthenticationError,
   UnauthenticatedError,
@@ -113,7 +116,7 @@ export default async function Home() {
           <CardHeader className="relative">
             <CardDescription>{t('visaStartDate')}</CardDescription>
             <CardTitle className="@[250px]/card:text-3xl text-2xl font-semibold tabular-nums">
-              {visaStartDate.toDateString()}
+              {displayUKDateTime(visaStartDate)}
             </CardTitle>
           </CardHeader>
         </Card>
@@ -153,7 +156,7 @@ export default async function Home() {
               />
               <div className="flex-1 flex flex-col gap-2">
                 <div>
-                  {`${leave.startDate.toDateString()} - ${leave.endDate.toDateString()}`}
+                  {`${displayUKDateTime(leave.startDate)} - ${displayUKDateTime(leave.endDate)}`}
                 </div>
                 <div>{getTotalLeaveDays([leave])} day(s)</div>
                 {leave.remarks && (
