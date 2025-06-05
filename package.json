@@ -17,6 +17,7 @@
     "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
+    "@date-fns/tz": "^1.2.0",
     "@evyweb/ioctopus": "^1.2.0",
     "@hookform/resolvers": "^5.0.1",
     "@libsql/client": "^0.15.4",

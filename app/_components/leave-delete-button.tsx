@@ -1,5 +1,6 @@
 'use client';
 
+import { format } from 'date-fns';
 import { Loader2, Trash2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useTransition } from 'react';
@@ -55,7 +56,7 @@ export function LeaveDeleteButton({
           <DialogTitle>{t('deleteLeave')}</DialogTitle>
           <DialogDescription>{t('deleteReminder')}</DialogDescription>
         </DialogHeader>
-        <div>{`${startDate.toDateString()} - ${endDate.toDateString()}`}</div>
+        <div>{`${format(startDate, 'PPP')} - ${format(endDate, 'PPP')}`}</div>
         <DialogFooter>
           <form onSubmit={handleSubmit}>
             <Button variant="destructive" type="submit" disabled={loading}>

@@ -127,7 +127,7 @@ export function VisaStartDateForm({ visaStartDate }: VisaStartDateFormProps) {
 
   return (
     <div className="flex flex-row items-center gap-2">
-      <div className="flex-1">{visaStartDate.toDateString()}</div>
+      <div className="flex-1">{format(visaStartDate, 'PPP')}</div>
       <Button
         variant="outline"
         data-cy="edit-visa-start-date"
