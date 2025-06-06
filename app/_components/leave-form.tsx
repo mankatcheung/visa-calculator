@@ -1,11 +1,9 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { format } from 'date-fns';
-import { CalendarIcon, Loader2 } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useTransition } from 'react';
-import { SelectSingleEventHandler } from 'react-day-picker';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
@@ -22,15 +20,9 @@ import {
   FormLabel,
   FormMessage,
 } from '@/app/_components/ui/form';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/app/_components/ui/popover';
 import { Textarea } from '@/app/_components/ui/textarea';
 import { leaveActions } from '@/app/actions';
 import { useRouter } from '@/i18n/navigation';
-import { cn } from '@/lib/utils';
 
 const DateInput = ({
   value,
@@ -39,33 +31,16 @@ const DateInput = ({
   description,
 }: {
   value: Date;
-  onChange: SelectSingleEventHandler;
+  onChange: (d: Date | undefined) => void;
   label: string;
   description: string;
 }) => {
-  const t = useTranslations();
   return (
     <FormItem className="flex flex-col">
       <FormLabel>{label}</FormLabel>
-      <Popover>
-        <PopoverTrigger asChild>
-          <FormControl>
-            <Button
-              variant={'outline'}
-              className={cn(
-                'w-[240px] pl-3 text-left font-normal',
-                !value && 'text-muted-foreground'
-              )}
-            >
-              {value ? format(value, 'PPP') : <span>{t('pickADate')}</span>}
-              <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-            </Button>
-          </FormControl>
-        </PopoverTrigger>
-        <PopoverContent className="w-auto p-0" align="start">
-          <DatePicker value={value} onChange={onChange} />
-        </PopoverContent>
-      </Popover>
+      <FormControl>
+        <DatePicker value={value} onChange={onChange} />
+      </FormControl>
       <FormDescription>{description}</FormDescription>
       <FormMessage />
     </FormItem>

@@ -2,7 +2,7 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { format } from 'date-fns';
-import { CalendarIcon, CircleX, Loader2 } from 'lucide-react';
+import { CircleX, Loader2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useState, useTransition } from 'react';
 import { useForm } from 'react-hook-form';
@@ -18,13 +18,7 @@ import {
   FormItem,
   FormMessage,
 } from '@/app/_components/ui/form';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/app/_components/ui/popover';
 import { userSettingsActions } from '@/app/actions';
-import { cn } from '@/lib/utils';
 
 type VisaStartDateFormProps = {
   visaStartDate?: Date;
@@ -75,32 +69,9 @@ export function VisaStartDateForm({ visaStartDate }: VisaStartDateFormProps) {
             render={({ field }) => (
               <FormItem className="flex flex-col">
                 <div className="flex flex-row items-center gap-2">
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <FormControl>
-                        <Button
-                          variant={'outline'}
-                          className={cn(
-                            'flex-1 pl-3 text-left font-normal',
-                            !field.value && 'text-muted-foreground'
-                          )}
-                        >
-                          {field.value ? (
-                            format(field.value, 'PPP')
-                          ) : (
-                            <span>{t('pickADate')}</span>
-                          )}
-                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                        </Button>
-                      </FormControl>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <DatePicker
-                        value={field.value}
-                        onChange={field.onChange}
-                      />
-                    </PopoverContent>
-                  </Popover>
+                  <FormControl>
+                    <DatePicker value={field.value} onChange={field.onChange} />
+                  </FormControl>
                   <Button type="submit" data-cy="submit" disabled={loading}>
                     {loading && <Loader2 className="animate-spin" />}
                     {t('submit')}

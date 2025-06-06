@@ -1,14 +1,21 @@
-import { format } from 'date-fns';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { format, startOfToday } from 'date-fns';
+import { CalendarIcon, ChevronLeft, ChevronRight } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useState } from 'react';
-import { SelectSingleEventHandler } from 'react-day-picker';
 
 import { Button } from '@/app/_components/ui/button';
 import { Calendar } from '@/app/_components/ui/calendar';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/app/_components/ui/popover';
+import { Separator } from '@/app/_components/ui/separator';
+import { cn } from '@/lib/utils';
 
 type DatePickerProps = {
   value?: Date;
-  onChange: SelectSingleEventHandler;
+  onChange: (d: Date | undefined) => void;
 };
 
 const MIN_YEAR = 1901;
@@ -22,6 +29,8 @@ enum MODE {
 }
 
 export function DatePicker({ value, onChange }: DatePickerProps) {
+  const t = useTranslations();
+  const [open, setOpen] = useState<boolean>(false);
   const [mode, setMode] = useState<MODE>(MODE.Calendar);
   const defaultYear = value?.getFullYear() || new Date().getFullYear();
   const defaultMonth = value?.getMonth() || new Date().getMonth();
@@ -34,7 +43,7 @@ export function DatePicker({ value, onChange }: DatePickerProps) {
 
   const handleOnYearChange = (v: number) => {
     setYear(v);
-    setMode(MODE.Calendar);
+    setMode(MODE.Month);
   };
 
   const handleOnMonthChange = (d: Date) => {
@@ -53,16 +62,33 @@ export function DatePicker({ value, onChange }: DatePickerProps) {
     setLeadingYear(leadingYear + YEAR_INTERVAL);
   };
 
+  const handleOnTodayClick = () => {
+    const today = startOfToday();
+    onChange(today);
+    setOpen(false);
+  };
+
+  const handleOnDateSelect = (date: Date | undefined) => {
+    onChange(date);
+    setOpen(false);
+  };
+
   let content = (
     <>
       <div className="flex flex-row gap-3 self-stretch">
+        <Button
+          className="flex-1"
+          variant="outline"
+          size="sm"
+          onClick={() => setMode(MODE.Month)}
+        >
+          {format(monthDateTime, 'MMM')}
+        </Button>
         <Button variant="outline" size="sm" onClick={() => setMode(MODE.Year)}>
           {year}
         </Button>
-        <Button variant="outline" size="sm" onClick={() => setMode(MODE.Month)}>
-          {format(monthDateTime, 'MMM')}
-        </Button>
       </div>
+      <Separator />
       <Calendar
         className="p-0"
         mode="single"
@@ -71,9 +97,18 @@ export function DatePicker({ value, onChange }: DatePickerProps) {
         defaultMonth={value}
         month={monthDateTime}
         onMonthChange={handleOnMonthChange}
-        onSelect={onChange}
+        onSelect={handleOnDateSelect}
         initialFocus
       />
+      <Separator />
+      <Button
+        variant="outline"
+        className="w-full"
+        size="sm"
+        onClick={handleOnTodayClick}
+      >
+        {t('today')}
+      </Button>
     </>
   );
 
@@ -133,5 +168,23 @@ export function DatePicker({ value, onChange }: DatePickerProps) {
     );
   }
 
-  return <div className="flex flex-col items-center gap-3 p-3">{content}</div>;
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <Button
+          variant={'outline'}
+          className={cn(
+            'flex-1 pl-3 text-left font-normal',
+            !value && 'text-muted-foreground'
+          )}
+        >
+          {value ? format(value, 'PPP') : <span>{t('pickADate')}</span>}
+          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-auto p-0" align="start">
+        <div className="flex flex-col items-center gap-3 p-3">{content}</div>
+      </PopoverContent>
+    </Popover>
+  );
 }
