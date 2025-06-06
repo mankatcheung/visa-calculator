@@ -15,7 +15,7 @@ export default async function UserSettingsPage() {
   const settings = settingsRes.result;
   return (
     <div
-      className="flex flex-col items-stretch gap-8 p-4"
+      className="w-full max-w-3xl mx-auto flex flex-col items-stretch gap-8 p-4"
       data-cy="user-settings-content"
     >
       <div className="text-lg font-bold">{t('visaStartDate')}</div>

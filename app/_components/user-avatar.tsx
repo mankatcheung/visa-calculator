@@ -1,6 +1,7 @@
 import { BadgeCheck, LogOut } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
+import { Avatar, AvatarFallback } from '@/app/_components/ui/avatar';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -22,12 +23,11 @@ export function UserAvatar() {
   };
 
   const avatar = (
-    <div
-      data-cy="avatar"
-      className="h-8 w-8 rounded-full border-white border-1 text-center cursor-pointer"
-    >
-      {user?.email?.substring(0, 1).toUpperCase()}
-    </div>
+    <Avatar data-cy="avatar" className="cursor-pointer">
+      <AvatarFallback>
+        {user?.email?.substring(0, 1).toUpperCase()}
+      </AvatarFallback>{' '}
+    </Avatar>
   );
 
   return (

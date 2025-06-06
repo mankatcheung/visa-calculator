@@ -13,7 +13,7 @@ import {
 export default async function LeaveCreatePage() {
   const t = await getTranslations();
   return (
-    <div className="flex flex-1 flex-col gap-4 p-4">
+    <div className="flex flex-1 flex-col gap-4 p-4 w-full max-w-3xl mx-auto">
       <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem>

@@ -108,7 +108,10 @@ export default async function Home() {
     throw err;
   }
   return (
-    <div className="flex flex-1 flex-col gap-4 p-4" data-cy="dashboard-content">
+    <div
+      className="w-full max-w-3xl mx-auto flex flex-1 flex-col gap-4 p-4"
+      data-cy="dashboard-content"
+    >
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <Card>
           <CardHeader className="relative">
