@@ -15,11 +15,12 @@ export default async function UserSettingsPage() {
   const settings = settingsRes.result;
   return (
     <div
-      className="flex flex-col items-stretch gap-4 p-4"
+      className="flex flex-col items-stretch gap-8 p-4"
       data-cy="user-settings-content"
     >
       <div className="text-lg font-bold">{t('visaStartDate')}</div>
       <VisaStartDateForm visaStartDate={settings?.visaStartDate} />
+      <Separator />
       <div className="text-lg font-bold">{t('updateEmail')}</div>
       <UpdateEmailForm email={user?.email} />
       <Separator />
