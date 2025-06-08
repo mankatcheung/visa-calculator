@@ -50,6 +50,20 @@
       "when": 1749026921389,
       "tag": "0006_aspiring_mojo",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "6",
+      "when": 1749254451764,
+      "tag": "0007_complex_omega_flight",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "6",
+      "when": 1749254556447,
+      "tag": "0008_peaceful_slipstream",
+      "breakpoints": true
     }
   ]
 }

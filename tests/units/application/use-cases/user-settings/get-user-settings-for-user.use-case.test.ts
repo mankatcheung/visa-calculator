@@ -21,6 +21,8 @@ it('returns settings', async () => {
   ).resolves.toMatchObject({
     id: 1,
     visaStartDate: new Date(2025, 5, 5),
+    visaExpiryDate: new Date(2030, 5, 5),
+    arrivalDate: new Date(2025, 6, 5),
     userId: '1',
   });
 });

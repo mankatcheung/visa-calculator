@@ -7,6 +7,6 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export function displayUKDateTime(date: Date) {
-  return format(date, 'PPP', { in: tz('Europe/London') });
+export function displayUKDateTime(date: Date, formatString?: string) {
+  return format(date, formatString ?? 'PPP', { in: tz('Europe/London') });
 }

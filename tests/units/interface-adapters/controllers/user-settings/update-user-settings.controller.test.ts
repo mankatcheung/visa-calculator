@@ -2,7 +2,6 @@ import { expect, it } from 'vitest';
 
 import { getInjection } from '@/di/container';
 import { UnauthenticatedError } from '@/src/entities/errors/auth';
-import { InputParseError } from '@/src/entities/errors/common';
 
 const signInUseCase = getInjection('ISignInUseCase');
 const updateUserSettingsController = getInjection(
@@ -18,12 +17,16 @@ it('update settings', async () => {
   });
   const updateData = {
     visaStartDate: new Date(2025, 5, 1).toUTCString(),
+    visaExpiryDate: new Date(2030, 5, 1).toUTCString(),
+    arrivalDate: new Date(2025, 7, 2).toUTCString(),
   };
   await expect(
     updateUserSettingsController(updateData, cookie.value)
   ).resolves.toMatchObject({
     id: 1,
     visaStartDate: new Date(2025, 5, 1),
+    visaExpiryDate: new Date(2030, 5, 1),
+    arrivalDate: new Date(2025, 7, 2),
     userId: '1',
   });
 });

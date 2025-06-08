@@ -1,8 +1,14 @@
 describe('Navigation', () => {
   it('navigates to main page', () => {
     cy.login('test@test.com', 'admin123');
-    cy.getBySel('side-bar-item-visaCalculator').click();
+    cy.getBySel('side-bar-item-summary').click();
     cy.url().should('include', '/');
+  });
+
+  it('navigates to leaves page', () => {
+    cy.login('test@test.com', 'admin123');
+    cy.getBySel('side-bar-item-leaves').click();
+    cy.url().should('include', '/leaves');
   });
 
   it('navigates to user settings', () => {

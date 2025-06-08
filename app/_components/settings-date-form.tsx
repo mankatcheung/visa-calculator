@@ -20,17 +20,21 @@ import {
 } from '@/app/_components/ui/form';
 import { userSettingsActions } from '@/app/actions';
 
-type VisaStartDateFormProps = {
-  visaStartDate?: Date;
+type SettingsDateFormProps = {
+  dataKey: string;
+  dateValue?: Date;
 } & React.ComponentPropsWithoutRef<'div'>;
 
-export function VisaStartDateForm({ visaStartDate }: VisaStartDateFormProps) {
+export function SettingsDateForm({
+  dataKey,
+  dateValue,
+}: SettingsDateFormProps) {
   const t = useTranslations();
   const [loading, startTransition] = useTransition();
   const [isEditing, setIsEditing] = useState<boolean>(false);
 
   const FormSchema = z.object({
-    visaStartDate: z.date({
+    date: z.date({
       required_error: t('pleaseInput'),
     }),
   });
@@ -38,7 +42,7 @@ export function VisaStartDateForm({ visaStartDate }: VisaStartDateFormProps) {
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      visaStartDate: visaStartDate ?? undefined,
+      date: dateValue ?? undefined,
     },
   });
 
@@ -46,7 +50,8 @@ export function VisaStartDateForm({ visaStartDate }: VisaStartDateFormProps) {
     if (loading) return;
     startTransition(async () => {
       const formData = new FormData();
-      formData.set('visaStartDate', data.visaStartDate.toUTCString());
+      console.log(dataKey);
+      formData.set(dataKey, data.date.toUTCString());
       const res = await userSettingsActions.updateUserSettings(formData);
       if (res?.error) {
         toast.error(res.error);
@@ -56,7 +61,7 @@ export function VisaStartDateForm({ visaStartDate }: VisaStartDateFormProps) {
       }
     });
   };
-  if (!visaStartDate) {
+  if (!dateValue) {
     return <Loader2 className="animate-spin" />;
   }
   if (isEditing)
@@ -65,7 +70,7 @@ export function VisaStartDateForm({ visaStartDate }: VisaStartDateFormProps) {
         <form onSubmit={form.handleSubmit(onSubmit)} className="w-full">
           <FormField
             control={form.control}
-            name="visaStartDate"
+            name="date"
             render={({ field }) => (
               <FormItem className="flex flex-col">
                 <div className="flex flex-row items-center gap-2">
@@ -98,10 +103,10 @@ export function VisaStartDateForm({ visaStartDate }: VisaStartDateFormProps) {
 
   return (
     <div className="flex flex-row items-center gap-2">
-      <div className="flex-1">{format(visaStartDate, 'PPP')}</div>
+      <div className="flex-1">{format(dateValue, 'PPP')}</div>
       <Button
         variant="outline"
-        data-cy="edit-visa-start-date"
+        data-cy={`edit-${dataKey}`}
         onClick={() => setIsEditing(true)}
       >
         {t('edit')}

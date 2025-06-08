@@ -1,5 +1,7 @@
 import '../globals.css';
 import { SpeedInsights } from '@vercel/speed-insights/next';
+import { setDefaultOptions } from 'date-fns';
+import { enGB, zhHK } from 'date-fns/locale';
 import type { Metadata } from 'next';
 import { NextIntlClientProvider, hasLocale } from 'next-intl';
 import { Inter as FontSans } from 'next/font/google';
@@ -31,6 +33,7 @@ export default async function RootLayout({
   if (!hasLocale(routing.locales, locale)) {
     notFound();
   }
+  setDefaultOptions({ locale: locale === 'en' ? enGB : zhHK });
   return (
     <html lang={locale} suppressHydrationWarning>
       <body

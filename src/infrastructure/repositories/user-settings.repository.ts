@@ -1,4 +1,5 @@
 import { Transaction, db } from '@/drizzle';
+import { addYears, startOfToday } from 'date-fns';
 import { eq } from 'drizzle-orm';
 
 import { userSettings } from '@/drizzle/schema';
@@ -55,7 +56,9 @@ export class UserSettingsRepository implements IUserSettingsRepository {
             .insert(userSettings)
             .values({
               userId,
-              visaStartDate: new Date(),
+              visaStartDate: startOfToday(),
+              visaExpiryDate: addYears(startOfToday(), 5),
+              arrivalDate: startOfToday(),
             })
             .returning();
 
