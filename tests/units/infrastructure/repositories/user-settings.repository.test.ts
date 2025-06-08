@@ -16,14 +16,20 @@ it('creates user settings', async () => {
 
 it('update user settings', async () => {
   const startDate = new Date(2025, 5, 7);
+  const expiryDate = new Date(2030, 5, 7);
+  const arrivalDate = new Date(2025, 7, 7);
 
   await expect(
     userSettingsRepository.updateUserSettings('1', {
       visaStartDate: startDate,
+      visaExpiryDate: expiryDate,
+      arrivalDate,
     })
   ).resolves.toMatchObject({
     id: 1,
     visaStartDate: startDate,
+    visaExpiryDate: expiryDate,
+    arrivalDate,
     userId: '1',
   });
 });
