@@ -14,12 +14,16 @@ it('update user settings', async () => {
   }
   const updateValue = {
     visaStartDate: new Date(2025, 6, 1),
+    visaExpiryDate: new Date(2030, 6, 1),
+    arrivalDate: new Date(2025, 7, 1),
   };
 
   await updateUserSettingsUseCase(updateValue, '1');
   await expect(getUserSettingsForUserUseCase('1')).resolves.toMatchObject({
     id: settings?.id,
     visaStartDate: new Date(2025, 6, 1),
+    visaExpiryDate: new Date(2030, 6, 1),
+    arrivalDate: new Date(2025, 7, 1),
     userId: '1',
   });
 });
