@@ -1,9 +1,9 @@
 import { getTranslations } from 'next-intl/server';
 
 import { ChangePasswordForm } from '@/app/_components/change-password-form';
+import { SettingsDateForm } from '@/app/_components/settings-date-form';
 import { Separator } from '@/app/_components/ui/separator';
 import { UpdateEmailForm } from '@/app/_components/update-email-form';
-import { VisaStartDateForm } from '@/app/_components/visa-start-date-form';
 import { getUserSettingsForUser } from '@/app/actions/user-settings';
 import { getSelfUser } from '@/app/actions/users';
 
@@ -19,7 +19,22 @@ export default async function UserSettingsPage() {
       data-cy="user-settings-content"
     >
       <div className="text-lg font-bold">{t('visaStartDate')}</div>
-      <VisaStartDateForm visaStartDate={settings?.visaStartDate} />
+      <SettingsDateForm
+        dataKey="visaStartDate"
+        dateValue={settings?.visaStartDate}
+      />
+      <Separator />
+      <div className="text-lg font-bold">{t('visaExpiryDate')}</div>
+      <SettingsDateForm
+        dataKey="visaExpiryDate"
+        dateValue={settings?.visaExpiryDate}
+      />
+      <Separator />
+      <div className="text-lg font-bold">{t('arrivalDate')}</div>
+      <SettingsDateForm
+        dataKey="arrivalDate"
+        dateValue={settings?.arrivalDate}
+      />
       <Separator />
       <div className="text-lg font-bold">{t('updateEmail')}</div>
       <UpdateEmailForm email={user?.email} />

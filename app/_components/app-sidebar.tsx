@@ -28,9 +28,14 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         url: '#',
         items: [
           {
-            key: 'visaCalculator',
-            title: t('visaCalculator'),
+            key: 'summary',
+            title: t('summary'),
             url: '/',
+          },
+          {
+            key: 'leaves',
+            title: t('leavesRecords'),
+            url: '/leaves',
           },
         ],
       },

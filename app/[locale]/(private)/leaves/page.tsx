@@ -1,14 +1,15 @@
+import { Pencil } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 
 import { SESSION_COOKIE } from '@/config';
 
+import { LeaveDeleteButton } from '@/app/_components/leave-delete-button';
 import { Button } from '@/app/_components/ui/button';
-import { VisaSummary } from '@/app/_components/visa-summary';
-import { getUserSettingsForUser } from '@/app/actions/user-settings';
 import { getInjection } from '@/di/container';
 import { Link } from '@/i18n/navigation';
+import { displayUKDateTime } from '@/lib/utils';
 import {
   AuthenticationError,
   UnauthenticatedError,
@@ -58,31 +59,7 @@ const getTotalLeaveDays = (leaves: { startDate: Date; endDate: Date }[]) => {
   return result;
 };
 
-const getLeaveDaysSince = (
-  leaves: { startDate: Date; endDate: Date }[],
-  beforeDays: number
-) => {
-  const upperLimitDate = new Date();
-  upperLimitDate.setDate(upperLimitDate.getDate() - beforeDays);
-  let result = 0;
-  for (let i = 0; i < leaves.length; i++) {
-    const { startDate, endDate } = leaves[i];
-    if (endDate < upperLimitDate) continue;
-    if (upperLimitDate < startDate) {
-      result += getTotalLeaveDays([leaves[i]]);
-      continue;
-    }
-    result += getTotalLeaveDays([
-      {
-        startDate: upperLimitDate,
-        endDate: leaves[i].endDate,
-      },
-    ]);
-  }
-  return result;
-};
-
-export default async function Home() {
+export default async function LeavesPage() {
   const t = await getTranslations();
   let leaves;
   try {
@@ -91,36 +68,58 @@ export default async function Home() {
     throw err;
   }
 
-  let visaStartDate = new Date();
-  let visaExpiryDate = new Date();
-  let arrivalDate = new Date();
-  try {
-    const settingsRes = await getUserSettingsForUser();
-    visaStartDate = settingsRes.result?.visaStartDate ?? new Date();
-    visaExpiryDate = settingsRes.result?.visaExpiryDate ?? new Date();
-    arrivalDate = settingsRes.result?.arrivalDate ?? new Date();
-  } catch (err) {
-    // Log error but continue with default date
-    console.error('Failed to fetch user settings:', err);
-    throw err;
-  }
-  const totalLeaveCount = getTotalLeaveDays(leaves);
-  const totalLeaveCountWithin = getLeaveDaysSince(leaves, 365);
   return (
     <div
       className="w-full max-w-3xl mx-auto flex flex-1 flex-col gap-4 p-4"
       data-cy="dashboard-content"
     >
-      <VisaSummary
-        visaStartDate={visaStartDate}
-        visaExpiryDate={visaExpiryDate}
-        arrivalDate={arrivalDate}
-        totalLeaveCount={totalLeaveCount}
-        totalLeaveCountWithin={totalLeaveCountWithin}
-      />
-      <Link href="/leaves">
+      <div className="space-y-2">
+        {leaves.map((leave) => {
+          return (
+            <div
+              key={leave.id}
+              className="flex flex-row items-center space-x-2 rounded-md border px-4 py-3 font-mono text-sm"
+            >
+              <div
+                className={
+                  'rounded-full h-6 w-6 cursor-pointer active:scale-105'
+                }
+                style={{
+                  backgroundColor: leave.color!,
+                }}
+              />
+              <div className="flex-1 flex flex-col gap-2">
+                <div>
+                  {`${displayUKDateTime(leave.startDate)} - ${displayUKDateTime(leave.endDate)}`}
+                </div>
+                <div>
+                  {t('countDays', { count: getTotalLeaveDays([leave]) })}
+                </div>
+                {leave.remarks && (
+                  <div className="text-xs">{leave.remarks}</div>
+                )}
+              </div>
+              <Link href={`/leaves/${leave.id}/edit`}>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="cursor-pointer"
+                >
+                  <Pencil />
+                </Button>
+              </Link>
+              <LeaveDeleteButton
+                id={leave.id}
+                startDate={leave.startDate}
+                endDate={leave.endDate}
+              />
+            </div>
+          );
+        })}
+      </div>
+      <Link href="/leaves/create">
         <Button variant="secondary" className="w-full cursor-pointer">
-          {t('leavesRecords')}
+          {t('addNewEntry')}
         </Button>
       </Link>
     </div>

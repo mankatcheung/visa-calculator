@@ -13,7 +13,9 @@ export const updateUserSettingsUseCase =
   ) =>
   (
     input: {
-      visaStartDate: Date;
+      visaStartDate?: Date;
+      visaExpiryDate?: Date;
+      arrivalDate?: Date;
     },
     userId: string,
     tx?: any
@@ -26,9 +28,7 @@ export const updateUserSettingsUseCase =
 
         const newSettings = await userSettingsRepository.updateUserSettings(
           userId,
-          {
-            visaStartDate: input.visaStartDate,
-          },
+          input,
           tx
         );
 

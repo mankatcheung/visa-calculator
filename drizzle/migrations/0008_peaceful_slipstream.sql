@@ -1,0 +1,2 @@
+ALTER TABLE `user_settings` ALTER COLUMN "visa_expiry_date" TO "visa_expiry_date" integer NOT NULL;--> statement-breakpoint
+ALTER TABLE `user_settings` ALTER COLUMN "arrival_date" TO "arrival_date" integer NOT NULL;

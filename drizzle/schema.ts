@@ -32,6 +32,8 @@ export const leaves = sqliteTable('leaves', {
 export const userSettings = sqliteTable('user_settings', {
   id: integer('id').primaryKey({ autoIncrement: true }).notNull(),
   visaStartDate: integer('visa_start_date', { mode: 'timestamp' }).notNull(),
+  visaExpiryDate: integer('visa_expiry_date', { mode: 'timestamp' }).notNull(),
+  arrivalDate: integer('arrival_date', { mode: 'timestamp' }).notNull(),
   userId: text('user_id')
     .references(() => users.id)
     .notNull(),

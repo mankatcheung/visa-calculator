@@ -18,6 +18,8 @@ function presenter(
       return {
         id: setting.id,
         visaStartDate: setting.visaStartDate,
+        visaExpiryDate: setting.visaExpiryDate,
+        arrivalDate: setting.arrivalDate,
         userId: setting.userId,
       };
     }
@@ -25,7 +27,9 @@ function presenter(
 }
 
 const inputSchema = z.object({
-  visaStartDate: z.string(),
+  visaStartDate: z.string().optional(),
+  visaExpiryDate: z.string().optional(),
+  arrivalDate: z.string().optional(),
 });
 
 export type IUpdateUserSettingsController = ReturnType<
@@ -61,18 +65,24 @@ export const updateUserSettingsController =
           throw new InputParseError('Invalid data', { cause: inputParseError });
         }
 
+        const updateData: {
+          visaStartDate?: Date;
+          visaExpiryDate?: Date;
+          arrivalDate?: Date;
+        } = {};
+        if (data?.visaStartDate)
+          updateData.visaStartDate = new Date(data.visaStartDate);
+        if (data?.visaExpiryDate)
+          updateData.visaExpiryDate = new Date(data.visaExpiryDate);
+        if (data?.arrivalDate)
+          updateData.arrivalDate = new Date(data.arrivalDate);
+
         const settings = await instrumentationService.startSpan(
           { name: 'Update User Settings Transaction' },
           async () =>
             transactionManagerService.startTransaction(async (tx) => {
               try {
-                return await updateUserSettingsUseCase(
-                  {
-                    visaStartDate: new Date(data.visaStartDate),
-                  },
-                  user.id,
-                  tx
-                );
+                return await updateUserSettingsUseCase(updateData, user.id, tx);
               } catch {
                 console.error('Rolling back!');
                 tx.rollback();
