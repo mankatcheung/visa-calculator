@@ -73,5 +73,6 @@
   "expired": "已過期",
   "countDays": "{count} 日",
   "summary": "概要",
-  "leavesRecords": "離開記錄"
+  "leavesRecords": "離開記錄",
+  "noRecords": "未有記錄"
 }

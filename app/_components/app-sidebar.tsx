@@ -15,12 +15,14 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarRail,
+  useSidebar,
 } from '@/app/_components/ui/sidebar';
 import { Link, usePathname } from '@/i18n/navigation';
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const t = useTranslations();
   const pathname = usePathname();
+  const { isMobile, toggleSidebar } = useSidebar();
   const data = {
     navMain: [
       {
@@ -70,6 +72,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                       <Link
                         data-cy={`side-bar-item-${item.key}`}
                         href={item.url}
+                        onClick={() => isMobile && toggleSidebar()}
                       >
                         {item.title}
                       </Link>

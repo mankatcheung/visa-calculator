@@ -1,5 +1,6 @@
 'use server';
 
+import { revalidatePath } from 'next/cache';
 import { cookies } from 'next/headers';
 
 import { SESSION_COOKIE } from '@/config';
@@ -20,6 +21,8 @@ export async function createLeave(formData: FormData) {
         const token = cookieStore.get(SESSION_COOKIE)?.value;
         const data = Object.fromEntries(formData.entries());
         const leave = await createLeaveController(data, token);
+        revalidatePath('/[locale]');
+        revalidatePath('/[locale]/leaves');
         return { result: leave };
       } catch (err) {
         if (err instanceof InputParseError) {
@@ -55,6 +58,8 @@ export async function updateLeave(formData: FormData) {
         const token = cookieStore.get(SESSION_COOKIE)?.value;
         const data = Object.fromEntries(formData.entries());
         const leave = await updateLeaveController(data, token);
+        revalidatePath('/[locale]');
+        revalidatePath('/[locale]/leaves');
         return { result: leave };
       } catch (err) {
         if (err instanceof InputParseError) {
@@ -89,6 +94,8 @@ export async function deleteLeave(id: number) {
         const cookieStore = await cookies();
         const token = cookieStore.get(SESSION_COOKIE)?.value;
         await deleteLeaveController({ leaveId: id }, token);
+        revalidatePath('/[locale]');
+        revalidatePath('/[locale]/leaves');
       } catch (err) {
         if (err instanceof InputParseError) {
           return { error: err.message };

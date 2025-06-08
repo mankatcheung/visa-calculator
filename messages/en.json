@@ -73,5 +73,6 @@
   "expired": "Expired",
   "countDays": "{count} days",
   "summary": "Summary",
-  "leavesRecords": "Leaves Records"
+  "leavesRecords": "Leaves Records",
+  "noRecords": "No records"
 }

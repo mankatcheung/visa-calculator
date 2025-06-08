@@ -7,6 +7,7 @@ import { SESSION_COOKIE } from '@/config';
 
 import { LeaveDeleteButton } from '@/app/_components/leave-delete-button';
 import { Button } from '@/app/_components/ui/button';
+import { Card, CardContent } from '@/app/_components/ui/card';
 import { getInjection } from '@/di/container';
 import { Link } from '@/i18n/navigation';
 import { displayUKDateTime } from '@/lib/utils';
@@ -74,6 +75,15 @@ export default async function LeavesPage() {
       data-cy="dashboard-content"
     >
       <div className="space-y-2">
+        {leaves.length === 0 && (
+          <Card>
+            <CardContent>
+              <div className="flex flex-col justify-center items-center w-full">
+                <div className="text-muted-foreground">{t('noRecords')}</div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
         {leaves.map((leave) => {
           return (
             <div

@@ -105,7 +105,7 @@ export function LeaveForm({ leave }: LeaveFormProps) {
         toast.error(res.error);
       } else {
         toast.success(t('success'));
-        router.push('/');
+        router.push('/leaves');
       }
     });
   };
