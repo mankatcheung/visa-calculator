@@ -2,7 +2,6 @@ import { expect, it } from 'vitest';
 
 import { getInjection } from '@/di/container';
 import { UnauthenticatedError } from '@/src/entities/errors/auth';
-import { InputParseError } from '@/src/entities/errors/common';
 
 const signInUseCase = getInjection('ISignInUseCase');
 const updateUserSettingsController = getInjection(

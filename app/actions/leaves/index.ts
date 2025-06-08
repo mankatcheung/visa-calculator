@@ -2,13 +2,51 @@
 
 import { revalidatePath } from 'next/cache';
 import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
 
 import { SESSION_COOKIE } from '@/config';
 
 import { getInjection } from '@/di/container';
-import { AuthenticationError } from '@/src/entities/errors/auth';
+import {
+  AuthenticationError,
+  UnauthenticatedError,
+} from '@/src/entities/errors/auth';
 import { InputParseError } from '@/src/entities/errors/common';
 
+export async function getLeavesForUser() {
+  const instrumentationService = getInjection('IInstrumentationService');
+  return await instrumentationService.startSpan(
+    {
+      name: 'getLeavesForUser',
+    },
+    async () => {
+      try {
+        const getLeaveForUserController = getInjection(
+          'IGetLeavesForUserController'
+        );
+        const cookieStore = await cookies();
+        const token = cookieStore.get(SESSION_COOKIE)?.value;
+        const leaves = await getLeaveForUserController(token);
+        return { result: leaves };
+      } catch (err) {
+        if (
+          err instanceof UnauthenticatedError ||
+          err instanceof AuthenticationError
+        ) {
+          redirect('/sign-in');
+        }
+        const crashReporterService = getInjection('ICrashReporterService');
+        crashReporterService.report(err);
+
+        return {
+          error:
+            'An error happened. The developers have been notified. Please try again later. Message: ' +
+            (err as Error).message,
+        };
+      }
+    }
+  );
+}
 export async function createLeave(formData: FormData) {
   const instrumentationService = getInjection('IInstrumentationService');
   return await instrumentationService.instrumentServerAction(

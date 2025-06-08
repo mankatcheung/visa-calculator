@@ -75,6 +75,9 @@ export async function VisaSummary({
   );
   const isExpiringSoon = daysUntilExpiry <= 30 && daysUntilExpiry > 0;
   const isExpired = daysUntilExpiry <= 0;
+  const ilrPercentage = Math.round(
+    (YEARS_TO_ILR / (YEARS_TO_ILR + YEARS_TO_CITIZENSHIP)) * 100
+  );
 
   const getStatusBadge = () => {
     if (isExpired) {
@@ -156,7 +159,7 @@ export async function VisaSummary({
             </div>
             <div
               className="absolute transform -translate-x-1/2"
-              style={{ left: `83%` }}
+              style={{ left: `${ilrPercentage}%` }}
             >
               <div className="absolute top-35 left-1/2 flex flex-col items-center transform -translate-x-1/2 whitespace-nowrap text-sm text-muted-foreground">
                 <div className="w-[1px] h-8 bg-muted-foreground" />

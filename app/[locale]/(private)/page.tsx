@@ -1,111 +1,31 @@
 import { getTranslations } from 'next-intl/server';
-import { cookies } from 'next/headers';
-import { redirect } from 'next/navigation';
-
-import { SESSION_COOKIE } from '@/config';
 
 import { Button } from '@/app/_components/ui/button';
 import { VisaSummary } from '@/app/_components/visa-summary';
+import { getLeavesForUser } from '@/app/actions/leaves';
 import { getUserSettingsForUser } from '@/app/actions/user-settings';
-import { getInjection } from '@/di/container';
 import { Link } from '@/i18n/navigation';
-import {
-  AuthenticationError,
-  UnauthenticatedError,
-} from '@/src/entities/errors/auth';
-
-async function getLeavesForUser() {
-  const instrumentationService = getInjection('IInstrumentationService');
-  return await instrumentationService.startSpan(
-    {
-      name: 'getLeavesForUser',
-      op: 'function.nextjs',
-    },
-    async () => {
-      try {
-        const getLeaveForUserController = getInjection(
-          'IGetLeavesForUserController'
-        );
-        const cookieStore = await cookies();
-        const token = cookieStore.get(SESSION_COOKIE)?.value;
-        const leaves = await getLeaveForUserController(token);
-        return leaves;
-      } catch (err) {
-        if (
-          err instanceof UnauthenticatedError ||
-          err instanceof AuthenticationError
-        ) {
-          redirect('/sign-in');
-        }
-        const crashReporterService = getInjection('ICrashReporterService');
-        crashReporterService.report(err);
-
-        throw err;
-      }
-    }
-  );
-}
-
-const getTotalLeaveDays = (leaves: { startDate: Date; endDate: Date }[]) => {
-  let result = 0;
-  for (let i = 0; i < leaves.length; i++) {
-    const { startDate, endDate } = leaves[i];
-    const t1 = startDate.getTime();
-    const t2 = endDate.getTime();
-    const days = Math.floor((t2 - t1) / (24 * 3600 * 1000));
-    result += days + 1;
-  }
-  return result;
-};
-
-const getLeaveDaysSince = (
-  leaves: { startDate: Date; endDate: Date }[],
-  beforeDays: number
-) => {
-  const upperLimitDate = new Date();
-  upperLimitDate.setDate(upperLimitDate.getDate() - beforeDays);
-  let result = 0;
-  for (let i = 0; i < leaves.length; i++) {
-    const { startDate, endDate } = leaves[i];
-    if (endDate < upperLimitDate) continue;
-    if (upperLimitDate < startDate) {
-      result += getTotalLeaveDays([leaves[i]]);
-      continue;
-    }
-    result += getTotalLeaveDays([
-      {
-        startDate: upperLimitDate,
-        endDate: leaves[i].endDate,
-      },
-    ]);
-  }
-  return result;
-};
+import { getLeaveDaysSince, getTotalLeaveDays } from '@/lib/leave';
 
 export default async function Home() {
   const t = await getTranslations();
-  let leaves;
-  try {
-    leaves = await getLeavesForUser();
-  } catch (err) {
-    throw err;
-  }
 
   let visaStartDate = new Date();
   let visaExpiryDate = new Date();
   let arrivalDate = new Date();
+  let leaves;
   try {
     const settingsRes = await getUserSettingsForUser();
+    const leavesRes = await getLeavesForUser();
     visaStartDate = settingsRes.result?.visaStartDate ?? new Date();
     visaExpiryDate = settingsRes.result?.visaExpiryDate ?? new Date();
     arrivalDate = settingsRes.result?.arrivalDate ?? new Date();
+    leaves = leavesRes.result;
   } catch (err) {
-    // Log error but continue with default date
-    console.error('Failed to fetch user settings:', err);
     throw err;
   }
-  const totalLeaveCount = getTotalLeaveDays(leaves);
-  const totalLeaveCountWithin = getLeaveDaysSince(leaves, 365);
+  const totalLeaveCount = getTotalLeaveDays(leaves || []);
+  const totalLeaveCountWithin = getLeaveDaysSince(leaves || [], 365);
   return (
     <div
       className="w-full max-w-3xl mx-auto flex flex-1 flex-col gap-4 p-4"
