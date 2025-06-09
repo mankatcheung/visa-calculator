@@ -74,5 +74,6 @@
   "countDays": "{count} 日",
   "summary": "概要",
   "leavesRecords": "離開記錄",
-  "noRecords": "未有記錄"
+  "noRecords": "未有記錄",
+  "updateSettingsReminder": "可以於<settingsLink>設定</settingsLink>頁面，更新你的簽證資料。"
 }

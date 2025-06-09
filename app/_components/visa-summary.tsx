@@ -15,6 +15,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/app/_components/ui/card';
+import { Link } from '@/i18n/navigation';
 import { cn, displayUKDateTime } from '@/lib/utils';
 import { YEARS_TO_CITIZENSHIP, YEARS_TO_ILR } from '@/lib/visa';
 
@@ -167,6 +168,15 @@ export async function VisaSummary({
                 <div>{displayUKDateTime(applyILRDate, 'P')}</div>
               </div>
             </div>
+          </div>
+          <div className="py-2 text-muted-foreground text-sm">
+            {t.rich('updateSettingsReminder', {
+              settingsLink: (chucks) => (
+                <Link className="text-foreground" href="/users/settings/">
+                  {chucks}
+                </Link>
+              ),
+            })}
           </div>
         </CardContent>
       </Card>

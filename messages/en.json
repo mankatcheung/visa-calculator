@@ -74,5 +74,6 @@
   "countDays": "{count} days",
   "summary": "Summary",
   "leavesRecords": "Leaves Records",
-  "noRecords": "No records"
+  "noRecords": "No records",
+  "updateSettingsReminder": "You can update the visa information on the <settingsLink>settings</settingsLink> page."
 }
