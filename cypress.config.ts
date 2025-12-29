@@ -6,6 +6,7 @@ export default defineConfig({
     baseUrl: 'http://localhost:3000', // Next.js dev server with Turbopack
     specPattern: ['cypress/e2e/**/*.{cy,spec}.{ts,tsx}'],
     supportFile: 'cypress/support/e2e.ts',
+    defaultCommandTimeout: 10000,
   },
 
   // Component Testing
