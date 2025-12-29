@@ -54,13 +54,13 @@ export function ChangePasswordForm({}: ChangePasswordFormProps) {
   const FormSchema = z
     .object({
       currentPassword: z.string({
-        required_error: t('pleaseInput'),
+        error: t('pleaseInput'),
       }),
       newPassword: z.string({
-        required_error: t('pleaseInput'),
+        error: t('pleaseInput'),
       }),
       confirmPassword: z.string({
-        required_error: t('pleaseInput'),
+        error: t('pleaseInput'),
       }),
     })
     .refine((data) => data.newPassword === data.confirmPassword, {

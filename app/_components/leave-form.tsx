@@ -66,10 +66,10 @@ export function LeaveForm({ leave }: LeaveFormProps) {
   const FormSchema = z
     .object({
       startDate: z.date({
-        required_error: t('startDateRequiredWarning'),
+        error: t('startDateRequiredWarning'),
       }),
       endDate: z.date({
-        required_error: t('endDateRequiredWarning'),
+        error: t('endDateRequiredWarning'),
       }),
       color: z.string(),
       remarks: z.string().optional(),

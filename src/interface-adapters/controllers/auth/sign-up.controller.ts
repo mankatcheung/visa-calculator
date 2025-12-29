@@ -6,7 +6,7 @@ import { InputParseError } from '@/src/entities/errors/common';
 
 const inputSchema = z
   .object({
-    email: z.string().email(),
+    email: z.email(),
     password: z.string().min(6).max(31),
     confirmPassword: z.string().min(6).max(31),
   })
