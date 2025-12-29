@@ -21,7 +21,7 @@
     "paths": {
       "@/*": ["./*"]
     },
-    "types": ["cypress/support"]
+    "types": ["cypress", "node"]
   },
   "include": [
     "next-env.d.ts",

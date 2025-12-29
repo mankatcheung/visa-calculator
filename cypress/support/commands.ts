@@ -18,6 +18,14 @@ Cypress.Commands.add('login', (email, password) => {
   cy.getBySel('submit').click();
 });
 
+// eslint-disable-next-line @typescript-eslint/no-namespace
+declare namespace Cypress {
+  interface Chainable<Subject = any> {
+    getBySel(selector: any, ...args: []): Chainable<any>;
+    login(email: string, password: string): Chainable<any>;
+  }
+}
+
 Cypress.on('uncaught:exception', (err) => {
   console.log('Uncaught exception:', err);
   return false; // Prevent Cypress from failing the test
