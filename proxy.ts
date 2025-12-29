@@ -22,7 +22,7 @@ export default async function proxy(request: NextRequest) {
   // Step 3: Alter the response (example)
   response.headers.set('x-your-custom-locale', defaultLocale);
 
-  const [, locale, ...segments] = request.nextUrl.pathname.split('/');
+  const [, , ...segments] = request.nextUrl.pathname.split('/');
   const isAuthPath = segments?.[0] ? AUTH_PATHS.includes(segments?.[0]) : false;
 
   if (!isAuthPath) {
@@ -35,7 +35,7 @@ export default async function proxy(request: NextRequest) {
     try {
       const authenticationService = getInjection('IAuthenticationService');
       await authenticationService.validateSession(sessionId);
-    } catch (err) {
+    } catch {
       return NextResponse.redirect(
         new URL(`/${defaultLocale}/sign-in`, request.url)
       );
