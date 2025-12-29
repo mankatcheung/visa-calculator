@@ -35,7 +35,7 @@ export function SettingsDateForm({
 
   const FormSchema = z.object({
     date: z.date({
-      error: t('pleaseInput'),
+      message: t('pleaseInput'),
     }),
   });
 

@@ -30,7 +30,7 @@ export function UpdateEmailForm({ email }: UpdateEmailFormProps) {
 
   const FormSchema = z.object({
     email: z.email({
-      error: t('pleaseInput'),
+      message: t('pleaseInput'),
     }),
   });
 

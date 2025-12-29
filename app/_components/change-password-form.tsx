@@ -50,18 +50,13 @@ type ChangePasswordFormProps = React.ComponentPropsWithoutRef<'div'>;
 export function ChangePasswordForm({}: ChangePasswordFormProps) {
   const t = useTranslations();
   const [loading, startTransition] = useTransition();
+  const passwordSchema = z.string().min(1, { message: t('pleaseInput') });
 
   const FormSchema = z
     .object({
-      currentPassword: z.string({
-        error: t('pleaseInput'),
-      }),
-      newPassword: z.string({
-        error: t('pleaseInput'),
-      }),
-      confirmPassword: z.string({
-        error: t('pleaseInput'),
-      }),
+      currentPassword: passwordSchema,
+      newPassword: passwordSchema,
+      confirmPassword: passwordSchema,
     })
     .refine((data) => data.newPassword === data.confirmPassword, {
       message: t('passwordNotMatched'),

@@ -5,7 +5,7 @@ import { defineConfig } from 'vitest/config';
 export default defineConfig({
   test: {
     pool: 'threads', // Use threads to ensure isolation
-    maxWorkers: 1, // Run tests in a single thread
+    maxWorkers: 1, // Run tests in a single worker
     setupFiles: ['./tests/setup.ts'],
     coverage: {
       provider: 'istanbul',
