@@ -8,7 +8,7 @@ type localeType = 'en' | 'zh-Hant-HK';
 
 const AUTH_PATHS = ['sign-in', 'sign-up'];
 
-export default async function middleware(request: NextRequest) {
+export default async function proxy(request: NextRequest) {
   // Step 1: Use the incoming request (example)
   const defaultLocale = request.headers.get('x-your-custom-locale') || 'en';
 
