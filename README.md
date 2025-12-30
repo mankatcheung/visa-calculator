@@ -111,6 +111,11 @@ yarn test
 
 ### End-to-End Tests (Cypress)
 
+Note: The test file `sign-up.cy.ts` should be run in the begining to make sure
+an user account is created. Before running the e2e test in github action, a
+testing database is created via the Turso API. The database will be deleted
+after the e2e test.
+
 Run e2e tests to simulate user interactions, such as recording a leave:
 
 ```bash
