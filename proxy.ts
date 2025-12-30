@@ -8,7 +8,7 @@ type localeType = 'en' | 'zh-Hant-HK';
 
 const AUTH_PATHS = ['sign-in', 'sign-up'];
 
-export default async function middleware(request: NextRequest) {
+export default async function proxy(request: NextRequest) {
   // Step 1: Use the incoming request (example)
   const defaultLocale = request.headers.get('x-your-custom-locale') || 'en';
 
@@ -22,7 +22,7 @@ export default async function middleware(request: NextRequest) {
   // Step 3: Alter the response (example)
   response.headers.set('x-your-custom-locale', defaultLocale);
 
-  const [, locale, ...segments] = request.nextUrl.pathname.split('/');
+  const [, , ...segments] = request.nextUrl.pathname.split('/');
   const isAuthPath = segments?.[0] ? AUTH_PATHS.includes(segments?.[0]) : false;
 
   if (!isAuthPath) {
@@ -35,7 +35,7 @@ export default async function middleware(request: NextRequest) {
     try {
       const authenticationService = getInjection('IAuthenticationService');
       await authenticationService.validateSession(sessionId);
-    } catch (err) {
+    } catch {
       return NextResponse.redirect(
         new URL(`/${defaultLocale}/sign-in`, request.url)
       );

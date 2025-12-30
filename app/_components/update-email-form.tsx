@@ -29,11 +29,9 @@ export function UpdateEmailForm({ email }: UpdateEmailFormProps) {
   const [isEditing, setIsEditing] = useState<boolean>(false);
 
   const FormSchema = z.object({
-    email: z
-      .string({
-        required_error: t('pleaseInput'),
-      })
-      .email(),
+    email: z.email({
+      message: t('pleaseInput'),
+    }),
   });
 
   const form = useForm<z.infer<typeof FormSchema>>({

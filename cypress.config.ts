@@ -5,7 +5,7 @@ export default defineConfig({
   e2e: {
     baseUrl: 'http://localhost:3000', // Next.js dev server with Turbopack
     specPattern: [
-      'cypress/e2e/sign-up.cy.ts',
+      'cypress/e2e/sign-up.cy.ts', // it should be run as the first test for creating account
       'cypress/e2e/**/*.{cy,spec}.{ts,tsx}',
     ],
     supportFile: 'cypress/support/e2e.ts',

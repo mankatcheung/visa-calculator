@@ -98,7 +98,6 @@ export function DatePicker({ value, onChange }: DatePickerProps) {
         month={monthDateTime}
         onMonthChange={handleOnMonthChange}
         onSelect={handleOnDateSelect}
-        initialFocus
       />
       <Separator />
       <Button
