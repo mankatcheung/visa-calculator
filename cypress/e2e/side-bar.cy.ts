@@ -1,6 +1,5 @@
 describe('Navigation', () => {
   it('navigates to main page', () => {
-    cy.viewport(1920, 900);
     cy.login('test@test.com', 'admin123');
     cy.getBySel('side-bar-item-summary').click();
     cy.url().should('include', '/');
