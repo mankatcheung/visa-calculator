@@ -1,4 +1,3 @@
-import { addYears, differenceInYears, subDays } from 'date-fns';
 import {
   AlertTriangle,
   CalendarDays,
@@ -17,7 +16,7 @@ import {
 } from '@/app/_components/ui/card';
 import { Link } from '@/i18n/navigation';
 import { cn, displayUKDateTime } from '@/lib/utils';
-import { YEARS_TO_CITIZENSHIP, YEARS_TO_ILR } from '@/lib/visa';
+import { getVisaStatus } from '@/lib/visa';
 
 type VisaSummaryProps = {
   visaStartDate: Date;
@@ -37,48 +36,20 @@ export async function VisaSummary({
   const t = await getTranslations();
   const today = new Date();
 
-  // Calculate durations and progress
-  const totalVisaDuration = visaExpiryDate.getTime() - visaStartDate.getTime();
-
-  const shouldExtendVisa = differenceInYears(visaExpiryDate, arrivalDate) < 5;
-
-  const applyILRDate = addYears(arrivalDate, YEARS_TO_ILR);
-  const applyCitizenship = addYears(applyILRDate, YEARS_TO_CITIZENSHIP);
-  const daysStayed =
-    (today.getTime() - arrivalDate.getTime()) / (1000 * 60 * 60 * 24);
-  const progressPercentage = Math.round(
-    Math.max(
-      0,
-      Math.min(
-        100,
-        (daysStayed / ((YEARS_TO_ILR + YEARS_TO_CITIZENSHIP) * 365)) * 100
-      )
-    )
-  );
-
-  const daysUntilExpiry = Math.ceil(
-    (visaExpiryDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
-  );
-
-  const arrivalUntilExpiry = Math.ceil(
-    (visaExpiryDate.getTime() - arrivalDate.getTime()) / (1000 * 60 * 60 * 24)
-  );
-
-  const visaExpiryPercentage = Math.round(
-    Math.max(
-      0,
-      Math.min(
-        100,
-        (arrivalUntilExpiry / ((YEARS_TO_ILR + YEARS_TO_CITIZENSHIP) * 365)) *
-          100
-      )
-    )
-  );
-  const isExpiringSoon = daysUntilExpiry <= 30 && daysUntilExpiry > 0;
-  const isExpired = daysUntilExpiry <= 0;
-  const ilrPercentage = Math.round(
-    (YEARS_TO_ILR / (YEARS_TO_ILR + YEARS_TO_CITIZENSHIP)) * 100
-  );
+  const {
+    applyILRDate,
+    applyCitizenshipDate,
+    extendVisaByDate,
+    totalVisaDurationDays,
+    daysSinceArrival,
+    daysUntilExpiry,
+    isExpired,
+    isExpiringSoon,
+    shouldExtendVisa,
+    progressPercentage,
+    visaExpiryPercentage,
+    ilrPercentage,
+  } = getVisaStatus({ visaStartDate, visaExpiryDate, arrivalDate }, today);
 
   const getStatusBadge = () => {
     if (isExpired) {
@@ -134,7 +105,7 @@ export async function VisaSummary({
               </div>
               <div className="flex flex-col items-end">
                 <span>{t('citizenship')}</span>
-                <div>{displayUKDateTime(applyCitizenship, 'P')}</div>
+                <div>{displayUKDateTime(applyCitizenshipDate, 'P')}</div>
                 <div className="w-[1px] h-24 bg-muted-foreground" />
               </div>
             </div>
@@ -269,7 +240,7 @@ export async function VisaSummary({
             {shouldExtendVisa && (
               <p className="text-xs text-muted-foreground">
                 {t('extendVisaOnDate', {
-                  date: displayUKDateTime(subDays(visaExpiryDate, 28)),
+                  date: displayUKDateTime(extendVisaByDate),
                 })}
               </p>
             )}
@@ -288,9 +259,7 @@ export async function VisaSummary({
               {t('totalVisaDuration')}
             </span>
             <span className="font-medium">
-              {t('countDays', {
-                count: Math.ceil(totalVisaDuration / (1000 * 60 * 60 * 24)),
-              })}
+              {t('countDays', { count: totalVisaDurationDays })}
             </span>
           </div>
           <div className="flex justify-between items-center">
@@ -298,15 +267,7 @@ export async function VisaSummary({
               {t('daysSinceArrival')}
             </span>
             <span className="font-medium">
-              {t('countDays', {
-                count: Math.max(
-                  0,
-                  Math.ceil(
-                    (today.getTime() - arrivalDate.getTime()) /
-                      (1000 * 60 * 60 * 24)
-                  )
-                ),
-              })}
+              {t('countDays', { count: daysSinceArrival })}
             </span>
           </div>
           <div className="flex justify-between items-center">
