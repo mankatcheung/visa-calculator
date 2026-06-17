@@ -7,8 +7,11 @@ concurrency:
   cancel-in-progress: true
 # Centralize environment variables
 env:
-  NODE_VERSION: '20.x'
+  NODE_VERSION: '22.x'
   TURSO_API_URL: 'https://api.turso.tech/v1'
+
+permissions:
+  contents: read
 jobs:
   # Job for linting
   lint:
@@ -108,6 +111,7 @@ jobs:
             echo "AUTH_TOKEN not found in response"
             exit 1
           fi
+          echo "::add-mask::$AUTH_TOKEN"
           echo "database_auth_token=$AUTH_TOKEN" >> $GITHUB_ENV
       - name: Run database migrations
         run: |
