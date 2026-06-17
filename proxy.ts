@@ -45,8 +45,10 @@ export default async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  // Match only internationalized pathnames
-  matcher: [
-    '/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt).*)',
-  ],
+  // Match only internationalized pathnames. Anything with a file extension
+  // (favicon.ico, manifest.webmanifest, sw.js, sitemap.xml, robots.txt) is
+  // treated as a static/metadata asset and skipped. `icon`/`apple-icon` are
+  // listed explicitly because Next's dynamic icon routes are served without
+  // an extension.
+  matcher: ['/((?!api|_next/static|_next/image|icon|apple-icon|.*\\..*).*)'],
 };
