@@ -1,22 +1,37 @@
 name: Test
 on: [push]
+# Cancel older in-progress runs on the same branch so they don't race each
+# other for the shared Turso testing database (same fixed name every run).
+concurrency:
+  group: test-${{ github.ref }}
+  cancel-in-progress: true
 # Centralize environment variables
 env:
-  NODE_VERSION: '20.x'
+  NODE_VERSION: '22.x'
   TURSO_API_URL: 'https://api.turso.tech/v1'
+
+permissions:
+  contents: read
 jobs:
   # Job for linting
   lint:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'yarn'
+      - name: Cache node_modules
+        id: node-modules-cache
+        uses: actions/cache@v5
+        with:
+          path: node_modules
+          key: node-modules-${{ runner.os }}-${{ hashFiles('yarn.lock') }}
       - name: Install dependencies
+        if: steps.node-modules-cache.outputs.cache-hit != 'true'
         run: yarn install --frozen-lockfile
       - name: Run lint
         run: yarn run lint
@@ -27,19 +42,26 @@ jobs:
     needs: lint
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'yarn'
+      - name: Cache node_modules
+        id: node-modules-cache
+        uses: actions/cache@v5
+        with:
+          path: node_modules
+          key: node-modules-${{ runner.os }}-${{ hashFiles('yarn.lock') }}
       - name: Install dependencies
+        if: steps.node-modules-cache.outputs.cache-hit != 'true'
         run: yarn install --frozen-lockfile
       - name: Run tests with coverage
         run: yarn run coverage
       - name: Upload coverage to Codecov
         if: ${{ !cancelled() }}
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@v7
         with:
           verbose: true
         env:
@@ -51,14 +73,28 @@ jobs:
     needs: lint
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'yarn'
+      - name: Cache node_modules
+        id: node-modules-cache
+        uses: actions/cache@v5
+        with:
+          path: node_modules
+          key: node-modules-${{ runner.os }}-${{ hashFiles('yarn.lock') }}
+      - name: Cache Cypress binary
+        uses: actions/cache@v5
+        with:
+          path: ~/.cache/Cypress
+          key: cypress-binary-${{ runner.os }}-${{ hashFiles('yarn.lock') }}
       - name: Install dependencies
+        if: steps.node-modules-cache.outputs.cache-hit != 'true'
         run: yarn install --frozen-lockfile
+      - name: Install Cypress binary
+        run: npx cypress install
       - name: Validate secrets
         run: |
           if [ -z "${{ secrets.TURSO_API_TOKEN }}" ] || [ -z "${{ secrets.TURSO_ORGANIZATION_NAME }}" ] || [ -z "${{ secrets.TURSO_TESTING_DATABASE_NAME }}" ] || [ -z "${{ secrets.TURSO_GROUP_NAME }}" ]; then
@@ -68,44 +104,54 @@ jobs:
       - name: Clean up existing database
         continue-on-error: true
         run: |
-          curl -s -X DELETE \
+          curl -s --retry 3 --retry-delay 2 --retry-connrefused -X DELETE \
             -H "Authorization: Bearer ${{ secrets.TURSO_API_TOKEN }}" \
             "${{ env.TURSO_API_URL }}/organizations/${{ secrets.TURSO_ORGANIZATION_NAME }}/databases/${{ secrets.TURSO_TESTING_DATABASE_NAME }}"
+          # Give the delete a moment to propagate before recreating the same name.
+          sleep 5
       - name: Create temporary database
         run: |
-          RESPONSE=$(curl -s -f -X POST \
-            -H "Authorization: Bearer ${{ secrets.TURSO_API_TOKEN }}" \
-            -H "Content-Type: application/json" \
-            -d '{"name": "${{ secrets.TURSO_TESTING_DATABASE_NAME }}", "group": "${{ secrets.TURSO_GROUP_NAME }}" }' \
-            "${{ env.TURSO_API_URL }}/organizations/${{ secrets.TURSO_ORGANIZATION_NAME }}/databases")
-          if [ $? -ne 0 ]; then
-            echo "API call failed"
-            exit 1
-          fi
-          HOSTNAME=$(echo $RESPONSE | jq -r '.database.Hostname')
-          if [ -z "$HOSTNAME" ]; then
-            echo "Hostname not found in response"
-            exit 1
-          fi
-          echo "database_hostname=$HOSTNAME" >> $GITHUB_ENV
+          for attempt in 1 2 3 4 5; do
+            HOSTNAME=""
+            RESPONSE=$(curl -s -f --retry 3 --retry-delay 2 --retry-connrefused -X POST \
+              -H "Authorization: Bearer ${{ secrets.TURSO_API_TOKEN }}" \
+              -H "Content-Type: application/json" \
+              -d '{"name": "${{ secrets.TURSO_TESTING_DATABASE_NAME }}", "group": "${{ secrets.TURSO_GROUP_NAME }}" }' \
+              "${{ env.TURSO_API_URL }}/organizations/${{ secrets.TURSO_ORGANIZATION_NAME }}/databases") \
+              && HOSTNAME=$(echo "$RESPONSE" | jq -r '.database.Hostname // empty')
+            if [ -n "$HOSTNAME" ]; then
+              echo "database_hostname=$HOSTNAME" >> $GITHUB_ENV
+              exit 0
+            fi
+            echo "Create database attempt $attempt failed, retrying in 5s..."
+            sleep 5
+          done
+          echo "Failed to create database after 5 attempts"
+          exit 1
       - name: Generate auth token for database
         run: |
-          RESPONSE=$(curl -s -f -X POST \
+          RESPONSE=$(curl -s -f --retry 3 --retry-delay 2 --retry-connrefused -X POST \
             -H "Authorization: Bearer ${{ secrets.TURSO_API_TOKEN }}" \
             -H "Content-Type: application/json" \
             "${{ env.TURSO_API_URL }}/organizations/${{ secrets.TURSO_ORGANIZATION_NAME }}/databases/${{ secrets.TURSO_TESTING_DATABASE_NAME }}/auth/tokens?expiration=30m&authorization=full-access")
-          if [ $? -ne 0 ]; then
-            echo "API call failed"
-            exit 1
-          fi
           AUTH_TOKEN=$(echo $RESPONSE | jq -r '.jwt')
           if [ -z "$AUTH_TOKEN" ]; then
             echo "AUTH_TOKEN not found in response"
             exit 1
           fi
+          echo "::add-mask::$AUTH_TOKEN"
           echo "database_auth_token=$AUTH_TOKEN" >> $GITHUB_ENV
       - name: Run database migrations
-        run: yarn db:migrate
+        run: |
+          for attempt in 1 2 3 4 5; do
+            if yarn db:migrate; then
+              exit 0
+            fi
+            echo "Migration attempt $attempt failed, retrying in 5s..."
+            sleep 5
+          done
+          echo "Migration failed after 5 attempts"
+          exit 1
         env:
           DATABASE_URL: libsql://${{ env.database_hostname }}
           DATABASE_AUTH_TOKEN: ${{ env.database_auth_token }}
@@ -132,7 +178,7 @@ jobs:
           DATABASE_AUTH_TOKEN: ${{ env.database_auth_token }}
       - name: Upload Cypress artifacts on failure
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: cypress-artifacts
           path: |
@@ -143,6 +189,6 @@ jobs:
       - name: Remove testing database
         if: always()
         run: |
-          curl -s -X DELETE \
+          curl -s --retry 3 --retry-delay 2 --retry-connrefused -X DELETE \
             -H "Authorization: Bearer ${{ secrets.TURSO_API_TOKEN }}" \
             "${{ env.TURSO_API_URL }}/organizations/${{ secrets.TURSO_ORGANIZATION_NAME }}/databases/${{ secrets.TURSO_TESTING_DATABASE_NAME }}"
