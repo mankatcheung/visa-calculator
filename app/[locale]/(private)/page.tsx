@@ -31,6 +31,7 @@ export default async function Home() {
       className="w-full max-w-3xl mx-auto flex flex-1 flex-col gap-4 p-4"
       data-cy="dashboard-content"
     >
+      <h1 className="sr-only">{t('summary')}</h1>
       <VisaSummary
         visaStartDate={visaStartDate}
         visaExpiryDate={visaExpiryDate}
