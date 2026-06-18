@@ -22,7 +22,9 @@ module.exports = {
     },
     upload: {
       target: 'filesystem',
-      outputDir: './.lighthouseci',
+      // Not ".lighthouseci": actions/upload-artifact excludes dotfiles by
+      // default, which would silently drop these from the CI artifact.
+      outputDir: './lighthouse-reports',
     },
   },
 };
