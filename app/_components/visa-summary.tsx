@@ -166,7 +166,7 @@ export async function VisaSummary({
             <div className="text-2xl font-bold text-green-800 dark:text-green-300 mb-1">
               {displayUKDateTime(visaStartDate)}
             </div>
-            <p className="text-xs text-green-600">
+            <p className="text-xs text-green-600 dark:text-green-300">
               {today >= visaStartDate ? t('activeSince') : t('becomesActive')}
             </p>
           </CardContent>
