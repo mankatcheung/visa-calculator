@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>You're offline — Visa Tracker</title>
+    <style>
+      body {
+        margin: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        font-family: sans-serif;
+        background: #ffffff;
+        color: #171717;
+        text-align: center;
+        padding: 24px;
+        box-sizing: border-box;
+      }
+      .card {
+        max-width: 360px;
+      }
+      h1 {
+        font-size: 1.25rem;
+        margin-bottom: 8px;
+      }
+      p {
+        color: #555555;
+        margin-bottom: 24px;
+      }
+      button {
+        font-size: 1rem;
+        padding: 8px 20px;
+        border-radius: 8px;
+        border: 1px solid #d4d4d4;
+        background: #171717;
+        color: #ffffff;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <h1>You're offline</h1>
+      <p>Visa Tracker needs an internet connection for this page.</p>
+      <button onclick="location.reload()">Try again</button>
+    </div>
+  </body>
+</html>
