@@ -19,6 +19,7 @@ export function ThemePicker() {
       <DropdownMenuTrigger asChild>
         <Button
           data-cy="theme-picker"
+          aria-label={t('theme')}
           className="cursor-pointer"
           variant="outline"
           size="icon"

@@ -143,7 +143,10 @@ export async function VisaSummary({
           <div className="py-2 text-muted-foreground text-sm">
             {t.rich('updateSettingsReminder', {
               settingsLink: (chucks) => (
-                <Link className="text-foreground" href="/users/settings/">
+                <Link
+                  className="text-foreground underline"
+                  href="/users/settings/"
+                >
                   {chucks}
                 </Link>
               ),
@@ -154,13 +157,13 @@ export async function VisaSummary({
       <div className="grid md:grid-cols-3 gap-4">
         <Card className="border-green-200">
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-green-700 flex items-center gap-2">
+            <CardTitle className="text-sm font-medium text-green-700 dark:text-green-300 flex items-center gap-2">
               <CheckCircle className="w-4 h-4" />
               {t('visaStartDate')}
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-800 mb-1">
+            <div className="text-2xl font-bold text-green-800 dark:text-green-300 mb-1">
               {displayUKDateTime(visaStartDate)}
             </div>
             <p className="text-xs text-green-600">
@@ -170,16 +173,16 @@ export async function VisaSummary({
         </Card>
         <Card className="border-blue-200">
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-blue-700 flex items-center gap-2">
+            <CardTitle className="text-sm font-medium text-blue-700 dark:text-blue-300 flex items-center gap-2">
               <Plane className="w-4 h-4" />
               {t('arrival')}
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-blue-800 mb-1">
+            <div className="text-2xl font-bold text-blue-800 dark:text-blue-300 mb-1">
               {displayUKDateTime(arrivalDate)}
             </div>
-            <p className="text-xs text-blue-600">
+            <p className="text-xs text-blue-600 dark:text-blue-300">
               {today >= arrivalDate ? t('arrived') : t('plannedArrival')}
             </p>
           </CardContent>

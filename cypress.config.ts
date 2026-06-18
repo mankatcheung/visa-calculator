@@ -9,6 +9,20 @@ export default defineConfig({
       'cypress/e2e/**/*.{cy,spec}.{ts,tsx}',
     ],
     supportFile: 'cypress/support/e2e.ts',
+    setupNodeEvents(on) {
+      // Print cypress-axe violations to the terminal/CI log, not just the
+      // Cypress GUI, since headless CI runs only show terminal output.
+      on('task', {
+        log(message: string) {
+          console.log(message);
+          return null;
+        },
+        table(data: unknown) {
+          console.table(data);
+          return null;
+        },
+      });
+    },
   },
 
   // Component Testing
