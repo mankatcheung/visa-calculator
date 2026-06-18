@@ -24,6 +24,7 @@ export default async function LeavesPage() {
       className="w-full max-w-3xl mx-auto flex flex-1 flex-col gap-4 p-4"
       data-cy="dashboard-content"
     >
+      <h1 className="sr-only">{t('leavesRecords')}</h1>
       <div className="space-y-2">
         {leaves!.length === 0 && (
           <Card>

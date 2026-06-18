@@ -18,6 +18,7 @@ export default async function UserSettingsPage() {
       className="w-full max-w-3xl mx-auto flex flex-col items-stretch gap-8 p-4"
       data-cy="user-settings-content"
     >
+      <h1 className="sr-only">{t('settings')}</h1>
       <div className="text-lg font-bold">{t('visaStartDate')}</div>
       <SettingsDateForm
         dataKey="visaStartDate"

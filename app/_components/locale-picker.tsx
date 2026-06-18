@@ -25,6 +25,7 @@ export function LocalePicker() {
       <DropdownMenuTrigger asChild>
         <Button
           data-cy="locale-picker"
+          aria-label={t('language')}
           className="cursor-pointer"
           variant="outline"
           size="icon"

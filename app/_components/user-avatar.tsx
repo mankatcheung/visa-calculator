@@ -23,7 +23,13 @@ export function UserAvatar() {
   };
 
   const avatar = (
-    <Avatar data-cy="avatar" className="cursor-pointer">
+    <Avatar
+      data-cy="avatar"
+      className="cursor-pointer"
+      role="button"
+      tabIndex={0}
+      aria-label={t('user')}
+    >
       <AvatarFallback>
         {user?.email?.substring(0, 1).toUpperCase()}
       </AvatarFallback>{' '}

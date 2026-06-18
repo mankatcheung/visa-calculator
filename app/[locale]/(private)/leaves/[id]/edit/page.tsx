@@ -63,6 +63,7 @@ export default async function LeaveEditPage({
   }
   return (
     <div className="flex flex-1 flex-col gap-4 p-4 w-full max-w-3xl mx-auto">
+      <h1 className="sr-only">{t('editLeave')}</h1>
       <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem>
