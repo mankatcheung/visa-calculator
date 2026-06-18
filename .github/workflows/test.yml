@@ -1,14 +1,13 @@
 name: Test
 on: [push]
-# Cancel older in-progress runs on the same branch so they don't race each
-# other for the shared Turso testing database (same fixed name every run).
+# Cancel older in-progress runs on the same branch -- saves CI time/cost
+# when pushing several commits in quick succession.
 concurrency:
   group: test-${{ github.ref }}
   cancel-in-progress: true
 # Centralize environment variables
 env:
   NODE_VERSION: '22.x'
-  TURSO_API_URL: 'https://api.turso.tech/v1'
 
 permissions:
   contents: read
@@ -67,7 +66,11 @@ jobs:
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
-  # Job for E2E tests with database setup
+  # Job for E2E tests against a local sqlite file instead of an ephemeral
+  # Turso database. EXPERIMENTAL: see if this is reliable/fast enough to
+  # replace the Turso-based setup, which has needed several rounds of
+  # flakiness hardening (502s on freshly-created DBs, a delete/create race)
+  # and doesn't work at all on Dependabot-triggered runs (no secrets access).
   e2e-tests:
     runs-on: ubuntu-latest
     needs: lint
@@ -95,76 +98,14 @@ jobs:
         run: yarn install --frozen-lockfile
       - name: Install Cypress binary
         run: npx cypress install
-      - name: Validate secrets
-        run: |
-          if [ -z "${{ secrets.TURSO_API_TOKEN }}" ] || [ -z "${{ secrets.TURSO_ORGANIZATION_NAME }}" ] || [ -z "${{ secrets.TURSO_TESTING_DATABASE_NAME }}" ] || [ -z "${{ secrets.TURSO_GROUP_NAME }}" ]; then
-            echo "Missing required secrets"
-            exit 1
-          fi
-      - name: Clean up existing database
-        continue-on-error: true
-        run: |
-          curl -s --retry 3 --retry-delay 2 --retry-connrefused -X DELETE \
-            -H "Authorization: Bearer ${{ secrets.TURSO_API_TOKEN }}" \
-            "${{ env.TURSO_API_URL }}/organizations/${{ secrets.TURSO_ORGANIZATION_NAME }}/databases/${{ secrets.TURSO_TESTING_DATABASE_NAME }}"
-          # Give the delete a moment to propagate before recreating the same name.
-          sleep 5
-      - name: Create temporary database
-        run: |
-          for attempt in 1 2 3 4 5; do
-            HOSTNAME=""
-            RESPONSE=$(curl -s -f --retry 3 --retry-delay 2 --retry-connrefused -X POST \
-              -H "Authorization: Bearer ${{ secrets.TURSO_API_TOKEN }}" \
-              -H "Content-Type: application/json" \
-              -d '{"name": "${{ secrets.TURSO_TESTING_DATABASE_NAME }}", "group": "${{ secrets.TURSO_GROUP_NAME }}" }' \
-              "${{ env.TURSO_API_URL }}/organizations/${{ secrets.TURSO_ORGANIZATION_NAME }}/databases") \
-              && HOSTNAME=$(echo "$RESPONSE" | jq -r '.database.Hostname // empty')
-            if [ -n "$HOSTNAME" ]; then
-              echo "database_hostname=$HOSTNAME" >> $GITHUB_ENV
-              exit 0
-            fi
-            echo "Create database attempt $attempt failed, retrying in 5s..."
-            sleep 5
-          done
-          echo "Failed to create database after 5 attempts"
-          exit 1
-      - name: Generate auth token for database
-        run: |
-          RESPONSE=$(curl -s -f --retry 3 --retry-delay 2 --retry-connrefused -X POST \
-            -H "Authorization: Bearer ${{ secrets.TURSO_API_TOKEN }}" \
-            -H "Content-Type: application/json" \
-            "${{ env.TURSO_API_URL }}/organizations/${{ secrets.TURSO_ORGANIZATION_NAME }}/databases/${{ secrets.TURSO_TESTING_DATABASE_NAME }}/auth/tokens?expiration=30m&authorization=full-access")
-          AUTH_TOKEN=$(echo $RESPONSE | jq -r '.jwt')
-          if [ -z "$AUTH_TOKEN" ]; then
-            echo "AUTH_TOKEN not found in response"
-            exit 1
-          fi
-          echo "::add-mask::$AUTH_TOKEN"
-          echo "database_auth_token=$AUTH_TOKEN" >> $GITHUB_ENV
       - name: Run database migrations
-        run: |
-          for attempt in 1 2 3 4 5; do
-            if yarn db:migrate; then
-              exit 0
-            fi
-            echo "Migration attempt $attempt failed, retrying in 5s..."
-            sleep 5
-          done
-          echo "Migration failed after 5 attempts"
-          exit 1
+        run: yarn db:migrate
         env:
-          DATABASE_URL: libsql://${{ env.database_hostname }}
-          DATABASE_AUTH_TOKEN: ${{ env.database_auth_token }}
+          NODE_ENV: test
       - name: Build Next.js project
         run: yarn build
-        env:
-          DATABASE_URL: libsql://${{ env.database_hostname }}
-          DATABASE_AUTH_TOKEN: ${{ env.database_auth_token }}
       - name: Start Next.js project
         run: yarn start > nextjs.log 2>&1 &
-        env:
-          DATABASE_URL: libsql://${{ env.database_hostname }}
-          DATABASE_AUTH_TOKEN: ${{ env.database_auth_token }}
       - name: Wait for Next.js to be ready
         run:
           npx wait-on http://localhost:3000 --timeout 60000 --verbose || (cat
@@ -173,9 +114,6 @@ jobs:
         run: curl -v http://localhost:3000 || echo "Server not responding"
       - name: Run Cypress E2E tests
         run: yarn cy:run
-        env:
-          DATABASE_URL: libsql://${{ env.database_hostname }}
-          DATABASE_AUTH_TOKEN: ${{ env.database_auth_token }}
       - name: Upload Cypress artifacts on failure
         if: failure()
         uses: actions/upload-artifact@v7
@@ -186,12 +124,6 @@ jobs:
             cypress/videos/
             nextjs.log
           retention-days: 7
-      - name: Remove testing database
-        if: always()
-        run: |
-          curl -s --retry 3 --retry-delay 2 --retry-connrefused -X DELETE \
-            -H "Authorization: Bearer ${{ secrets.TURSO_API_TOKEN }}" \
-            "${{ env.TURSO_API_URL }}/organizations/${{ secrets.TURSO_ORGANIZATION_NAME }}/databases/${{ secrets.TURSO_TESTING_DATABASE_NAME }}"
 
   # Job for Lighthouse CI performance/accessibility/best-practices/SEO budgets.
   # Only scans the public sign-in/sign-up pages, so it needs no database
