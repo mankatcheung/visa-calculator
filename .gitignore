@@ -13,6 +13,10 @@
 # testing
 /coverage
 /tests/coverage
+/lighthouse-reports
+
+# local sqlite fallback used when DATABASE_URL isn't set
+sqlite.db
 
 # Codecov
 test-report.junit.xml
