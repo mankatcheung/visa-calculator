@@ -67,10 +67,11 @@ jobs:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
   # Job for E2E tests against a local sqlite file instead of an ephemeral
-  # Turso database. EXPERIMENTAL: see if this is reliable/fast enough to
-  # replace the Turso-based setup, which has needed several rounds of
-  # flakiness hardening (502s on freshly-created DBs, a delete/create race)
-  # and doesn't work at all on Dependabot-triggered runs (no secrets access).
+  # Turso database. Replaced the old Turso-based setup, which needed several
+  # rounds of flakiness hardening (502s on freshly-created DBs, a
+  # delete/create race) and didn't work at all on Dependabot-triggered runs
+  # (no secrets access) -- validated across 3 independent CI runs before
+  # switching over, see PR #20.
   e2e-tests:
     runs-on: ubuntu-latest
     needs: lint
