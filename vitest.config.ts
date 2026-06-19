@@ -7,6 +7,7 @@ export default defineConfig({
   test: {
     pool: 'threads', // Use threads to ensure isolation
     maxWorkers: 1, // Run tests in a single worker
+    clearMocks: true, // Reset vi.fn() call history between tests in the same file
     setupFiles: ['./tests/setup.ts', './tests/setup-rtl.ts'],
     coverage: {
       provider: 'istanbul',
