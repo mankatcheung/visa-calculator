@@ -17,7 +17,7 @@
   "startDateRequiredWarning": "Start date is required",
   "endDate": "End Date",
   "endDateDescription": "The date you came back",
-  "endDateRequiredWarning": "End date is requried",
+  "endDateRequiredWarning": "End date is required",
   "color": "Color",
   "colorFormatWarning": "The color should be in hex",
   "remarks": "Remarks",
