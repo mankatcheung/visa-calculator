@@ -3,7 +3,7 @@
 A web application for recording and tracking the number of leaves (absences) for
 UK visa compliance, built with Next.js, following clean architecture principles,
 and equipped with robust tools for scalability, internationalization, testing,
-and monitoring.
+and monitoring. It's also an installable Progressive Web App.
 
 ## Tech Stack
 
@@ -14,8 +14,13 @@ and monitoring.
 - **Yarn**: Fast and reliable package manager for dependency management.
 - **Clean Architecture**: Modular structure for maintainability and scalability.
 - **Next-Intl**: Internationalization (i18n) for multi-language support.
+- **PWA**: Installable on desktop and mobile, with an offline app-shell
+  fallback (see [Progressive Web App](#progressive-web-app) below).
 - **Cypress**: End-to-end testing framework for reliable UI testing.
-- **Vitest**: Fast unit testing framework for testing components and logic.
+- **cypress-axe**: Automated accessibility (a11y) auditing on key pages.
+- **Vitest + React Testing Library**: Unit and component testing.
+- **Lighthouse CI**: Automated performance/accessibility/best-practices/SEO
+  budgets on every push.
 - **Sentry**: Real-time error tracking and monitoring for bug detection.
 - **Codecov**: Code coverage reporting to ensure test quality.
 
@@ -23,9 +28,12 @@ and monitoring.
 
 Before you begin, ensure you have the following installed:
 
-- Node.js (v18 or higher)
+- Node.js (v22 or higher — matches the version CI runs)
 - Yarn (v1.22 or higher)
-- A Turso database instance (with connection details)
+- A Turso database instance (with connection details) — only needed to run
+  the app against real persistent data (`yarn dev`/`yarn start`). Unit,
+  component, and e2e tests all run against a local sqlite file and don't
+  need one.
 - A Sentry account (for error monitoring, optional)
 - A Codecov account (for code coverage reporting, optional)
 
@@ -74,10 +82,12 @@ Before you begin, ensure you have the following installed:
 - `yarn dev`: Start the development server.
 - `yarn build`: Build the application for production.
 - `yarn start`: Start the production server.
-- `yarn test`: Run unit tests with Vitest.
+- `yarn test`: Run unit and component tests with Vitest.
+- `yarn coverage`: Run tests with coverage (uploaded to Codecov in CI).
 - `yarn cy:run`: Run end-to-end tests with Cypress.
+- `yarn cy:open`: Open the Cypress test runner interactively.
+- `yarn lighthouse`: Run Lighthouse CI (`lhci autorun`) against a local build.
 - `yarn lint`: Run ESLint for code linting.
-- `yarn coverage`: Generate and upload code coverage report to Codecov.
 
 ## Database Setup
 
@@ -101,9 +111,14 @@ Before you begin, ensure you have the following installed:
 
 ## Testing
 
-### Unit Tests (Vitest)
+### Unit & Component Tests (Vitest + React Testing Library)
 
-Run unit tests to verify individual components and logic:
+Use-cases, controllers, and repositories are tested against a real local
+sqlite database (`tests/units/{application,infrastructure,interface-adapters}`).
+Components with real validation logic (e.g. `change-password-form`,
+`leave-form`) are tested in isolation with React Testing Library
+(`tests/units/components/`), mocking server actions, translations, and any
+subcomponent (like date pickers) that isn't the focus of the test.
 
 ```bash
 yarn test
@@ -111,10 +126,10 @@ yarn test
 
 ### End-to-End Tests (Cypress)
 
-Note: The test file `sign-up.cy.ts` should be run in the begining to make sure
-an user account is created. Before running the e2e test in github action, a
-testing database is created via the Turso API. The database will be deleted
-after the e2e test.
+E2E tests run against a local sqlite file, migrated fresh on every run — no
+external database service required. The test file `sign-up.cy.ts` runs first
+(see `cypress.config.ts`'s `specPattern`) so the account it creates exists for
+the specs that follow.
 
 Run e2e tests to simulate user interactions, such as recording a leave:
 
@@ -128,15 +143,48 @@ To open the Cypress test runner:
 yarn cy:open
 ```
 
+### Accessibility Tests (cypress-axe)
+
+`cypress/e2e/accessibility.cy.ts` runs an axe-core scan against every
+reachable page (sign-in, sign-up, dashboard, leaves, create-leave, user
+settings) as part of the regular Cypress run. Violations fail the test and
+are also printed to the terminal/CI log with their target selector and HTML,
+not just the Cypress GUI.
+
+### Performance Budgets (Lighthouse CI)
+
+```bash
+yarn lighthouse
+```
+
+Runs Lighthouse three times against the public sign-in/sign-up pages and
+asserts minimum category scores (`lighthouserc.js`): performance ≥ 0.7,
+accessibility/best-practices/SEO ≥ 0.9. Reports are written to
+`lighthouse-reports/` (uploaded as a CI artifact on every push).
+
 ### Code Coverage (Codecov)
 
-Generate and upload coverage reports:
+Generate a coverage report (uploaded to Codecov automatically in CI):
 
 ```bash
 yarn coverage
 ```
 
 View coverage reports on your Codecov dashboard.
+
+## Progressive Web App
+
+The app ships a web manifest (`app/manifest.ts`), generated icons
+(`app/icon.tsx`, `app/apple-icon.tsx`), and a hand-written service worker
+(`public/sw.js`) — installable on desktop and mobile, with an offline
+app-shell fallback (`public/offline.html`) for static assets and the page
+shell. Offline support is intentionally scoped to the app shell only: there's
+no offline editing of leaves or visa data, since that would need real sync
+logic against the remote database. Push notifications are not implemented —
+see [Future Improvements](#future-improvements).
+
+To verify installability locally, run `yarn build && yarn start` and check
+Chrome DevTools → Application → Manifest, or run a Lighthouse audit.
 
 ## Error Monitoring (Sentry)
 
@@ -146,6 +194,17 @@ sides. To test Sentry integration:
 
 1. Trigger an error in development (e.g., throw an error in a component).
 2. Check your Sentry dashboard for the reported issue.
+
+## Future Improvements
+
+- **Push notifications**: `.env` already has `NEXT_PUBLIC_VAPID_PUBLIC_KEY`/
+  `VAPID_PRIVATE_KEY` configured, but there's no subscription storage,
+  subscribe/unsubscribe routes, permission UI, or service worker push
+  handler yet. Deliberately deferred as a separate feature from PWA
+  installability.
+- **Lighthouse budgets only cover the public sign-in/sign-up pages** —
+  authenticated pages (dashboard, leaves, settings) have no performance
+  budget, since Lighthouse CI has no logged-in session to work with.
 
 ## Contributing
 
