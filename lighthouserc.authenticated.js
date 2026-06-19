@@ -5,6 +5,7 @@
 // relies on. Resolve the path ourselves the same way chrome-launcher does,
 // so this config doesn't depend on `puppeteer` (vs. `puppeteer-core`)
 // being installed.
+// eslint-disable-next-line @typescript-eslint/no-require-imports -- CJS config file, loaded directly by LHCI via require()
 const { Launcher } = require('chrome-launcher');
 const chromePath = Launcher.getInstallations()[0];
 
