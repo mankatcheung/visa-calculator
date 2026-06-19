@@ -127,9 +127,11 @@ jobs:
           retention-days: 7
 
   # Job for Lighthouse CI performance/accessibility/best-practices/SEO budgets.
-  # Only scans the public sign-in/sign-up pages, so it needs no database
-  # setup at all -- the app falls back to a local sqlite file when
-  # DATABASE_URL isn't set, and those pages don't query the database.
+  # Scans the public sign-in/sign-up pages (no auth needed) plus the
+  # dashboard/leaves/settings pages, which lighthouse-auth-script.js signs
+  # into freshly via Puppeteer before each authenticated audit. The local
+  # sqlite fallback (no DATABASE_URL) needs its schema migrated first so
+  # those sign-ups actually have a users/user_settings table to write to.
   lighthouse:
     runs-on: ubuntu-latest
     needs: lint
@@ -150,10 +152,16 @@ jobs:
       - name: Install dependencies
         if: steps.node-modules-cache.outputs.cache-hit != 'true'
         run: yarn install --frozen-lockfile
+      - name: Run database migrations
+        run: yarn db:migrate
+        env:
+          NODE_ENV: test
       - name: Build Next.js project
         run: yarn build
-      - name: Run Lighthouse CI
+      - name: Run Lighthouse CI (public pages)
         run: npx lhci autorun
+      - name: Run Lighthouse CI (authenticated pages)
+        run: npx lhci autorun --config=lighthouserc.authenticated.js
       - name: Upload Lighthouse reports
         if: always()
         uses: actions/upload-artifact@v7
