@@ -1,4 +1,5 @@
 import '../globals.css';
+import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { setDefaultOptions } from 'date-fns';
 import { enGB, zhHK } from 'date-fns/locale';
@@ -63,6 +64,7 @@ export default async function RootLayout({
         </NextIntlClientProvider>
         <Toaster position="bottom-center" />
         <SpeedInsights />
+        <Analytics />
         <RegisterServiceWorker />
       </body>
     </html>
