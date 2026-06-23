@@ -1,6 +1,7 @@
 'use client';
 
 import { Label } from '@radix-ui/react-label';
+import { Loader2 } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 import { useTransition } from 'react';
 import { toast } from 'sonner';
@@ -81,7 +82,13 @@ export function SignInForm({
                   required
                 />
               </div>
-              <Button type="submit" data-cy="submit" className="w-full">
+              <Button
+                type="submit"
+                data-cy="submit"
+                className="w-full"
+                disabled={loading}
+              >
+                {loading && <Loader2 className="animate-spin" />}
                 {t('signIn')}
               </Button>
             </div>
