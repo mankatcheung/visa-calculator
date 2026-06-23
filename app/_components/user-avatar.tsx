@@ -1,5 +1,6 @@
-import { BadgeCheck, LogOut } from 'lucide-react';
+import { BadgeCheck, LogOut, Loader2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import { useTransition } from 'react';
 
 import { Avatar, AvatarFallback } from '@/app/_components/ui/avatar';
 import {
@@ -10,6 +11,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/app/_components/ui/dropdown-menu';
+import { Skeleton } from '@/app/_components/ui/skeleton';
 import { authActions } from '@/app/actions';
 import useUser from '@/hooks/use-user';
 import { Link } from '@/i18n/navigation';
@@ -17,10 +19,20 @@ import { Link } from '@/i18n/navigation';
 export function UserAvatar() {
   const t = useTranslations();
   const user = useUser();
+  const [signingOut, startSignOut] = useTransition();
 
-  const onSignOut = async () => {
-    await authActions.signOut();
+  const onSignOut = () => {
+    if (signingOut) return;
+    startSignOut(async () => {
+      await authActions.signOut();
+    });
   };
+
+  if (user === undefined) {
+    return (
+      <Skeleton data-cy="avatar-skeleton" className="h-8 w-8 rounded-full" />
+    );
+  }
 
   const avatar = (
     <Avatar
@@ -54,8 +66,12 @@ export function UserAvatar() {
           </Link>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={onSignOut} data-cy="avatar-logout">
-          <LogOut />
+        <DropdownMenuItem
+          onClick={onSignOut}
+          data-cy="avatar-logout"
+          disabled={signingOut}
+        >
+          {signingOut ? <Loader2 className="animate-spin" /> : <LogOut />}
           {t('signOut')}
         </DropdownMenuItem>
       </DropdownMenuContent>
