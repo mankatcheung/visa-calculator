@@ -34,7 +34,13 @@ export default async function proxy(request: NextRequest) {
     }
     try {
       const authenticationService = getInjection('IAuthenticationService');
-      await authenticationService.validateSession(sessionId);
+      const { session } =
+        await authenticationService.validateSession(sessionId);
+      const cookie = authenticationService.buildSessionCookie(
+        sessionId,
+        session.expiresAt
+      );
+      response.cookies.set(cookie.name, cookie.value, cookie.attributes);
     } catch {
       return NextResponse.redirect(
         new URL(`/${defaultLocale}/sign-in`, request.url)

@@ -10,5 +10,6 @@ export interface IAuthenticationService {
     usersHashedPassword: string
   ): Promise<boolean>;
   createSession(user: User): Promise<{ session: Session; cookie: Cookie }>;
+  buildSessionCookie(token: string, expiresAt: Date): Cookie;
   invalidateSession(token: string): Promise<{ blankCookie: Cookie }>;
 }
