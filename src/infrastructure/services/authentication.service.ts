@@ -5,7 +5,11 @@ import {
 } from '@oslojs/encoding';
 import { compare } from 'bcrypt-ts';
 
-import { SESSION_COOKIE } from '@/config';
+import {
+  SESSION_COOKIE,
+  SESSION_EXPIRY_MS,
+  SESSION_RENEWAL_THRESHOLD_MS,
+} from '@/config';
 
 import { ISessionsRepository } from '@/src/application/repositories/sessions.repository.interface';
 import { IAuthenticationService } from '@/src/application/services/authentication.service.interface';
@@ -71,13 +75,15 @@ export class AuthenticationService implements IAuthenticationService {
           await this._sessionRepository.deleteSession(sessionId);
           throw new UnauthenticatedError('Session Expired');
         }
+
+        let session = result.session;
         if (
           Date.now() >=
-          result.session.expiresAt.getTime() - 1000 * 60 * 60 * 24 * 15
+          session.expiresAt.getTime() - SESSION_RENEWAL_THRESHOLD_MS
         ) {
-          await this._sessionRepository.updateSessionExpiresAt(
+          session = await this._sessionRepository.updateSessionExpiresAt(
             sessionId,
-            new Date(Date.now() + 1000 * 60 * 60 * 24 * 30)
+            new Date(Date.now() + SESSION_EXPIRY_MS)
           );
         }
 
@@ -85,7 +91,7 @@ export class AuthenticationService implements IAuthenticationService {
           throw new UnauthenticatedError("User doesn't exist");
         }
 
-        return { user: result.user, session: result.session };
+        return { user: result.user, session };
       }
     );
   }
@@ -104,29 +110,32 @@ export class AuthenticationService implements IAuthenticationService {
         const sessionId = encodeHexLowerCase(
           sha256(new TextEncoder().encode(token))
         );
-        // expires in 30 days
-        const expiresAt = new Date(Date.now() + 1000 * 60 * 60 * 24 * 30);
+        const expiresAt = new Date(Date.now() + SESSION_EXPIRY_MS);
         const session = await this._sessionRepository.createSession({
           id: sessionId,
           userId: user.id,
           expiresAt: expiresAt,
         });
 
-        const cookie: Cookie = {
-          name: SESSION_COOKIE,
-          value: token,
-          attributes: {
-            path: '/',
-            expires: expiresAt,
-            sameSite: 'lax',
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-          },
-        };
+        const cookie = this.buildSessionCookie(token, expiresAt);
 
         return { session, cookie };
       }
     );
+  }
+
+  buildSessionCookie(token: string, expiresAt: Date): Cookie {
+    return {
+      name: SESSION_COOKIE,
+      value: token,
+      attributes: {
+        path: '/',
+        expires: expiresAt,
+        sameSite: 'lax',
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+      },
+    };
   }
 
   async invalidateSession(token: string): Promise<{ blankCookie: Cookie }> {
