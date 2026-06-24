@@ -4,6 +4,7 @@ import { IUserSettingsRepository } from '@/src/application/repositories/user-set
 import { IUsersRepository } from '@/src/application/repositories/users.repository.interface';
 import { IAuthenticationService } from '@/src/application/services/authentication.service.interface';
 import { ICrashReporterService } from '@/src/application/services/crash-reporter.service.interface';
+import { IEmailBloomFilterService } from '@/src/application/services/email-bloom-filter.service.interface';
 import { IInstrumentationService } from '@/src/application/services/instrumentation.service.interface';
 import { ITransactionManagerService } from '@/src/application/services/transaction-manager.service.interface';
 import { ISignInUseCase } from '@/src/application/use-cases/auth/sign-in.use-case';
@@ -39,6 +40,7 @@ export const DI_SYMBOLS = {
   ITransactionManagerService: Symbol.for('ITransactionManagerService'),
   IInstrumentationService: Symbol.for('IInstrumentationService'),
   ICrashReporterService: Symbol.for('ICrashReporterService'),
+  IEmailBloomFilterService: Symbol.for('IEmailBloomFilterService'),
 
   // Repositories
   ILeavesRepository: Symbol.for('ILeavesRepository'),
@@ -85,6 +87,7 @@ export interface DI_RETURN_TYPES {
   ITransactionManagerService: ITransactionManagerService;
   IInstrumentationService: IInstrumentationService;
   ICrashReporterService: ICrashReporterService;
+  IEmailBloomFilterService: IEmailBloomFilterService;
 
   // Repositories
   ILeavesRepository: ILeavesRepository;

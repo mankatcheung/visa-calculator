@@ -5,6 +5,7 @@ import { getUserUseCase } from '@/src/application/use-cases/users/get-user.use-c
 import { updateUserEmailUseCase } from '@/src/application/use-cases/users/update-user-email.use-case';
 import { updateUserPasswordUseCase } from '@/src/application/use-cases/users/update-user-password.use-case';
 import { UsersRepository } from '@/src/infrastructure/repositories/users.repository';
+import { EmailBloomFilterService } from '@/src/infrastructure/services/email-bloom-filter.service';
 import { getSelfUserController } from '@/src/interface-adapters/controllers/users/get-self-user.controller';
 import { updateUserEmailController } from '@/src/interface-adapters/controllers/users/update-user-email.controller';
 import { updateUserPasswordController } from '@/src/interface-adapters/controllers/users/update-user-password.controller';
@@ -17,6 +18,13 @@ export function createUsersModule() {
     .toClass(UsersRepository, [
       DI_SYMBOLS.IInstrumentationService,
       DI_SYMBOLS.ICrashReporterService,
+    ]);
+
+  usersModule
+    .bind(DI_SYMBOLS.IEmailBloomFilterService)
+    .toClass(EmailBloomFilterService, [
+      DI_SYMBOLS.IUsersRepository,
+      DI_SYMBOLS.IInstrumentationService,
     ]);
 
   usersModule

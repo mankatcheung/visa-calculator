@@ -41,6 +41,7 @@ export function createAuthenticationModule() {
       DI_SYMBOLS.IAuthenticationService,
       DI_SYMBOLS.IUsersRepository,
       DI_SYMBOLS.IUserSettingsRepository,
+      DI_SYMBOLS.IEmailBloomFilterService,
     ]);
 
   authenticationModule

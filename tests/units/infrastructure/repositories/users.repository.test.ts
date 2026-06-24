@@ -2,6 +2,7 @@ import { compare } from 'bcrypt-ts';
 import { expect, it } from 'vitest';
 
 import { getInjection } from '@/di/container';
+import { ConflictError } from '@/src/entities/errors/common';
 
 const usersRepository = getInjection('IUsersRepository');
 
@@ -78,4 +79,29 @@ it('should return undefined when getting a user with non-existent email', async 
   await expect(
     usersRepository.getUserByEmail('non-existent@test.com')
   ).resolves.toBeUndefined();
+});
+
+it('gets all emails', async () => {
+  await usersRepository.createUser({
+    id: '9',
+    email: 'nine@test.com',
+    password: 'password-nine',
+  });
+  const emails = await usersRepository.getAllEmails();
+  expect(emails).toContain('nine@test.com');
+});
+
+it('throws a ConflictError when creating a user with a duplicate email', async () => {
+  await usersRepository.createUser({
+    id: '10',
+    email: 'ten@test.com',
+    password: 'password-ten',
+  });
+  await expect(
+    usersRepository.createUser({
+      id: '11',
+      email: 'ten@test.com',
+      password: 'password-eleven',
+    })
+  ).rejects.toBeInstanceOf(ConflictError);
 });
