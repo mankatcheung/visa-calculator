@@ -6,7 +6,10 @@ import { cookies } from 'next/headers';
 import { SESSION_COOKIE } from '@/config';
 
 import { getInjection } from '@/di/container';
-import { AuthenticationError } from '@/src/entities/errors/auth';
+import {
+  AuthenticationError,
+  UnauthenticatedError,
+} from '@/src/entities/errors/auth';
 import { InputParseError } from '@/src/entities/errors/common';
 
 export async function getSelfUser() {
@@ -94,7 +97,15 @@ export async function getPendingEmailChange() {
         const token = cookieStore.get(SESSION_COOKIE)?.value;
         const pendingEmail = await controller(token);
         return { result: pendingEmail };
-      } catch {
+      } catch (err) {
+        if (
+          err instanceof UnauthenticatedError ||
+          err instanceof AuthenticationError
+        ) {
+          return { result: null };
+        }
+        const crashReporterService = getInjection('ICrashReporterService');
+        crashReporterService.report(err);
         return { result: null };
       }
     }

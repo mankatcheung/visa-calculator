@@ -199,6 +199,13 @@ export class UsersRepository implements IUsersRepository {
             throw new DatabaseOperationError('Cannot apply email change.');
           }
         } catch (err) {
+          const cause = err instanceof Error ? err.cause : undefined;
+          if (
+            cause instanceof LibsqlError &&
+            cause.code?.startsWith('SQLITE_CONSTRAINT')
+          ) {
+            throw new ConflictError('Email taken', { cause: err });
+          }
           this.crashReporterService.report(err);
           throw err;
         }

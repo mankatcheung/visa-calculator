@@ -5,6 +5,10 @@ import { IEmailChangeTokensRepository } from '@/src/application/repositories/ema
 import { IUsersRepository } from '@/src/application/repositories/users.repository.interface';
 import type { IInstrumentationService } from '@/src/application/services/instrumentation.service.interface';
 import { AuthenticationError } from '@/src/entities/errors/auth';
+import {
+  ConflictError,
+  InputParseError,
+} from '@/src/entities/errors/common';
 import { User } from '@/src/entities/models/user';
 
 export type IVerifyEmailChangeUseCase = ReturnType<
@@ -37,10 +41,18 @@ export const verifyEmailChangeUseCase =
           throw new AuthenticationError('Invalid or expired verification code');
         }
 
-        const updatedUser = await usersRepository.applyEmailChange(
-          userId,
-          token.pendingEmail
-        );
+        let updatedUser: User;
+        try {
+          updatedUser = await usersRepository.applyEmailChange(
+            userId,
+            token.pendingEmail
+          );
+        } catch (err) {
+          if (err instanceof ConflictError) {
+            throw new InputParseError('Email is already taken');
+          }
+          throw err;
+        }
         await emailChangeTokensRepository.deleteToken(tokenHash);
         return updatedUser;
       }

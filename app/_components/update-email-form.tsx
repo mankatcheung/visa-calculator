@@ -189,7 +189,7 @@ export function UpdateEmailForm({
         </div>
       )}
 
-      <Dialog open={!!pendingEmail} onOpenChange={() => {}}>
+      <Dialog open={!!pendingEmail} onOpenChange={(open) => { if (!open) onCancel(); }}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>{t('emailChangeOtpTitle')}</DialogTitle>
