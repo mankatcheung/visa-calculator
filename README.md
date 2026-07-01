@@ -36,6 +36,9 @@ Before you begin, ensure you have the following installed:
   need one.
 - A Sentry account (for error monitoring, optional)
 - A Codecov account (for code coverage reporting, optional)
+- A [Brevo](https://www.brevo.com) account (for transactional emails — password
+  reset, email verification, and email-change OTP; optional but email flows
+  will silently no-op without it)
 
 ## Getting Started
 
@@ -62,11 +65,16 @@ Before you begin, ensure you have the following installed:
     SENTRY_AUTH_TOKEN=your-sentry-auth-token
     DATABASE_URL=your-turso-database-url
     DATABASE_AUTH_TOKEN=your-turso-auth-token
+    BREVO_API_KEY=your-brevo-api-key
+    BREVO_SENDER_EMAIL=your-sender-email
+    BREVO_SENDER_NAME=your-sender-name
    ```
 
    Replace `your-turso-database-url`, `your-turso-auth-token`,
    `your-sentry-dsn`, and `your-sentry-auth-token` with your respective
-   credentials.
+   credentials. The `BREVO_*` variables are required for transactional emails
+   (password reset, email verification, and email-change OTP); obtain them
+   from your [Brevo](https://www.brevo.com) account.
 
 4. **Run the Development Server**
 
