@@ -16,6 +16,9 @@ describe('Sign Up Flow', () => {
     cy.getBySel('password').type('admin123');
     cy.getBySel('confirmPassword').type('admin123');
     cy.getBySel('submit').click();
-    cy.getBySel('dashboard-content').should('be.visible');
+    // After sign-up, user lands on the verify-email page
+    cy.url().should('include', '/verify-email');
+    // Mark the user as verified so subsequent test specs can log in normally
+    cy.task('verifyUser', 'test@test.com');
   });
 });
