@@ -6,7 +6,7 @@ import { getInjection } from './di/container';
 
 type localeType = 'en' | 'zh-Hant-HK';
 
-const AUTH_PATHS = ['sign-in', 'sign-up', 'forgot-password', 'reset-password'];
+const AUTH_PATHS = ['sign-in', 'sign-up', 'forgot-password', 'reset-password', 'verify-email'];
 
 export default async function proxy(request: NextRequest) {
   // Step 1: Use the incoming request (example)
@@ -34,13 +34,18 @@ export default async function proxy(request: NextRequest) {
     }
     try {
       const authenticationService = getInjection('IAuthenticationService');
-      const { session } =
+      const { session, user } =
         await authenticationService.validateSession(sessionId);
       const cookie = authenticationService.buildSessionCookie(
         sessionId,
         session.expiresAt
       );
       response.cookies.set(cookie.name, cookie.value, cookie.attributes);
+      if (!user.emailVerified) {
+        return NextResponse.redirect(
+          new URL(`/${defaultLocale}/verify-email`, request.url)
+        );
+      }
     } catch {
       return NextResponse.redirect(
         new URL(`/${defaultLocale}/sign-in`, request.url)

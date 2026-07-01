@@ -1,4 +1,8 @@
+import { createClient } from '@libsql/client';
 import { defineConfig } from 'cypress';
+import dotenv from 'dotenv';
+
+dotenv.config({ path: '.env.local' });
 
 export default defineConfig({
   // E2E Testing
@@ -19,6 +23,20 @@ export default defineConfig({
         },
         table(data: unknown) {
           console.table(data);
+          return null;
+        },
+        async verifyUser(email: string) {
+          const url = process.env.DATABASE_URL ?? 'file:sqlite.db';
+          const authToken = process.env.DATABASE_AUTH_TOKEN;
+          const client = createClient({ url, authToken });
+          try {
+            await client.execute({
+              sql: 'UPDATE users SET email_verified = 1 WHERE email = ?',
+              args: [email],
+            });
+          } finally {
+            client.close();
+          }
           return null;
         },
       });

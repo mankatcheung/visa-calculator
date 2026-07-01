@@ -1,9 +1,21 @@
-import { expect, it } from 'vitest';
+import { afterAll, beforeAll, expect, it, vi } from 'vitest';
 
 import { getInjection } from '@/di/container';
 import { AuthenticationError } from '@/src/entities/errors/auth';
 
 const signUpUseCase = getInjection('ISignUpUseCase');
+
+const TEST_VERIFY_BASE_URL = 'http://localhost:3000/en/verify-email';
+
+beforeAll(() => {
+  vi.spyOn(global, 'fetch').mockResolvedValue(
+    new Response(null, { status: 200 })
+  );
+});
+
+afterAll(() => {
+  vi.restoreAllMocks();
+});
 
 // A great guide on test names
 // https://www.epicweb.dev/talks/how-to-write-better-test-names
@@ -11,6 +23,7 @@ it('returns session and cookie', async () => {
   const result = await signUpUseCase({
     email: 'new@test.com',
     password: 'password-new',
+    verifyBaseUrl: TEST_VERIFY_BASE_URL,
   });
   expect(result).toHaveProperty('session');
   expect(result).toHaveProperty('cookie');
@@ -19,6 +32,10 @@ it('returns session and cookie', async () => {
 
 it('throws for invalid input', async () => {
   await expect(() =>
-    signUpUseCase({ email: 'one@test.com', password: 'doesntmatter' })
+    signUpUseCase({
+      email: 'one@test.com',
+      password: 'doesntmatter',
+      verifyBaseUrl: TEST_VERIFY_BASE_URL,
+    })
   ).rejects.toBeInstanceOf(AuthenticationError);
 });

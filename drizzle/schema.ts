@@ -5,6 +5,9 @@ export const users = sqliteTable('users', {
   id: text('id').primaryKey().notNull(),
   email: text('email').notNull().unique(),
   passwordHash: text('password_hash').notNull(),
+  emailVerified: integer('email_verified', { mode: 'boolean' })
+    .notNull()
+    .default(true),
 });
 
 export const sessions = sqliteTable('sessions', {
@@ -46,3 +49,14 @@ export const passwordResetTokens = sqliteTable('password_reset_tokens', {
     .notNull(),
   expiresAt: integer('expires_at', { mode: 'timestamp' }).notNull(),
 });
+
+export const emailVerificationTokens = sqliteTable(
+  'email_verification_tokens',
+  {
+    tokenHash: text('token_hash').primaryKey().notNull(),
+    userId: text('user_id')
+      .references(() => users.id)
+      .notNull(),
+    expiresAt: integer('expires_at', { mode: 'timestamp' }).notNull(),
+  }
+);

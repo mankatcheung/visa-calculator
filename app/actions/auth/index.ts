@@ -23,6 +23,13 @@ export async function signUp(formData: FormData) {
       const password = formData.get('password')?.toString();
       const confirmPassword = formData.get('confirmPassword')?.toString();
 
+      const headersList = await headers();
+      const host = headersList.get('host') ?? 'localhost:3000';
+      const protocol =
+        process.env.NODE_ENV === 'production' ? 'https' : 'http';
+      const locale = headersList.get('x-your-custom-locale') ?? 'en';
+      const verifyBaseUrl = `${protocol}://${host}/${locale}/verify-email`;
+
       let sessionCookie: Cookie;
       try {
         const signUpController = getInjection('ISignUpController');
@@ -30,6 +37,7 @@ export async function signUp(formData: FormData) {
           email,
           password,
           confirmPassword,
+          verifyBaseUrl,
         });
         sessionCookie = cookie;
       } catch (err) {
@@ -62,7 +70,75 @@ export async function signUp(formData: FormData) {
         sessionCookie.attributes
       );
 
+      redirect('/verify-email');
+    }
+  );
+}
+
+export async function verifyEmail(token: string) {
+  const instrumentationService = getInjection('IInstrumentationService');
+  return await instrumentationService.instrumentServerAction(
+    'verifyEmail',
+    { recordResponse: true },
+    async () => {
+      try {
+        const controller = getInjection('IVerifyEmailController');
+        await controller({ token });
+      } catch (err) {
+        if (err instanceof InputParseError) {
+          return { error: 'Invalid verification link.' };
+        }
+        if (err instanceof AuthenticationError) {
+          return { error: err.message };
+        }
+        const crashReporterService = getInjection('ICrashReporterService');
+        crashReporterService.report(err);
+        return {
+          error:
+            'An error happened. The developers have been notified. Please try again later.',
+        };
+      }
+
       redirect('/');
+    }
+  );
+}
+
+export async function resendVerificationEmail() {
+  const instrumentationService = getInjection('IInstrumentationService');
+  return await instrumentationService.instrumentServerAction(
+    'resendVerificationEmail',
+    { recordResponse: true },
+    async () => {
+      const cookiesStore = await cookies();
+      const sessionId = cookiesStore.get(SESSION_COOKIE)?.value;
+      if (!sessionId) {
+        return { error: 'Not authenticated.' };
+      }
+
+      const headersList = await headers();
+      const host = headersList.get('host') ?? 'localhost:3000';
+      const protocol =
+        process.env.NODE_ENV === 'production' ? 'https' : 'http';
+      const locale = headersList.get('x-your-custom-locale') ?? 'en';
+      const verifyBaseUrl = `${protocol}://${host}/${locale}/verify-email`;
+
+      try {
+        const authenticationService = getInjection('IAuthenticationService');
+        const { user } = await authenticationService.validateSession(sessionId);
+        const controller = getInjection('IResendVerificationEmailController');
+        await controller({ userId: user.id, verifyBaseUrl });
+      } catch (err) {
+        if (err instanceof InputParseError) {
+          return { error: 'Invalid request.' };
+        }
+        const crashReporterService = getInjection('ICrashReporterService');
+        crashReporterService.report(err);
+        return {
+          error:
+            'An error happened. The developers have been notified. Please try again later.',
+        };
+      }
     }
   );
 }
