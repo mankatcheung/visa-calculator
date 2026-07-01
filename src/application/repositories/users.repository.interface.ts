@@ -12,4 +12,5 @@ export interface IUsersRepository {
     tx?: ITransaction
   ): Promise<User>;
   verifyUserEmail(id: string): Promise<User>;
+  applyEmailChange(userId: string, newEmail: string): Promise<User>;
 }

@@ -89,5 +89,13 @@
   "verifyEmailResend": "Resend verification email",
   "verifyEmailResendSuccess": "Verification email sent",
   "verifyEmailSuccess": "Email verified! You are now logged in.",
-  "verifyEmailInvalidToken": "Invalid or expired verification link"
+  "verifyEmailInvalidToken": "Invalid or expired verification link",
+  "cancel": "Cancel",
+  "emailChangeOtpTitle": "Verify your new email",
+  "emailChangeOtpDescription": "We sent a 6-digit code to {email}. Enter it below to confirm your new email address.",
+  "emailChangeOtpPlaceholder": "Enter 6-digit code",
+  "emailChangeOtpInvalid": "Please enter a valid 6-digit code",
+  "emailChangeOtpSuccess": "Email address updated successfully",
+  "emailChangeOtpResent": "A new code has been sent",
+  "emailChangeOtpResend": "Resend code"
 }

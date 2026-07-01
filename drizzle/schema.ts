@@ -60,3 +60,12 @@ export const emailVerificationTokens = sqliteTable(
     expiresAt: integer('expires_at', { mode: 'timestamp' }).notNull(),
   }
 );
+
+export const emailChangeTokens = sqliteTable('email_change_tokens', {
+  tokenHash: text('token_hash').primaryKey().notNull(),
+  userId: text('user_id')
+    .references(() => users.id)
+    .notNull(),
+  pendingEmail: text('pending_email').notNull(),
+  expiresAt: integer('expires_at', { mode: 'timestamp' }).notNull(),
+});

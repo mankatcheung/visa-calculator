@@ -3,7 +3,7 @@ import { ExtractTablesWithRelations } from 'drizzle-orm';
 import { drizzle } from 'drizzle-orm/libsql';
 import { SQLiteTransaction } from 'drizzle-orm/sqlite-core';
 
-import { emailVerificationTokens, leaves, passwordResetTokens, sessions, userSettings, users } from './schema';
+import { emailChangeTokens, emailVerificationTokens, leaves, passwordResetTokens, sessions, userSettings, users } from './schema';
 
 const connectionString = process.env.DATABASE_URL;
 const databaseToken = process.env.DATABASE_AUTH_TOKEN;
@@ -22,7 +22,7 @@ if (isTesting) {
 export const client = createClient(dbCredentials);
 
 export const db = drizzle(client, {
-  schema: { users, sessions, leaves, userSettings, passwordResetTokens, emailVerificationTokens },
+  schema: { users, sessions, leaves, userSettings, passwordResetTokens, emailVerificationTokens, emailChangeTokens },
 });
 
 type Schema = {
@@ -32,6 +32,7 @@ type Schema = {
   userSettings: typeof userSettings;
   passwordResetTokens: typeof passwordResetTokens;
   emailVerificationTokens: typeof emailVerificationTokens;
+  emailChangeTokens: typeof emailChangeTokens;
 };
 
 export type Transaction = SQLiteTransaction<
