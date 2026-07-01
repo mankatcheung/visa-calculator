@@ -1,7 +1,7 @@
 import { IEmailChangeTokensRepository } from '@/src/application/repositories/email-change-tokens.repository.interface';
 import { IEmailVerificationTokensRepository } from '@/src/application/repositories/email-verification-tokens.repository.interface';
-import { IPasswordResetTokensRepository } from '@/src/application/repositories/password-reset-tokens.repository.interface';
 import { ILeavesRepository } from '@/src/application/repositories/leaves.repository.interface';
+import { IPasswordResetTokensRepository } from '@/src/application/repositories/password-reset-tokens.repository.interface';
 import { ISessionsRepository } from '@/src/application/repositories/sessions.repository.interface';
 import { IUserSettingsRepository } from '@/src/application/repositories/user-settings.repository.interface';
 import { IUsersRepository } from '@/src/application/repositories/users.repository.interface';
@@ -11,13 +11,13 @@ import { IEmailBloomFilterService } from '@/src/application/services/email-bloom
 import { IEmailService } from '@/src/application/services/email.service.interface';
 import { IInstrumentationService } from '@/src/application/services/instrumentation.service.interface';
 import { ITransactionManagerService } from '@/src/application/services/transaction-manager.service.interface';
-import { IResendVerificationEmailUseCase } from '@/src/application/use-cases/auth/resend-verification-email.use-case';
-import { IVerifyEmailUseCase } from '@/src/application/use-cases/auth/verify-email.use-case';
 import { IRequestPasswordResetUseCase } from '@/src/application/use-cases/auth/request-password-reset.use-case';
+import { IResendVerificationEmailUseCase } from '@/src/application/use-cases/auth/resend-verification-email.use-case';
 import { IResetPasswordUseCase } from '@/src/application/use-cases/auth/reset-password.use-case';
 import { ISignInUseCase } from '@/src/application/use-cases/auth/sign-in.use-case';
 import { ISignOutUseCase } from '@/src/application/use-cases/auth/sign-out.use-case';
 import { ISignUpUseCase } from '@/src/application/use-cases/auth/sign-up.use-case';
+import { IVerifyEmailUseCase } from '@/src/application/use-cases/auth/verify-email.use-case';
 import { ICreateLeaveUseCase } from '@/src/application/use-cases/leaves/create-leave.use-case';
 import { IDeleteLeaveUseCase } from '@/src/application/use-cases/leaves/delete-leave.use-case';
 import { IGetLeaveUseCase } from '@/src/application/use-cases/leaves/get-leave.use-case';
@@ -25,19 +25,19 @@ import { IGetLeavesForUserUseCase } from '@/src/application/use-cases/leaves/get
 import { IUpdateLeaveUseCase } from '@/src/application/use-cases/leaves/update-leave.use-case';
 import { IGetUserSettingsForUserUseCase } from '@/src/application/use-cases/user-settings/get-user-settings-for-user.use-case';
 import { IUpdateUserSettingsUseCase } from '@/src/application/use-cases/user-settings/update-user-settings.use-case';
-import { IGetUserUseCase } from '@/src/application/use-cases/users/get-user.use-case';
 import { ICancelEmailChangeUseCase } from '@/src/application/use-cases/users/cancel-email-change.use-case';
 import { IGetPendingEmailChangeUseCase } from '@/src/application/use-cases/users/get-pending-email-change.use-case';
+import { IGetUserUseCase } from '@/src/application/use-cases/users/get-user.use-case';
 import { IRequestEmailChangeUseCase } from '@/src/application/use-cases/users/request-email-change.use-case';
-import { IVerifyEmailChangeUseCase } from '@/src/application/use-cases/users/verify-email-change.use-case';
 import { IUpdateUserPasswordUseCase } from '@/src/application/use-cases/users/update-user-password.use-case';
-import { IResendVerificationEmailController } from '@/src/interface-adapters/controllers/auth/resend-verification-email.controller';
-import { IVerifyEmailController } from '@/src/interface-adapters/controllers/auth/verify-email.controller';
+import { IVerifyEmailChangeUseCase } from '@/src/application/use-cases/users/verify-email-change.use-case';
 import { IRequestPasswordResetController } from '@/src/interface-adapters/controllers/auth/request-password-reset.controller';
+import { IResendVerificationEmailController } from '@/src/interface-adapters/controllers/auth/resend-verification-email.controller';
 import { IResetPasswordController } from '@/src/interface-adapters/controllers/auth/reset-password.controller';
 import { ISignInController } from '@/src/interface-adapters/controllers/auth/sign-in.controller';
 import { ISignOutController } from '@/src/interface-adapters/controllers/auth/sign-out.controller';
 import { ISignUpController } from '@/src/interface-adapters/controllers/auth/sign-up.controller';
+import { IVerifyEmailController } from '@/src/interface-adapters/controllers/auth/verify-email.controller';
 import { ICreateLeaveController } from '@/src/interface-adapters/controllers/leaves/create-leave.controller';
 import { IDeleteLeaveController } from '@/src/interface-adapters/controllers/leaves/delete-leave.controller';
 import { IGetLeaveController } from '@/src/interface-adapters/controllers/leaves/get-leave.controller';
@@ -45,12 +45,12 @@ import { IGetLeavesForUserController } from '@/src/interface-adapters/controller
 import { IUpdateLeaveController } from '@/src/interface-adapters/controllers/leaves/update-leave.controller';
 import { IGetUserSettingsForUserController } from '@/src/interface-adapters/controllers/user-settings/get-user-settings-for-user.controller';
 import { IUpdateUserSettingsController } from '@/src/interface-adapters/controllers/user-settings/update-user-settings.controller';
-import { IGetSelfUserController } from '@/src/interface-adapters/controllers/users/get-self-user.controller';
 import { ICancelEmailChangeController } from '@/src/interface-adapters/controllers/users/cancel-email-change.controller';
 import { IGetPendingEmailChangeController } from '@/src/interface-adapters/controllers/users/get-pending-email-change.controller';
+import { IGetSelfUserController } from '@/src/interface-adapters/controllers/users/get-self-user.controller';
 import { IRequestEmailChangeController } from '@/src/interface-adapters/controllers/users/request-email-change.controller';
-import { IVerifyEmailChangeController } from '@/src/interface-adapters/controllers/users/verify-email-change.controller';
 import { IUpdateUserPasswordController } from '@/src/interface-adapters/controllers/users/update-user-password.controller';
+import { IVerifyEmailChangeController } from '@/src/interface-adapters/controllers/users/verify-email-change.controller';
 
 export const DI_SYMBOLS = {
   // Services
@@ -67,7 +67,9 @@ export const DI_SYMBOLS = {
   ISessionRepository: Symbol.for('ISessionRepository'),
   IUserSettingsRepository: Symbol.for('IUserSettingsRepository'),
   IPasswordResetTokensRepository: Symbol.for('IPasswordResetTokensRepository'),
-  IEmailVerificationTokensRepository: Symbol.for('IEmailVerificationTokensRepository'),
+  IEmailVerificationTokensRepository: Symbol.for(
+    'IEmailVerificationTokensRepository'
+  ),
   IEmailChangeTokensRepository: Symbol.for('IEmailChangeTokensRepository'),
 
   // Use Cases
@@ -82,7 +84,9 @@ export const DI_SYMBOLS = {
   IRequestPasswordResetUseCase: Symbol.for('IRequestPasswordResetUseCase'),
   IResetPasswordUseCase: Symbol.for('IResetPasswordUseCase'),
   IVerifyEmailUseCase: Symbol.for('IVerifyEmailUseCase'),
-  IResendVerificationEmailUseCase: Symbol.for('IResendVerificationEmailUseCase'),
+  IResendVerificationEmailUseCase: Symbol.for(
+    'IResendVerificationEmailUseCase'
+  ),
   IGetUserUseCase: Symbol.for('IGetUserUseCase'),
   IRequestEmailChangeUseCase: Symbol.for('IRequestEmailChangeUseCase'),
   IVerifyEmailChangeUseCase: Symbol.for('IVerifyEmailChangeUseCase'),
@@ -96,10 +100,14 @@ export const DI_SYMBOLS = {
   ISignInController: Symbol.for('ISignInController'),
   ISignOutController: Symbol.for('ISignOutController'),
   ISignUpController: Symbol.for('ISignUpController'),
-  IRequestPasswordResetController: Symbol.for('IRequestPasswordResetController'),
+  IRequestPasswordResetController: Symbol.for(
+    'IRequestPasswordResetController'
+  ),
   IResetPasswordController: Symbol.for('IResetPasswordController'),
   IVerifyEmailController: Symbol.for('IVerifyEmailController'),
-  IResendVerificationEmailController: Symbol.for('IResendVerificationEmailController'),
+  IResendVerificationEmailController: Symbol.for(
+    'IResendVerificationEmailController'
+  ),
   ICreateLeaveController: Symbol.for('ICreateLeaveController'),
   IDeleteLeaveController: Symbol.for('IDeleteLeaveController'),
   IGetLeavesForUserController: Symbol.for('IGetLeavesForUserController'),
@@ -109,7 +117,9 @@ export const DI_SYMBOLS = {
   IRequestEmailChangeController: Symbol.for('IRequestEmailChangeController'),
   IVerifyEmailChangeController: Symbol.for('IVerifyEmailChangeController'),
   ICancelEmailChangeController: Symbol.for('ICancelEmailChangeController'),
-  IGetPendingEmailChangeController: Symbol.for('IGetPendingEmailChangeController'),
+  IGetPendingEmailChangeController: Symbol.for(
+    'IGetPendingEmailChangeController'
+  ),
   IUpdateUserPasswordController: Symbol.for('IUpdateUserPasswordController'),
   IGetUserSettingsForUserController: Symbol.for(
     'IGetUserSettingsForUserController'

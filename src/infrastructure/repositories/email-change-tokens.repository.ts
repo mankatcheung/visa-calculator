@@ -1,15 +1,13 @@
+import { db } from '@/drizzle';
 import { and, eq, gt } from 'drizzle-orm';
 
-import { db } from '@/drizzle';
 import { emailChangeTokens } from '@/drizzle/schema';
 import { IEmailChangeTokensRepository } from '@/src/application/repositories/email-change-tokens.repository.interface';
 import type { ICrashReporterService } from '@/src/application/services/crash-reporter.service.interface';
 import type { IInstrumentationService } from '@/src/application/services/instrumentation.service.interface';
 import { EmailChangeToken } from '@/src/entities/models/email-change-token';
 
-export class EmailChangeTokensRepository
-  implements IEmailChangeTokensRepository
-{
+export class EmailChangeTokensRepository implements IEmailChangeTokensRepository {
   constructor(
     private readonly instrumentationService: IInstrumentationService,
     private readonly crashReporterService: ICrashReporterService

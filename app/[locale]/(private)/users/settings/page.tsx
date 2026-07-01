@@ -39,7 +39,10 @@ export default async function UserSettingsPage() {
       />
       <Separator />
       <div className="text-lg font-bold">{t('updateEmail')}</div>
-      <UpdateEmailForm email={user?.email} pendingEmail={pendingEmailRes.result ?? null} />
+      <UpdateEmailForm
+        email={user?.email}
+        pendingEmail={pendingEmailRes.result ?? null}
+      />
       <Separator />
       <div className="text-lg font-bold">{t('changePassword')}</div>
       <ChangePasswordForm />

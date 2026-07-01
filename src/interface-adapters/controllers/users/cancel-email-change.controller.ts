@@ -18,7 +18,9 @@ export const cancelEmailChangeController =
       { name: 'cancelEmailChange Controller' },
       async () => {
         if (!token) {
-          throw new UnauthenticatedError('Must be logged in to cancel email change');
+          throw new UnauthenticatedError(
+            'Must be logged in to cancel email change'
+          );
         }
         const { user } = await authenticationService.validateSession(token);
         await cancelEmailChangeUseCase(user.id);

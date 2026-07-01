@@ -150,11 +150,7 @@ export function UpdateEmailForm({
                         onChange={(e) => field.onChange(e.target.value)}
                       />
                     </FormControl>
-                    <Button
-                      type="submit"
-                      data-cy="submit"
-                      disabled={loading}
-                    >
+                    <Button type="submit" data-cy="submit" disabled={loading}>
                       {loading && <Loader2 className="animate-spin" />}
                       {t('submit')}
                     </Button>
@@ -189,7 +185,12 @@ export function UpdateEmailForm({
         </div>
       )}
 
-      <Dialog open={!!pendingEmail} onOpenChange={(open) => { if (!open) onCancel(); }}>
+      <Dialog
+        open={!!pendingEmail}
+        onOpenChange={(open) => {
+          if (!open) onCancel();
+        }}
+      >
         <DialogContent>
           <DialogHeader>
             <DialogTitle>{t('emailChangeOtpTitle')}</DialogTitle>

@@ -28,7 +28,9 @@ export const verifyEmailChangeController =
       { name: 'verifyEmailChange Controller' },
       async () => {
         if (!token) {
-          throw new UnauthenticatedError('Must be logged in to verify email change');
+          throw new UnauthenticatedError(
+            'Must be logged in to verify email change'
+          );
         }
         const { user } = await authenticationService.validateSession(token);
 

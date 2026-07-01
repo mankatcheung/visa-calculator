@@ -28,10 +28,15 @@ it('removes the pending token so a new request can be made', async () => {
     session.userId
   );
 
-  await expect(cancelEmailChangeUseCase(session.userId)).resolves.toBeUndefined();
+  await expect(
+    cancelEmailChangeUseCase(session.userId)
+  ).resolves.toBeUndefined();
 
   // After cancel, a new request for the same email should succeed
   await expect(
-    requestEmailChangeUseCase({ email: 'cancel-target@test.com' }, session.userId)
+    requestEmailChangeUseCase(
+      { email: 'cancel-target@test.com' },
+      session.userId
+    )
   ).resolves.toMatchObject({ pendingEmail: 'cancel-target@test.com' });
 });

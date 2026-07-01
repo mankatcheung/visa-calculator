@@ -2,8 +2,8 @@ import { afterAll, beforeAll, expect, it } from 'vitest';
 import { vi } from 'vitest';
 
 import { getInjection } from '@/di/container';
-import { InputParseError } from '@/src/entities/errors/common';
 import { UnauthenticatedError } from '@/src/entities/errors/auth';
+import { InputParseError } from '@/src/entities/errors/common';
 
 const signInUseCase = getInjection('ISignInUseCase');
 const requestEmailChangeController = getInjection(
@@ -27,7 +27,10 @@ it('returns pendingEmail', async () => {
   });
 
   await expect(
-    requestEmailChangeController({ email: 'one-ctrl-new@test.com' }, cookie.value)
+    requestEmailChangeController(
+      { email: 'one-ctrl-new@test.com' },
+      cookie.value
+    )
   ).resolves.toMatchObject({ pendingEmail: 'one-ctrl-new@test.com' });
 });
 

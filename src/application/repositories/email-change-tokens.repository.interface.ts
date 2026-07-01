@@ -8,9 +8,7 @@ export interface IEmailChangeTokensRepository {
     expiresAt: Date
   ): Promise<void>;
   getToken(tokenHash: string): Promise<EmailChangeToken | undefined>;
-  getActiveTokenByUserId(
-    userId: string
-  ): Promise<EmailChangeToken | undefined>;
+  getActiveTokenByUserId(userId: string): Promise<EmailChangeToken | undefined>;
   deleteToken(tokenHash: string): Promise<void>;
   deleteTokensByUserId(userId: string): Promise<void>;
 }

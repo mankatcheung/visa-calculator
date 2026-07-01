@@ -5,10 +5,7 @@ import { IEmailChangeTokensRepository } from '@/src/application/repositories/ema
 import { IUsersRepository } from '@/src/application/repositories/users.repository.interface';
 import type { IInstrumentationService } from '@/src/application/services/instrumentation.service.interface';
 import { AuthenticationError } from '@/src/entities/errors/auth';
-import {
-  ConflictError,
-  InputParseError,
-} from '@/src/entities/errors/common';
+import { ConflictError, InputParseError } from '@/src/entities/errors/common';
 import { User } from '@/src/entities/models/user';
 
 export type IVerifyEmailChangeUseCase = ReturnType<
@@ -29,8 +26,7 @@ export const verifyEmailChangeUseCase =
           sha256(new TextEncoder().encode(otp))
         );
 
-        const token =
-          await emailChangeTokensRepository.getToken(tokenHash);
+        const token = await emailChangeTokensRepository.getToken(tokenHash);
         if (!token || token.userId !== userId) {
           await emailChangeTokensRepository.deleteTokensByUserId(userId);
           throw new AuthenticationError('Invalid or expired verification code');
