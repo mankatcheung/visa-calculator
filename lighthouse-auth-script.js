@@ -3,6 +3,7 @@
 // only way in (no header-based auth). LHCI hands us the shared `Browser`
 // (not a `Page`) and reuses its cookies for the page it then audits.
 module.exports = async (browser) => {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports -- CJS script loaded directly by LHCI
   require('dotenv').config({ path: '.env.local' });
 
   const email = `lhci-${Date.now()}-${Math.random().toString(36).slice(2)}@test.com`;
@@ -23,6 +24,7 @@ module.exports = async (browser) => {
 
   // Mark user as verified directly in the DB — email delivery is not possible
   // in CI, so we bypass it here the same way the Cypress verifyUser task does.
+  // eslint-disable-next-line @typescript-eslint/no-require-imports -- CJS script loaded directly by LHCI
   const { createClient } = require('@libsql/client');
   const url = process.env.DATABASE_URL ?? 'file:sqlite.db';
   const authToken = process.env.DATABASE_AUTH_TOKEN;
