@@ -32,14 +32,14 @@ export const verifyEmailChangeController =
             'Must be logged in to verify email change'
           );
         }
-        const { user } = await authenticationService.validateSession(token);
+        const { session, user } = await authenticationService.validateSession(token);
 
         const { data, error: inputParseError } = inputSchema.safeParse(input);
         if (inputParseError) {
           throw new InputParseError('Invalid data', { cause: inputParseError });
         }
 
-        await verifyEmailChangeUseCase(data.otp, user.id);
+        await verifyEmailChangeUseCase(data.otp, user.id, session.id);
       }
     );
   };

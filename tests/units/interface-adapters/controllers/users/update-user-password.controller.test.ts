@@ -8,6 +8,7 @@ const signInUseCase = getInjection('ISignInUseCase');
 const updateUserPasswordController = getInjection(
   'IUpdateUserPasswordController'
 );
+const sessionRepository = getInjection('ISessionRepository');
 
 // A great guide on test names
 // https://www.epicweb.dev/talks/how-to-write-better-test-names
@@ -51,6 +52,29 @@ it('throws for invalid input', async () => {
   await expect(
     updateUserPasswordController({}, cookie.value)
   ).rejects.toBeInstanceOf(InputParseError);
+});
+
+it('revokes other sessions on password change', async () => {
+  const { cookie: cookieA, session: sessionA } = await signInUseCase({
+    email: 'two@test.com',
+    password: 'password-two',
+  });
+  const { session: sessionB } = await signInUseCase({
+    email: 'two@test.com',
+    password: 'password-two',
+  });
+
+  await updateUserPasswordController(
+    {
+      currentPassword: 'password-two',
+      newPassword: 'password-two-new',
+      confirmPassword: 'password-two-new',
+    },
+    cookieA.value
+  );
+
+  await expect(sessionRepository.getSession(sessionA.id)).resolves.toBeTruthy();
+  await expect(sessionRepository.getSession(sessionB.id)).resolves.toBeUndefined();
 });
 
 it('throws for unauthenticated', async () => {

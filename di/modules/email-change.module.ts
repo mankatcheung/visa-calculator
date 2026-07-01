@@ -36,6 +36,7 @@ export function createEmailChangeModule() {
       DI_SYMBOLS.IInstrumentationService,
       DI_SYMBOLS.IEmailChangeTokensRepository,
       DI_SYMBOLS.IUsersRepository,
+      DI_SYMBOLS.ISessionRepository,
     ]);
 
   emailChangeModule

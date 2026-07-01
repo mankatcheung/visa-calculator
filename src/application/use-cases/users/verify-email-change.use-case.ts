@@ -2,6 +2,7 @@ import { sha256 } from '@oslojs/crypto/sha2';
 import { encodeHexLowerCase } from '@oslojs/encoding';
 
 import { IEmailChangeTokensRepository } from '@/src/application/repositories/email-change-tokens.repository.interface';
+import { ISessionsRepository } from '@/src/application/repositories/sessions.repository.interface';
 import { IUsersRepository } from '@/src/application/repositories/users.repository.interface';
 import type { IInstrumentationService } from '@/src/application/services/instrumentation.service.interface';
 import { AuthenticationError } from '@/src/entities/errors/auth';
@@ -16,9 +17,10 @@ export const verifyEmailChangeUseCase =
   (
     instrumentationService: IInstrumentationService,
     emailChangeTokensRepository: IEmailChangeTokensRepository,
-    usersRepository: IUsersRepository
+    usersRepository: IUsersRepository,
+    sessionsRepository: ISessionsRepository
   ) =>
-  async (otp: string, userId: string): Promise<User> => {
+  async (otp: string, userId: string, currentSessionId: string): Promise<User> => {
     return await instrumentationService.startSpan(
       { name: 'verifyEmailChange Use Case', op: 'function' },
       async () => {
@@ -50,6 +52,10 @@ export const verifyEmailChangeUseCase =
           throw err;
         }
         await emailChangeTokensRepository.deleteToken(tokenHash);
+        await sessionsRepository.deleteOtherSessionsByUserId(
+          userId,
+          currentSessionId
+        );
         return updatedUser;
       }
     );
