@@ -32,6 +32,19 @@ export const requestEmailChangeUseCase =
 
         const currentUser = await usersRepository.getUser(userId);
 
+        const activeToken =
+          await emailChangeTokensRepository.getActiveTokenByUserId(userId);
+        if (activeToken) {
+          const TOKEN_TTL_MS = 10 * 60 * 1000;
+          const COOLDOWN_MS = 60 * 1000;
+          const tokenAge = Date.now() - (activeToken.expiresAt.getTime() - TOKEN_TTL_MS);
+          if (tokenAge < COOLDOWN_MS) {
+            throw new InputParseError(
+              'Please wait before requesting another verification code'
+            );
+          }
+        }
+
         await emailChangeTokensRepository.deleteTokensByUserId(userId);
 
         const otpArray = new Uint32Array(1);
