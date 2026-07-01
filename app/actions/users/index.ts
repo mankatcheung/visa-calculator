@@ -129,7 +129,10 @@ export async function requestEmailChange(formData: FormData) {
         if (err instanceof InputParseError) {
           return { error: err.message };
         }
-        if (err instanceof AuthenticationError) {
+        if (
+          err instanceof AuthenticationError ||
+          err instanceof UnauthenticatedError
+        ) {
           return { error: err.message };
         }
         const crashReporterService = getInjection('ICrashReporterService');
@@ -160,7 +163,10 @@ export async function verifyEmailChangeOtp(otp: string) {
         if (err instanceof InputParseError) {
           return { error: err.message };
         }
-        if (err instanceof AuthenticationError) {
+        if (
+          err instanceof AuthenticationError ||
+          err instanceof UnauthenticatedError
+        ) {
           return { error: err.message };
         }
         const crashReporterService = getInjection('ICrashReporterService');
@@ -187,7 +193,10 @@ export async function cancelEmailChange() {
         await controller(token);
         return { result: true };
       } catch (err) {
-        if (err instanceof AuthenticationError) {
+        if (
+          err instanceof AuthenticationError ||
+          err instanceof UnauthenticatedError
+        ) {
           return { error: err.message };
         }
         const crashReporterService = getInjection('ICrashReporterService');
