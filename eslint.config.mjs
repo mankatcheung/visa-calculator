@@ -42,6 +42,11 @@ const eslintConfig = [
         },
         {
           mode: 'full',
+          type: 'presenters',
+          pattern: ['src/interface-adapters/presenters/**/*'],
+        },
+        {
+          mode: 'full',
           type: 'use-cases',
           pattern: ['src/application/use-cases/**/*'],
         },
@@ -92,7 +97,12 @@ const eslintConfig = [
                 'service-interfaces',
                 'repository-interfaces',
                 'use-cases',
+                'presenters',
               ],
+            },
+            {
+              from: 'presenters',
+              allow: ['entities', 'service-interfaces'],
             },
             {
               from: 'infrastructure',
