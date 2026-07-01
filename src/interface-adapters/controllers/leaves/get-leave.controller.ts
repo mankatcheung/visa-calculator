@@ -3,25 +3,10 @@ import { IInstrumentationService } from '@/src/application/services/instrumentat
 import { IGetLeaveUseCase } from '@/src/application/use-cases/leaves/get-leave.use-case';
 import { UnauthenticatedError } from '@/src/entities/errors/auth';
 import { InputParseError } from '@/src/entities/errors/common';
-import { Leave } from '@/src/entities/models/leave';
-
-function presenter(
-  leave: Leave,
-  instrumentationService: IInstrumentationService
-) {
-  return instrumentationService.startSpan(
-    { name: 'getLeavesForUser Presenter', op: 'serialize' },
-    () => ({
-      id: leave.id,
-      startDate: leave.startDate,
-      endDate: leave.endDate,
-      color: leave.color,
-      remarks: leave.remarks,
-      createdAt: leave.createdAt,
-      userId: leave.userId,
-    })
-  );
-}
+import {
+  getLeavePresenter,
+  GetLeavePresenterOutput,
+} from '@/src/interface-adapters/presenters/leaves/get-leave.presenter';
 
 export type IGetLeaveController = ReturnType<typeof getLeaveController>;
 
@@ -34,7 +19,7 @@ export const getLeaveController =
   async (
     leaveId: number | undefined,
     token: string | undefined
-  ): Promise<ReturnType<typeof presenter>> => {
+  ): Promise<GetLeavePresenterOutput> => {
     return await instrumentationService.startSpan(
       { name: 'getLeavesForUser Controller' },
       async () => {
@@ -50,7 +35,7 @@ export const getLeaveController =
 
         const leave = await getLeaveUseCase(leaveId, session.userId);
 
-        return presenter(leave, instrumentationService);
+        return getLeavePresenter(leave, instrumentationService);
       }
     );
   };

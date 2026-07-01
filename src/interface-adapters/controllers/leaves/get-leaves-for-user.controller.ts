@@ -2,26 +2,10 @@ import { IAuthenticationService } from '@/src/application/services/authenticatio
 import { IInstrumentationService } from '@/src/application/services/instrumentation.service.interface';
 import { IGetLeavesForUserUseCase } from '@/src/application/use-cases/leaves/get-leaves-for-user.use-case';
 import { UnauthenticatedError } from '@/src/entities/errors/auth';
-import { Leave } from '@/src/entities/models/leave';
-
-function presenter(
-  leaves: Leave[],
-  instrumentationService: IInstrumentationService
-) {
-  return instrumentationService.startSpan(
-    { name: 'getLeavesForUser Presenter', op: 'serialize' },
-    () =>
-      leaves.map((t) => ({
-        id: t.id,
-        startDate: t.startDate,
-        endDate: t.endDate,
-        color: t.color,
-        remarks: t.remarks,
-        createdAt: t.createdAt,
-        userId: t.userId,
-      }))
-  );
-}
+import {
+  getLeavesForUserPresenter,
+  GetLeavesForUserPresenterOutput,
+} from '@/src/interface-adapters/presenters/leaves/get-leaves-for-user.presenter';
 
 export type IGetLeavesForUserController = ReturnType<
   typeof getLeavesForUserController
@@ -33,7 +17,9 @@ export const getLeavesForUserController =
     authenticationService: IAuthenticationService,
     getLeavesForUserUseCase: IGetLeavesForUserUseCase
   ) =>
-  async (token: string | undefined): Promise<ReturnType<typeof presenter>> => {
+  async (
+    token: string | undefined
+  ): Promise<GetLeavesForUserPresenterOutput> => {
     return await instrumentationService.startSpan(
       { name: 'getLeavesForUser Controller' },
       async () => {
@@ -45,7 +31,7 @@ export const getLeavesForUserController =
 
         const leaves = await getLeavesForUserUseCase(session.userId);
 
-        return presenter(leaves, instrumentationService);
+        return getLeavesForUserPresenter(leaves, instrumentationService);
       }
     );
   };

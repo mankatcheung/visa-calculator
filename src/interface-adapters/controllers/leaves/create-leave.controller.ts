@@ -6,27 +6,10 @@ import { ITransactionManagerService } from '@/src/application/services/transacti
 import { ICreateLeaveUseCase } from '@/src/application/use-cases/leaves/create-leave.use-case';
 import { UnauthenticatedError } from '@/src/entities/errors/auth';
 import { InputParseError } from '@/src/entities/errors/common';
-import { Leave } from '@/src/entities/models/leave';
-
-function presenter(
-  leave: Leave,
-  instrumentationService: IInstrumentationService
-) {
-  return instrumentationService.startSpan(
-    { name: 'createLeave Presenter', op: 'serialize' },
-    () => {
-      return {
-        id: leave.id,
-        createdAt: leave.createdAt,
-        startDate: leave.startDate,
-        endDate: leave.endDate,
-        color: leave.color,
-        remarks: leave.remarks,
-        userId: leave.userId,
-      };
-    }
-  );
-}
+import {
+  createLeavePresenter,
+  CreateLeavePresenterOutput,
+} from '@/src/interface-adapters/presenters/leaves/create-leave.presenter';
 
 const inputSchema = z
   .object({
@@ -62,7 +45,7 @@ export const createLeaveController =
   async (
     input: Partial<z.infer<typeof inputSchema>>,
     token: string | undefined
-  ): Promise<ReturnType<typeof presenter>> => {
+  ): Promise<CreateLeavePresenterOutput> => {
     return await instrumentationService.startSpan(
       {
         name: 'createLeave Controller',
@@ -99,7 +82,7 @@ export const createLeaveController =
               }
             })
         );
-        return presenter(leave!, instrumentationService);
+        return createLeavePresenter(leave!, instrumentationService);
       }
     );
   };

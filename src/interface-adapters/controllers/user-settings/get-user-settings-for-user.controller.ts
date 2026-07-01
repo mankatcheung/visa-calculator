@@ -2,17 +2,10 @@ import { IAuthenticationService } from '@/src/application/services/authenticatio
 import { IInstrumentationService } from '@/src/application/services/instrumentation.service.interface';
 import { IGetUserSettingsForUserUseCase } from '@/src/application/use-cases/user-settings/get-user-settings-for-user.use-case';
 import { UnauthenticatedError } from '@/src/entities/errors/auth';
-import { UserSetting } from '@/src/entities/models/userSettings';
-
-function presenter(
-  setting: UserSetting | undefined,
-  instrumentationService: IInstrumentationService
-) {
-  return instrumentationService.startSpan(
-    { name: 'getUserSettingsForUser Presenter', op: 'serialize' },
-    () => setting
-  );
-}
+import {
+  getUserSettingsForUserPresenter,
+  GetUserSettingsForUserPresenterOutput,
+} from '@/src/interface-adapters/presenters/user-settings/get-user-settings-for-user.presenter';
 
 export type IGetUserSettingsForUserController = ReturnType<
   typeof getUserSettingsForUserController
@@ -24,7 +17,9 @@ export const getUserSettingsForUserController =
     authenticationService: IAuthenticationService,
     getUserSettingsForUserUseCase: IGetUserSettingsForUserUseCase
   ) =>
-  async (token: string | undefined): Promise<ReturnType<typeof presenter>> => {
+  async (
+    token: string | undefined
+  ): Promise<GetUserSettingsForUserPresenterOutput> => {
     return await instrumentationService.startSpan(
       { name: 'getUserSettingsForUser Controller' },
       async () => {
@@ -38,7 +33,7 @@ export const getUserSettingsForUserController =
 
         const setting = await getUserSettingsForUserUseCase(session.userId);
 
-        return presenter(setting, instrumentationService);
+        return getUserSettingsForUserPresenter(setting, instrumentationService);
       }
     );
   };

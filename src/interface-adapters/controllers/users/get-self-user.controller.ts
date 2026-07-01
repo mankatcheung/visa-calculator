@@ -2,20 +2,10 @@ import { IAuthenticationService } from '@/src/application/services/authenticatio
 import { IInstrumentationService } from '@/src/application/services/instrumentation.service.interface';
 import { IGetUserUseCase } from '@/src/application/use-cases/users/get-user.use-case';
 import { UnauthenticatedError } from '@/src/entities/errors/auth';
-import { User } from '@/src/entities/models/user';
-
-function presenter(
-  user: User,
-  instrumentationService: IInstrumentationService
-) {
-  return instrumentationService.startSpan(
-    { name: 'getSelfUser Presenter', op: 'serialize' },
-    () => ({
-      id: user.id,
-      email: user.email,
-    })
-  );
-}
+import {
+  getSelfUserPresenter,
+  GetSelfUserPresenterOutput,
+} from '@/src/interface-adapters/presenters/users/get-self-user.presenter';
 
 export type IGetSelfUserController = ReturnType<typeof getSelfUserController>;
 
@@ -25,7 +15,7 @@ export const getSelfUserController =
     authenticationService: IAuthenticationService,
     getUserUseCase: IGetUserUseCase
   ) =>
-  async (token: string | undefined): Promise<ReturnType<typeof presenter>> => {
+  async (token: string | undefined): Promise<GetSelfUserPresenterOutput> => {
     return await instrumentationService.startSpan(
       { name: 'getSelfUser Controller' },
       async () => {
@@ -37,7 +27,7 @@ export const getSelfUserController =
 
         const user = await getUserUseCase(session.userId);
 
-        return presenter(user, instrumentationService);
+        return getSelfUserPresenter(user, instrumentationService);
       }
     );
   };
