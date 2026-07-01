@@ -98,7 +98,11 @@ export function UpdateEmailForm({
   const onCancel = () => {
     if (loading) return;
     startTransition(async () => {
-      await userActions.cancelEmailChange();
+      const res = await userActions.cancelEmailChange();
+      if (res?.error) {
+        toast.error(res.error);
+        return;
+      }
       setPendingEmail(null);
       otpForm.reset();
     });

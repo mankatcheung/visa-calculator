@@ -1,5 +1,5 @@
 import { sql } from 'drizzle-orm';
-import { integer, sqliteTable, text } from 'drizzle-orm/sqlite-core';
+import { index, integer, sqliteTable, text } from 'drizzle-orm/sqlite-core';
 
 export const users = sqliteTable('users', {
   id: text('id').primaryKey().notNull(),
@@ -61,11 +61,15 @@ export const emailVerificationTokens = sqliteTable(
   }
 );
 
-export const emailChangeTokens = sqliteTable('email_change_tokens', {
-  tokenHash: text('token_hash').primaryKey().notNull(),
-  userId: text('user_id')
-    .references(() => users.id, { onDelete: 'cascade' })
-    .notNull(),
-  pendingEmail: text('pending_email').notNull(),
-  expiresAt: integer('expires_at', { mode: 'timestamp' }).notNull(),
-});
+export const emailChangeTokens = sqliteTable(
+  'email_change_tokens',
+  {
+    tokenHash: text('token_hash').primaryKey().notNull(),
+    userId: text('user_id')
+      .references(() => users.id, { onDelete: 'cascade' })
+      .notNull(),
+    pendingEmail: text('pending_email').notNull(),
+    expiresAt: integer('expires_at', { mode: 'timestamp' }).notNull(),
+  },
+  (t) => [index('email_change_tokens_user_id_idx').on(t.userId)]
+);
