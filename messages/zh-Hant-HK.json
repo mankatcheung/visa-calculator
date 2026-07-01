@@ -89,5 +89,13 @@
   "verifyEmailResend": "重新發送驗證電郵",
   "verifyEmailResendSuccess": "驗證電郵已發送",
   "verifyEmailSuccess": "電郵已驗證！您現已登入。",
-  "verifyEmailInvalidToken": "驗證連結無效或已過期"
+  "verifyEmailInvalidToken": "驗證連結無效或已過期",
+  "cancel": "取消",
+  "emailChangeOtpTitle": "驗證您的新電郵",
+  "emailChangeOtpDescription": "我們已將6位數字驗證碼發送至 {email}，請在下方輸入以確認您的新電郵地址。",
+  "emailChangeOtpPlaceholder": "輸入6位數字驗證碼",
+  "emailChangeOtpInvalid": "請輸入有效的6位數字驗證碼",
+  "emailChangeOtpSuccess": "電郵地址更新成功",
+  "emailChangeOtpResent": "新驗證碼已發送",
+  "emailChangeOtpResend": "重新發送驗證碼"
 }

@@ -175,6 +175,44 @@ export class UsersRepository implements IUsersRepository {
     );
   }
 
+  async applyEmailChange(userId: string, newEmail: string): Promise<User> {
+    return await this.instrumentationService.startSpan(
+      { name: 'UsersRepository > applyEmailChange' },
+      async () => {
+        try {
+          const query = db
+            .update(users)
+            .set({ email: newEmail })
+            .where(eq(users.id, userId))
+            .returning();
+          const [updated] = await this.instrumentationService.startSpan(
+            {
+              name: query.toSQL().sql,
+              op: 'db.query',
+              attributes: { 'db.system': 'sqlite' },
+            },
+            () => query.execute()
+          );
+          if (updated) {
+            return updated;
+          } else {
+            throw new DatabaseOperationError('Cannot apply email change.');
+          }
+        } catch (err) {
+          const cause = err instanceof Error ? err.cause : undefined;
+          if (
+            cause instanceof LibsqlError &&
+            cause.code?.startsWith('SQLITE_CONSTRAINT')
+          ) {
+            throw new ConflictError('Email taken', { cause: err });
+          }
+          this.crashReporterService.report(err);
+          throw err;
+        }
+      }
+    );
+  }
+
   async updateUser(
     id: string,
     input: Partial<UpdateUser>,

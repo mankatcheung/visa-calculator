@@ -5,12 +5,13 @@ import { SettingsDateForm } from '@/app/_components/settings-date-form';
 import { Separator } from '@/app/_components/ui/separator';
 import { UpdateEmailForm } from '@/app/_components/update-email-form';
 import { getUserSettingsForUser } from '@/app/actions/user-settings';
-import { getSelfUser } from '@/app/actions/users';
+import { getPendingEmailChange, getSelfUser } from '@/app/actions/users';
 
 export default async function UserSettingsPage() {
   const t = await getTranslations();
   const res = await getSelfUser();
   const user = res.result;
+  const pendingEmailRes = await getPendingEmailChange();
   const settingsRes = await getUserSettingsForUser();
   const settings = settingsRes.result;
   return (
@@ -38,7 +39,10 @@ export default async function UserSettingsPage() {
       />
       <Separator />
       <div className="text-lg font-bold">{t('updateEmail')}</div>
-      <UpdateEmailForm email={user?.email} />
+      <UpdateEmailForm
+        email={user?.email}
+        pendingEmail={pendingEmailRes.result ?? null}
+      />
       <Separator />
       <div className="text-lg font-bold">{t('changePassword')}</div>
       <ChangePasswordForm />

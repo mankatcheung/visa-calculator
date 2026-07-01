@@ -1,0 +1,1 @@
+CREATE INDEX `email_change_tokens_user_id_idx` ON `email_change_tokens` (`user_id`);
