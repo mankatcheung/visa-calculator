@@ -1,3 +1,4 @@
+import { IPasswordResetTokensRepository } from '@/src/application/repositories/password-reset-tokens.repository.interface';
 import { ILeavesRepository } from '@/src/application/repositories/leaves.repository.interface';
 import { ISessionsRepository } from '@/src/application/repositories/sessions.repository.interface';
 import { IUserSettingsRepository } from '@/src/application/repositories/user-settings.repository.interface';
@@ -5,8 +6,11 @@ import { IUsersRepository } from '@/src/application/repositories/users.repositor
 import { IAuthenticationService } from '@/src/application/services/authentication.service.interface';
 import { ICrashReporterService } from '@/src/application/services/crash-reporter.service.interface';
 import { IEmailBloomFilterService } from '@/src/application/services/email-bloom-filter.service.interface';
+import { IEmailService } from '@/src/application/services/email.service.interface';
 import { IInstrumentationService } from '@/src/application/services/instrumentation.service.interface';
 import { ITransactionManagerService } from '@/src/application/services/transaction-manager.service.interface';
+import { IRequestPasswordResetUseCase } from '@/src/application/use-cases/auth/request-password-reset.use-case';
+import { IResetPasswordUseCase } from '@/src/application/use-cases/auth/reset-password.use-case';
 import { ISignInUseCase } from '@/src/application/use-cases/auth/sign-in.use-case';
 import { ISignOutUseCase } from '@/src/application/use-cases/auth/sign-out.use-case';
 import { ISignUpUseCase } from '@/src/application/use-cases/auth/sign-up.use-case';
@@ -20,6 +24,8 @@ import { IUpdateUserSettingsUseCase } from '@/src/application/use-cases/user-set
 import { IGetUserUseCase } from '@/src/application/use-cases/users/get-user.use-case';
 import { IUpdateUserEmailUseCase } from '@/src/application/use-cases/users/update-user-email.use-case';
 import { IUpdateUserPasswordUseCase } from '@/src/application/use-cases/users/update-user-password.use-case';
+import { IRequestPasswordResetController } from '@/src/interface-adapters/controllers/auth/request-password-reset.controller';
+import { IResetPasswordController } from '@/src/interface-adapters/controllers/auth/reset-password.controller';
 import { ISignInController } from '@/src/interface-adapters/controllers/auth/sign-in.controller';
 import { ISignOutController } from '@/src/interface-adapters/controllers/auth/sign-out.controller';
 import { ISignUpController } from '@/src/interface-adapters/controllers/auth/sign-up.controller';
@@ -41,12 +47,14 @@ export const DI_SYMBOLS = {
   IInstrumentationService: Symbol.for('IInstrumentationService'),
   ICrashReporterService: Symbol.for('ICrashReporterService'),
   IEmailBloomFilterService: Symbol.for('IEmailBloomFilterService'),
+  IEmailService: Symbol.for('IEmailService'),
 
   // Repositories
   ILeavesRepository: Symbol.for('ILeavesRepository'),
   IUsersRepository: Symbol.for('IUsersRepository'),
   ISessionRepository: Symbol.for('ISessionRepository'),
   IUserSettingsRepository: Symbol.for('IUserSettingsRepository'),
+  IPasswordResetTokensRepository: Symbol.for('IPasswordResetTokensRepository'),
 
   // Use Cases
   ICreateLeaveUseCase: Symbol.for('ICreateLeaveUseCase'),
@@ -57,6 +65,8 @@ export const DI_SYMBOLS = {
   ISignInUseCase: Symbol.for('ISignInUseCase'),
   ISignOutUseCase: Symbol.for('ISignOutUseCase'),
   ISignUpUseCase: Symbol.for('ISignUpUseCase'),
+  IRequestPasswordResetUseCase: Symbol.for('IRequestPasswordResetUseCase'),
+  IResetPasswordUseCase: Symbol.for('IResetPasswordUseCase'),
   IGetUserUseCase: Symbol.for('IGetUserUseCase'),
   IUpdateUserEmailUseCase: Symbol.for('IUpdateUserEmailUseCase'),
   IUpdateUserPasswordUseCase: Symbol.for('IUpdateUserPasswordUseCase'),
@@ -67,6 +77,8 @@ export const DI_SYMBOLS = {
   ISignInController: Symbol.for('ISignInController'),
   ISignOutController: Symbol.for('ISignOutController'),
   ISignUpController: Symbol.for('ISignUpController'),
+  IRequestPasswordResetController: Symbol.for('IRequestPasswordResetController'),
+  IResetPasswordController: Symbol.for('IResetPasswordController'),
   ICreateLeaveController: Symbol.for('ICreateLeaveController'),
   IDeleteLeaveController: Symbol.for('IDeleteLeaveController'),
   IGetLeavesForUserController: Symbol.for('IGetLeavesForUserController'),
@@ -88,12 +100,14 @@ export interface DI_RETURN_TYPES {
   IInstrumentationService: IInstrumentationService;
   ICrashReporterService: ICrashReporterService;
   IEmailBloomFilterService: IEmailBloomFilterService;
+  IEmailService: IEmailService;
 
   // Repositories
   ILeavesRepository: ILeavesRepository;
   IUsersRepository: IUsersRepository;
   ISessionRepository: ISessionsRepository;
   IUserSettingsRepository: IUserSettingsRepository;
+  IPasswordResetTokensRepository: IPasswordResetTokensRepository;
 
   // Use Cases
   ICreateLeaveUseCase: ICreateLeaveUseCase;
@@ -104,6 +118,8 @@ export interface DI_RETURN_TYPES {
   ISignInUseCase: ISignInUseCase;
   ISignOutUseCase: ISignOutUseCase;
   ISignUpUseCase: ISignUpUseCase;
+  IRequestPasswordResetUseCase: IRequestPasswordResetUseCase;
+  IResetPasswordUseCase: IResetPasswordUseCase;
   IGetUserUseCase: IGetUserUseCase;
   IUpdateUserEmailUseCase: IUpdateUserEmailUseCase;
   IUpdateUserPasswordUseCase: IUpdateUserPasswordUseCase;
@@ -114,6 +130,8 @@ export interface DI_RETURN_TYPES {
   ISignInController: ISignInController;
   ISignOutController: ISignOutController;
   ISignUpController: ISignUpController;
+  IRequestPasswordResetController: IRequestPasswordResetController;
+  IResetPasswordController: IResetPasswordController;
   ICreateLeaveController: ICreateLeaveController;
   IDeleteLeaveController: IDeleteLeaveController;
   IGetLeaveController: IGetLeaveController;

@@ -6,7 +6,7 @@ import { getInjection } from './di/container';
 
 type localeType = 'en' | 'zh-Hant-HK';
 
-const AUTH_PATHS = ['sign-in', 'sign-up'];
+const AUTH_PATHS = ['sign-in', 'sign-up', 'forgot-password', 'reset-password'];
 
 export default async function proxy(request: NextRequest) {
   // Step 1: Use the incoming request (example)

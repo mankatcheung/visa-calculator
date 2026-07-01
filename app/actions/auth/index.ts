@@ -1,6 +1,6 @@
 'use server';
 
-import { cookies } from 'next/headers';
+import { cookies, headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 
 import { SESSION_COOKIE } from '@/config';
@@ -106,6 +106,74 @@ export async function signIn(formData: FormData, redirectPath: string) {
       );
 
       redirect(redirectPath);
+    }
+  );
+}
+
+export async function requestPasswordReset(formData: FormData) {
+  const instrumentationService = getInjection('IInstrumentationService');
+  return await instrumentationService.instrumentServerAction(
+    'requestPasswordReset',
+    { recordResponse: true },
+    async () => {
+      const email = formData.get('email')?.toString();
+      const headersList = await headers();
+      const host = headersList.get('host') ?? 'localhost:3000';
+      const protocol =
+        process.env.NODE_ENV === 'production' ? 'https' : 'http';
+      const locale = headersList.get('x-your-custom-locale') ?? 'en';
+      const resetBaseUrl = `${protocol}://${host}/${locale}/reset-password`;
+
+      try {
+        const controller = getInjection('IRequestPasswordResetController');
+        await controller({ email, resetBaseUrl });
+      } catch (err) {
+        if (err instanceof InputParseError) {
+          return { error: 'Please enter a valid email address.' };
+        }
+        const crashReporterService = getInjection('ICrashReporterService');
+        crashReporterService.report(err);
+        return {
+          error:
+            'An error happened. The developers have been notified. Please try again later.',
+        };
+      }
+    }
+  );
+}
+
+export async function resetPassword(formData: FormData) {
+  const instrumentationService = getInjection('IInstrumentationService');
+  return await instrumentationService.instrumentServerAction(
+    'resetPassword',
+    { recordResponse: true },
+    async () => {
+      const token = formData.get('token')?.toString();
+      const password = formData.get('password')?.toString();
+      const confirmPassword = formData.get('confirmPassword')?.toString();
+
+      try {
+        const controller = getInjection('IResetPasswordController');
+        await controller({ token, password, confirmPassword });
+      } catch (err) {
+        if (err instanceof InputParseError) {
+          return {
+            error:
+              'Invalid data. Make sure the passwords match and are at least 6 characters.',
+          };
+        }
+        if (err instanceof AuthenticationError) {
+          return { error: err.message };
+        }
+        const crashReporterService = getInjection('ICrashReporterService');
+        crashReporterService.report(err);
+        return {
+          error:
+            'An error happened. The developers have been notified. Please try again later.',
+        };
+      }
+
+      redirect('/sign-in');
     }
   );
 }
