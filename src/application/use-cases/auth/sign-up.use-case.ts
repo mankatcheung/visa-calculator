@@ -1,7 +1,15 @@
+import { sha256 } from '@oslojs/crypto/sha2';
+import {
+  encodeBase32LowerCaseNoPadding,
+  encodeHexLowerCase,
+} from '@oslojs/encoding';
+
+import { IEmailVerificationTokensRepository } from '@/src/application/repositories/email-verification-tokens.repository.interface';
 import { IUserSettingsRepository } from '@/src/application/repositories/user-settings.repository.interface';
 import type { IUsersRepository } from '@/src/application/repositories/users.repository.interface';
 import type { IAuthenticationService } from '@/src/application/services/authentication.service.interface';
 import type { IEmailBloomFilterService } from '@/src/application/services/email-bloom-filter.service.interface';
+import { IEmailService } from '@/src/application/services/email.service.interface';
 import type { IInstrumentationService } from '@/src/application/services/instrumentation.service.interface';
 import { AuthenticationError } from '@/src/entities/errors/auth';
 import { ConflictError } from '@/src/entities/errors/common';
@@ -17,11 +25,14 @@ export const signUpUseCase =
     authenticationService: IAuthenticationService,
     usersRepository: IUsersRepository,
     userSettingsRepository: IUserSettingsRepository,
-    emailBloomFilterService: IEmailBloomFilterService
+    emailBloomFilterService: IEmailBloomFilterService,
+    emailVerificationTokensRepository: IEmailVerificationTokensRepository,
+    emailService: IEmailService
   ) =>
   (input: {
     email: string;
     password: string;
+    verifyBaseUrl: string;
   }): Promise<{
     session: Session;
     cookie: Cookie;
@@ -58,6 +69,23 @@ export const signUpUseCase =
         await emailBloomFilterService.recordEmail(input.email);
 
         await userSettingsRepository.createUserSettings(userId);
+
+        const bytes = new Uint8Array(20);
+        crypto.getRandomValues(bytes);
+        const token = encodeBase32LowerCaseNoPadding(bytes);
+        const tokenHash = encodeHexLowerCase(
+          sha256(new TextEncoder().encode(token))
+        );
+        const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
+        await emailVerificationTokensRepository.createToken(
+          tokenHash,
+          userId,
+          expiresAt
+        );
+        await emailService.sendVerificationEmail(
+          input.email,
+          `${input.verifyBaseUrl}?token=${token}`
+        );
 
         const { cookie, session } =
           await authenticationService.createSession(newUser);

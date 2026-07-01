@@ -1,3 +1,4 @@
+import { IEmailVerificationTokensRepository } from '@/src/application/repositories/email-verification-tokens.repository.interface';
 import { IPasswordResetTokensRepository } from '@/src/application/repositories/password-reset-tokens.repository.interface';
 import { ILeavesRepository } from '@/src/application/repositories/leaves.repository.interface';
 import { ISessionsRepository } from '@/src/application/repositories/sessions.repository.interface';
@@ -9,6 +10,8 @@ import { IEmailBloomFilterService } from '@/src/application/services/email-bloom
 import { IEmailService } from '@/src/application/services/email.service.interface';
 import { IInstrumentationService } from '@/src/application/services/instrumentation.service.interface';
 import { ITransactionManagerService } from '@/src/application/services/transaction-manager.service.interface';
+import { IResendVerificationEmailUseCase } from '@/src/application/use-cases/auth/resend-verification-email.use-case';
+import { IVerifyEmailUseCase } from '@/src/application/use-cases/auth/verify-email.use-case';
 import { IRequestPasswordResetUseCase } from '@/src/application/use-cases/auth/request-password-reset.use-case';
 import { IResetPasswordUseCase } from '@/src/application/use-cases/auth/reset-password.use-case';
 import { ISignInUseCase } from '@/src/application/use-cases/auth/sign-in.use-case';
@@ -24,6 +27,8 @@ import { IUpdateUserSettingsUseCase } from '@/src/application/use-cases/user-set
 import { IGetUserUseCase } from '@/src/application/use-cases/users/get-user.use-case';
 import { IUpdateUserEmailUseCase } from '@/src/application/use-cases/users/update-user-email.use-case';
 import { IUpdateUserPasswordUseCase } from '@/src/application/use-cases/users/update-user-password.use-case';
+import { IResendVerificationEmailController } from '@/src/interface-adapters/controllers/auth/resend-verification-email.controller';
+import { IVerifyEmailController } from '@/src/interface-adapters/controllers/auth/verify-email.controller';
 import { IRequestPasswordResetController } from '@/src/interface-adapters/controllers/auth/request-password-reset.controller';
 import { IResetPasswordController } from '@/src/interface-adapters/controllers/auth/reset-password.controller';
 import { ISignInController } from '@/src/interface-adapters/controllers/auth/sign-in.controller';
@@ -55,6 +60,7 @@ export const DI_SYMBOLS = {
   ISessionRepository: Symbol.for('ISessionRepository'),
   IUserSettingsRepository: Symbol.for('IUserSettingsRepository'),
   IPasswordResetTokensRepository: Symbol.for('IPasswordResetTokensRepository'),
+  IEmailVerificationTokensRepository: Symbol.for('IEmailVerificationTokensRepository'),
 
   // Use Cases
   ICreateLeaveUseCase: Symbol.for('ICreateLeaveUseCase'),
@@ -67,6 +73,8 @@ export const DI_SYMBOLS = {
   ISignUpUseCase: Symbol.for('ISignUpUseCase'),
   IRequestPasswordResetUseCase: Symbol.for('IRequestPasswordResetUseCase'),
   IResetPasswordUseCase: Symbol.for('IResetPasswordUseCase'),
+  IVerifyEmailUseCase: Symbol.for('IVerifyEmailUseCase'),
+  IResendVerificationEmailUseCase: Symbol.for('IResendVerificationEmailUseCase'),
   IGetUserUseCase: Symbol.for('IGetUserUseCase'),
   IUpdateUserEmailUseCase: Symbol.for('IUpdateUserEmailUseCase'),
   IUpdateUserPasswordUseCase: Symbol.for('IUpdateUserPasswordUseCase'),
@@ -79,6 +87,8 @@ export const DI_SYMBOLS = {
   ISignUpController: Symbol.for('ISignUpController'),
   IRequestPasswordResetController: Symbol.for('IRequestPasswordResetController'),
   IResetPasswordController: Symbol.for('IResetPasswordController'),
+  IVerifyEmailController: Symbol.for('IVerifyEmailController'),
+  IResendVerificationEmailController: Symbol.for('IResendVerificationEmailController'),
   ICreateLeaveController: Symbol.for('ICreateLeaveController'),
   IDeleteLeaveController: Symbol.for('IDeleteLeaveController'),
   IGetLeavesForUserController: Symbol.for('IGetLeavesForUserController'),
@@ -108,6 +118,7 @@ export interface DI_RETURN_TYPES {
   ISessionRepository: ISessionsRepository;
   IUserSettingsRepository: IUserSettingsRepository;
   IPasswordResetTokensRepository: IPasswordResetTokensRepository;
+  IEmailVerificationTokensRepository: IEmailVerificationTokensRepository;
 
   // Use Cases
   ICreateLeaveUseCase: ICreateLeaveUseCase;
@@ -120,6 +131,8 @@ export interface DI_RETURN_TYPES {
   ISignUpUseCase: ISignUpUseCase;
   IRequestPasswordResetUseCase: IRequestPasswordResetUseCase;
   IResetPasswordUseCase: IResetPasswordUseCase;
+  IVerifyEmailUseCase: IVerifyEmailUseCase;
+  IResendVerificationEmailUseCase: IResendVerificationEmailUseCase;
   IGetUserUseCase: IGetUserUseCase;
   IUpdateUserEmailUseCase: IUpdateUserEmailUseCase;
   IUpdateUserPasswordUseCase: IUpdateUserPasswordUseCase;
@@ -132,6 +145,8 @@ export interface DI_RETURN_TYPES {
   ISignUpController: ISignUpController;
   IRequestPasswordResetController: IRequestPasswordResetController;
   IResetPasswordController: IResetPasswordController;
+  IVerifyEmailController: IVerifyEmailController;
+  IResendVerificationEmailController: IResendVerificationEmailController;
   ICreateLeaveController: ICreateLeaveController;
   IDeleteLeaveController: IDeleteLeaveController;
   IGetLeaveController: IGetLeaveController;

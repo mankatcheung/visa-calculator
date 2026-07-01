@@ -5,6 +5,7 @@ import { createAuthenticationModule } from '@/di/modules/authentication.module';
 import { createTransactionManagerModule } from '@/di/modules/database.module';
 import { createLeavesModule } from '@/di/modules/leaves.module';
 import { createMonitoringModule } from '@/di/modules/monitoring.module';
+import { createEmailVerificationModule } from '@/di/modules/email-verification.module';
 import { createPasswordResetModule } from '@/di/modules/password-reset.module';
 import { createUserSettingModule } from '@/di/modules/user-settings.module';
 import { createUsersModule } from '@/di/modules/users.module';
@@ -32,6 +33,10 @@ ApplicationContainer.load(
 ApplicationContainer.load(
   Symbol('PasswordResetModule'),
   createPasswordResetModule()
+);
+ApplicationContainer.load(
+  Symbol('EmailVerificationModule'),
+  createEmailVerificationModule()
 );
 
 export function getInjection<K extends keyof typeof DI_SYMBOLS>(

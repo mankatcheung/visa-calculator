@@ -1,4 +1,4 @@
-import { expect, it } from 'vitest';
+import { afterAll, beforeAll, expect, it, vi } from 'vitest';
 
 import { SESSION_COOKIE } from '@/config';
 
@@ -8,6 +8,18 @@ import { InputParseError } from '@/src/entities/errors/common';
 
 const signUpController = getInjection('ISignUpController');
 
+const TEST_VERIFY_BASE_URL = 'http://localhost:3000/en/verify-email';
+
+beforeAll(() => {
+  vi.spyOn(global, 'fetch').mockResolvedValue(
+    new Response(null, { status: 200 })
+  );
+});
+
+afterAll(() => {
+  vi.restoreAllMocks();
+});
+
 // A great guide on test names
 // https://www.epicweb.dev/talks/how-to-write-better-test-names
 it('returns cookie', async () => {
@@ -15,6 +27,7 @@ it('returns cookie', async () => {
     email: 'newUser@test.com',
     password: 'password',
     confirmPassword: 'password',
+    verifyBaseUrl: TEST_VERIFY_BASE_URL,
   });
 
   expect(user).toBeDefined();
@@ -34,6 +47,7 @@ it('throws for invalid input', async () => {
       email: 'no',
       password: 'no',
       confirmPassword: 'nah',
+      verifyBaseUrl: TEST_VERIFY_BASE_URL,
     })
   ).rejects.toBeInstanceOf(InputParseError);
 
@@ -43,6 +57,7 @@ it('throws for invalid input', async () => {
       email: 'nikolovlazar',
       password: 'password',
       confirmPassword: 'passwords',
+      verifyBaseUrl: TEST_VERIFY_BASE_URL,
     })
   ).rejects.toBeInstanceOf(InputParseError);
 });
@@ -53,6 +68,7 @@ it('throws for existing email', async () => {
       email: 'one@test.com',
       password: 'doesntmatter',
       confirmPassword: 'doesntmatter',
+      verifyBaseUrl: TEST_VERIFY_BASE_URL,
     })
   ).rejects.toBeInstanceOf(AuthenticationError);
 });

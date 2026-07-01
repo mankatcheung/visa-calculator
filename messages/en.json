@@ -83,5 +83,11 @@
   "resetLinkSent": "If that email is registered, a reset link has been sent",
   "resetPassword": "Reset Password",
   "resetPasswordDescription": "Enter your new password below",
-  "invalidOrExpiredToken": "Invalid or expired password reset link"
+  "invalidOrExpiredToken": "Invalid or expired password reset link",
+  "verifyEmail": "Verify Your Email",
+  "verifyEmailDescription": "We sent a verification link to your email address. Please check your inbox and click the link to activate your account.",
+  "verifyEmailResend": "Resend verification email",
+  "verifyEmailResendSuccess": "Verification email sent",
+  "verifyEmailSuccess": "Email verified! You are now logged in.",
+  "verifyEmailInvalidToken": "Invalid or expired verification link"
 }

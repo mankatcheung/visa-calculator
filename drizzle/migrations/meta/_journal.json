@@ -71,6 +71,20 @@
       "when": 1782305442322,
       "tag": "0009_orange_black_tarantula",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "6",
+      "when": 1782905178215,
+      "tag": "0010_red_bromley",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "6",
+      "when": 1782909335478,
+      "tag": "0011_loose_loners",
+      "breakpoints": true
     }
   ]
 }

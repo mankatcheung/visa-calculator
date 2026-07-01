@@ -9,6 +9,7 @@ const inputSchema = z
     email: z.email(),
     password: z.string().min(6).max(31),
     confirmPassword: z.string().min(6).max(31),
+    verifyBaseUrl: z.string().url(),
   })
   .superRefine(({ password, confirmPassword }, ctx) => {
     if (confirmPassword !== password) {

@@ -111,6 +111,7 @@ export class UsersRepository implements IUsersRepository {
             id: input.id,
             email: input.email,
             passwordHash,
+            emailVerified: false,
           };
           const query = db.insert(users).values(newUser).returning();
 
@@ -138,6 +139,37 @@ export class UsersRepository implements IUsersRepository {
           }
           this.crashReporterService.report(err);
           throw err; // TODO: convert to Entities error
+        }
+      }
+    );
+  }
+
+  async verifyUserEmail(id: string): Promise<User> {
+    return await this.instrumentationService.startSpan(
+      { name: 'UsersRepository > verifyUserEmail' },
+      async () => {
+        try {
+          const query = db
+            .update(users)
+            .set({ emailVerified: true })
+            .where(eq(users.id, id))
+            .returning();
+          const [updated] = await this.instrumentationService.startSpan(
+            {
+              name: query.toSQL().sql,
+              op: 'db.query',
+              attributes: { 'db.system': 'sqlite' },
+            },
+            () => query.execute()
+          );
+          if (updated) {
+            return updated;
+          } else {
+            throw new DatabaseOperationError('Cannot verify user email.');
+          }
+        } catch (err) {
+          this.crashReporterService.report(err);
+          throw err;
         }
       }
     );

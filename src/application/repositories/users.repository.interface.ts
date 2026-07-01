@@ -11,4 +11,5 @@ export interface IUsersRepository {
     input: Partial<UpdateUser>,
     tx?: ITransaction
   ): Promise<User>;
+  verifyUserEmail(id: string): Promise<User>;
 }
