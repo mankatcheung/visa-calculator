@@ -30,6 +30,8 @@ export const requestEmailChangeUseCase =
           throw new InputParseError('Email has been taken');
         }
 
+        const currentUser = await usersRepository.getUser(userId);
+
         await emailChangeTokensRepository.deleteTokensByUserId(userId);
 
         const otpArray = new Uint32Array(1);
@@ -52,6 +54,14 @@ export const requestEmailChangeUseCase =
         } catch {
           // Email delivery failure is non-fatal: the token is stored and the
           // user can request a resend.
+        }
+
+        if (currentUser) {
+          try {
+            await emailService.sendEmailChangeAlert(currentUser.email, input.email);
+          } catch {
+            // Alert delivery failure is non-fatal.
+          }
         }
 
         return { pendingEmail: input.email };

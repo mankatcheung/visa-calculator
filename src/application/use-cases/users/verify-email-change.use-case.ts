@@ -28,6 +28,7 @@ export const verifyEmailChangeUseCase =
         const token =
           await emailChangeTokensRepository.getToken(tokenHash);
         if (!token || token.userId !== userId) {
+          await emailChangeTokensRepository.deleteTokensByUserId(userId);
           throw new AuthenticationError('Invalid or expired verification code');
         }
 

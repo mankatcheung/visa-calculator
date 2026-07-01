@@ -27,6 +27,7 @@ import { IGetUserSettingsForUserUseCase } from '@/src/application/use-cases/user
 import { IUpdateUserSettingsUseCase } from '@/src/application/use-cases/user-settings/update-user-settings.use-case';
 import { IGetUserUseCase } from '@/src/application/use-cases/users/get-user.use-case';
 import { ICancelEmailChangeUseCase } from '@/src/application/use-cases/users/cancel-email-change.use-case';
+import { IGetPendingEmailChangeUseCase } from '@/src/application/use-cases/users/get-pending-email-change.use-case';
 import { IRequestEmailChangeUseCase } from '@/src/application/use-cases/users/request-email-change.use-case';
 import { IVerifyEmailChangeUseCase } from '@/src/application/use-cases/users/verify-email-change.use-case';
 import { IUpdateUserPasswordUseCase } from '@/src/application/use-cases/users/update-user-password.use-case';
@@ -46,6 +47,7 @@ import { IGetUserSettingsForUserController } from '@/src/interface-adapters/cont
 import { IUpdateUserSettingsController } from '@/src/interface-adapters/controllers/user-settings/update-user-settings.controller';
 import { IGetSelfUserController } from '@/src/interface-adapters/controllers/users/get-self-user.controller';
 import { ICancelEmailChangeController } from '@/src/interface-adapters/controllers/users/cancel-email-change.controller';
+import { IGetPendingEmailChangeController } from '@/src/interface-adapters/controllers/users/get-pending-email-change.controller';
 import { IRequestEmailChangeController } from '@/src/interface-adapters/controllers/users/request-email-change.controller';
 import { IVerifyEmailChangeController } from '@/src/interface-adapters/controllers/users/verify-email-change.controller';
 import { IUpdateUserPasswordController } from '@/src/interface-adapters/controllers/users/update-user-password.controller';
@@ -85,6 +87,7 @@ export const DI_SYMBOLS = {
   IRequestEmailChangeUseCase: Symbol.for('IRequestEmailChangeUseCase'),
   IVerifyEmailChangeUseCase: Symbol.for('IVerifyEmailChangeUseCase'),
   ICancelEmailChangeUseCase: Symbol.for('ICancelEmailChangeUseCase'),
+  IGetPendingEmailChangeUseCase: Symbol.for('IGetPendingEmailChangeUseCase'),
   IUpdateUserPasswordUseCase: Symbol.for('IUpdateUserPasswordUseCase'),
   IGetUserSettingsForUserUseCase: Symbol.for('IGetUserSettingsForUserUseCase'),
   IUpdateUserSettingsUseCase: Symbol.for('IUpdateUserSettingsUseCase'),
@@ -106,6 +109,7 @@ export const DI_SYMBOLS = {
   IRequestEmailChangeController: Symbol.for('IRequestEmailChangeController'),
   IVerifyEmailChangeController: Symbol.for('IVerifyEmailChangeController'),
   ICancelEmailChangeController: Symbol.for('ICancelEmailChangeController'),
+  IGetPendingEmailChangeController: Symbol.for('IGetPendingEmailChangeController'),
   IUpdateUserPasswordController: Symbol.for('IUpdateUserPasswordController'),
   IGetUserSettingsForUserController: Symbol.for(
     'IGetUserSettingsForUserController'
@@ -148,6 +152,7 @@ export interface DI_RETURN_TYPES {
   IRequestEmailChangeUseCase: IRequestEmailChangeUseCase;
   IVerifyEmailChangeUseCase: IVerifyEmailChangeUseCase;
   ICancelEmailChangeUseCase: ICancelEmailChangeUseCase;
+  IGetPendingEmailChangeUseCase: IGetPendingEmailChangeUseCase;
   IUpdateUserPasswordUseCase: IUpdateUserPasswordUseCase;
   IGetUserSettingsForUserUseCase: IGetUserSettingsForUserUseCase;
   IUpdateUserSettingsUseCase: IUpdateUserSettingsUseCase;
@@ -169,6 +174,7 @@ export interface DI_RETURN_TYPES {
   IRequestEmailChangeController: IRequestEmailChangeController;
   IVerifyEmailChangeController: IVerifyEmailChangeController;
   ICancelEmailChangeController: ICancelEmailChangeController;
+  IGetPendingEmailChangeController: IGetPendingEmailChangeController;
   IUpdateUserPasswordController: IUpdateUserPasswordController;
   IGetUserSettingsForUserController: IGetUserSettingsForUserController;
   IUpdateUserSettingsController: IUpdateUserSettingsController;

@@ -2,10 +2,12 @@ import { createModule } from '@evyweb/ioctopus';
 
 import { DI_SYMBOLS } from '@/di/types';
 import { cancelEmailChangeUseCase } from '@/src/application/use-cases/users/cancel-email-change.use-case';
+import { getPendingEmailChangeUseCase } from '@/src/application/use-cases/users/get-pending-email-change.use-case';
 import { requestEmailChangeUseCase } from '@/src/application/use-cases/users/request-email-change.use-case';
 import { verifyEmailChangeUseCase } from '@/src/application/use-cases/users/verify-email-change.use-case';
 import { EmailChangeTokensRepository } from '@/src/infrastructure/repositories/email-change-tokens.repository';
 import { cancelEmailChangeController } from '@/src/interface-adapters/controllers/users/cancel-email-change.controller';
+import { getPendingEmailChangeController } from '@/src/interface-adapters/controllers/users/get-pending-email-change.controller';
 import { requestEmailChangeController } from '@/src/interface-adapters/controllers/users/request-email-change.controller';
 import { verifyEmailChangeController } from '@/src/interface-adapters/controllers/users/verify-email-change.controller';
 
@@ -44,6 +46,13 @@ export function createEmailChangeModule() {
     ]);
 
   emailChangeModule
+    .bind(DI_SYMBOLS.IGetPendingEmailChangeUseCase)
+    .toHigherOrderFunction(getPendingEmailChangeUseCase, [
+      DI_SYMBOLS.IInstrumentationService,
+      DI_SYMBOLS.IEmailChangeTokensRepository,
+    ]);
+
+  emailChangeModule
     .bind(DI_SYMBOLS.IRequestEmailChangeController)
     .toHigherOrderFunction(requestEmailChangeController, [
       DI_SYMBOLS.IInstrumentationService,
@@ -65,6 +74,14 @@ export function createEmailChangeModule() {
       DI_SYMBOLS.IInstrumentationService,
       DI_SYMBOLS.IAuthenticationService,
       DI_SYMBOLS.ICancelEmailChangeUseCase,
+    ]);
+
+  emailChangeModule
+    .bind(DI_SYMBOLS.IGetPendingEmailChangeController)
+    .toHigherOrderFunction(getPendingEmailChangeController, [
+      DI_SYMBOLS.IInstrumentationService,
+      DI_SYMBOLS.IAuthenticationService,
+      DI_SYMBOLS.IGetPendingEmailChangeUseCase,
     ]);
 
   return emailChangeModule;

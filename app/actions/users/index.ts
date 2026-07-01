@@ -89,14 +89,11 @@ export async function getPendingEmailChange() {
     { recordResponse: true },
     async () => {
       try {
+        const controller = getInjection('IGetPendingEmailChangeController');
         const cookieStore = await cookies();
-        const sessionId = cookieStore.get(SESSION_COOKIE)?.value;
-        if (!sessionId) return { result: null };
-        const authService = getInjection('IAuthenticationService');
-        const { user } = await authService.validateSession(sessionId);
-        const repo = getInjection('IEmailChangeTokensRepository');
-        const token = await repo.getActiveTokenByUserId(user.id);
-        return { result: token ? token.pendingEmail : null };
+        const token = cookieStore.get(SESSION_COOKIE)?.value;
+        const pendingEmail = await controller(token);
+        return { result: pendingEmail };
       } catch {
         return { result: null };
       }

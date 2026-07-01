@@ -64,7 +64,7 @@ export const emailVerificationTokens = sqliteTable(
 export const emailChangeTokens = sqliteTable('email_change_tokens', {
   tokenHash: text('token_hash').primaryKey().notNull(),
   userId: text('user_id')
-    .references(() => users.id)
+    .references(() => users.id, { onDelete: 'cascade' })
     .notNull(),
   pendingEmail: text('pending_email').notNull(),
   expiresAt: integer('expires_at', { mode: 'timestamp' }).notNull(),
