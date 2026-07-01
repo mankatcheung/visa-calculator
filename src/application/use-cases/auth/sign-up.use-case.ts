@@ -82,10 +82,15 @@ export const signUpUseCase =
           userId,
           expiresAt
         );
-        await emailService.sendVerificationEmail(
-          input.email,
-          `${input.verifyBaseUrl}?token=${token}`
-        );
+        try {
+          await emailService.sendVerificationEmail(
+            input.email,
+            `${input.verifyBaseUrl}?token=${token}`
+          );
+        } catch {
+          // Email delivery failure is non-fatal: the token is stored and the
+          // user can request a resend from /verify-email.
+        }
 
         const { cookie, session } =
           await authenticationService.createSession(newUser);
