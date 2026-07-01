@@ -38,3 +38,11 @@ export const userSettings = sqliteTable('user_settings', {
     .references(() => users.id)
     .notNull(),
 });
+
+export const passwordResetTokens = sqliteTable('password_reset_tokens', {
+  tokenHash: text('token_hash').primaryKey().notNull(),
+  userId: text('user_id')
+    .references(() => users.id)
+    .notNull(),
+  expiresAt: integer('expires_at', { mode: 'timestamp' }).notNull(),
+});

@@ -77,5 +77,11 @@
   "summary": "概要",
   "leavesRecords": "離開記錄",
   "noRecords": "未有記錄",
-  "updateSettingsReminder": "可以於<settingsLink>設定</settingsLink>頁面，更新你的簽證資料。"
+  "updateSettingsReminder": "可以於<settingsLink>設定</settingsLink>頁面，更新你的簽證資料。",
+  "forgotPasswordDescription": "輸入您的電郵地址，我們將向您發送重置連結",
+  "sendResetLink": "發送重置連結",
+  "resetLinkSent": "如該電郵已註冊，重置連結已發送",
+  "resetPassword": "重置密碼",
+  "resetPasswordDescription": "請在下方輸入您的新密碼",
+  "invalidOrExpiredToken": "重置連結無效或已過期"
 }

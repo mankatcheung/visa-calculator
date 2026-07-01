@@ -77,5 +77,11 @@
   "summary": "Summary",
   "leavesRecords": "Leaves Records",
   "noRecords": "No records",
-  "updateSettingsReminder": "You can update the visa information on the <settingsLink>settings</settingsLink> page."
+  "updateSettingsReminder": "You can update the visa information on the <settingsLink>settings</settingsLink> page.",
+  "forgotPasswordDescription": "Enter your email address and we'll send you a reset link",
+  "sendResetLink": "Send Reset Link",
+  "resetLinkSent": "If that email is registered, a reset link has been sent",
+  "resetPassword": "Reset Password",
+  "resetPasswordDescription": "Enter your new password below",
+  "invalidOrExpiredToken": "Invalid or expired password reset link"
 }
