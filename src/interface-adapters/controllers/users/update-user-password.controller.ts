@@ -1,5 +1,6 @@
 import { z } from 'zod';
 
+import { ISessionsRepository } from '@/src/application/repositories/sessions.repository.interface';
 import { IAuthenticationService } from '@/src/application/services/authentication.service.interface';
 import { IInstrumentationService } from '@/src/application/services/instrumentation.service.interface';
 import { ITransactionManagerService } from '@/src/application/services/transaction-manager.service.interface';
@@ -52,7 +53,8 @@ export const updateUserPasswordController =
     instrumentationService: IInstrumentationService,
     authenticationService: IAuthenticationService,
     transactionManagerService: ITransactionManagerService,
-    updateUserPasswordUseCase: IUpdateUserPasswordUseCase
+    updateUserPasswordUseCase: IUpdateUserPasswordUseCase,
+    sessionsRepository: ISessionsRepository
   ) =>
   async (
     input: Partial<z.infer<typeof inputSchema>>,
@@ -66,7 +68,8 @@ export const updateUserPasswordController =
         if (!token) {
           throw new UnauthenticatedError('Must be logged in to update a leave');
         }
-        const { user } = await authenticationService.validateSession(token);
+        const { session, user } =
+          await authenticationService.validateSession(token);
 
         const { data, error: inputParseError } = inputSchema.safeParse(input);
 
@@ -94,6 +97,10 @@ export const updateUserPasswordController =
             })
         );
         if (!newUser) throw new Error('no user is updated');
+        await sessionsRepository.deleteOtherSessionsByUserId(
+          user.id,
+          session.id
+        );
         return presenter(newUser!, instrumentationService);
       }
     );

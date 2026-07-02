@@ -55,6 +55,7 @@ export function createUsersModule() {
       DI_SYMBOLS.IAuthenticationService,
       DI_SYMBOLS.ITransactionManagerService,
       DI_SYMBOLS.IUpdateUserPasswordUseCase,
+      DI_SYMBOLS.ISessionRepository,
     ]);
   return usersModule;
 }

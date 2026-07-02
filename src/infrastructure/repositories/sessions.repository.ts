@@ -1,6 +1,6 @@
 import { db } from '@/drizzle';
 import { encodeBase32LowerCaseNoPadding } from '@oslojs/encoding';
-import { eq } from 'drizzle-orm';
+import { and, eq, ne } from 'drizzle-orm';
 
 import { sessions, users } from '@/drizzle/schema';
 import { ISessionsRepository } from '@/src/application/repositories/sessions.repository.interface';
@@ -170,6 +170,39 @@ export class SessionsRepository implements ISessionsRepository {
       }
     );
   }
+  async deleteOtherSessionsByUserId(
+    userId: string,
+    currentSessionId: string
+  ): Promise<void> {
+    const invoker = db;
+    return await this.instrumentationService.startSpan(
+      { name: 'SessionsRepository > deleteOtherSessionsByUserId' },
+      async () => {
+        try {
+          const query = invoker
+            .delete(sessions)
+            .where(
+              and(
+                eq(sessions.userId, userId),
+                ne(sessions.id, currentSessionId)
+              )
+            );
+          await this.instrumentationService.startSpan(
+            {
+              name: query.toSQL().sql,
+              op: 'db.query',
+              attributes: { 'db.system': 'sqlite' },
+            },
+            () => query.execute()
+          );
+        } catch (err) {
+          this.crashReporterService.report(err);
+          throw err;
+        }
+      }
+    );
+  }
+
   async deleteUserSession(userId: string): Promise<void> {
     const invoker = db;
     return await this.instrumentationService.startSpan(

@@ -36,9 +36,7 @@ export const updateUserPasswordUseCase =
         }
         const newUser = await usersRepository.updateUser(
           userId,
-          {
-            password: input.newPassword,
-          },
+          { password: input.newPassword },
           tx
         );
 

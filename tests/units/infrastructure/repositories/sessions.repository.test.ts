@@ -113,3 +113,34 @@ it('delete user session', async () => {
     sessionsRepository.deleteUserSession('1')
   ).resolves.not.toThrow();
 });
+
+it('delete other sessions by userId keeps current session and removes the rest', async () => {
+  const expiresAt = new Date(2025, 10, 2);
+  const currentSessionId = 'sessionId-current';
+  const otherSessionId = 'sessionId-other';
+
+  await sessionsRepository.createSession({
+    id: currentSessionId,
+    userId: '2',
+    expiresAt,
+  });
+  await sessionsRepository.createSession({
+    id: otherSessionId,
+    userId: '2',
+    expiresAt,
+  });
+
+  await expect(
+    sessionsRepository.deleteOtherSessionsByUserId('2', currentSessionId)
+  ).resolves.not.toThrow();
+
+  await expect(
+    sessionsRepository.getSession(currentSessionId)
+  ).resolves.toMatchObject({
+    session: { id: currentSessionId, userId: '2' },
+  });
+
+  await expect(
+    sessionsRepository.getSession(otherSessionId)
+  ).resolves.toBeUndefined();
+});

@@ -11,4 +11,8 @@ export interface ISessionsRepository {
   ): Promise<Session>;
   deleteSession(sessionId: string): Promise<void>;
   deleteUserSession(userId: string): Promise<void>;
+  deleteOtherSessionsByUserId(
+    userId: string,
+    currentSessionId: string
+  ): Promise<void>;
 }
