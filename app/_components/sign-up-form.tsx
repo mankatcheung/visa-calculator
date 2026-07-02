@@ -3,9 +3,10 @@
 import { Label } from '@radix-ui/react-label';
 import { Loader2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { useTransition } from 'react';
+import { useState, useTransition } from 'react';
 import { toast } from 'sonner';
 
+import { PasswordStrengthMeter } from '@/app/_components/password-strength-meter';
 import { Button } from '@/app/_components/ui/button';
 import {
   Card,
@@ -26,6 +27,7 @@ export function SignUpForm({
 }: React.ComponentPropsWithoutRef<'div'>) {
   const t = useTranslations();
   const [loading, startTransition] = useTransition();
+  const [password, setPassword] = useState('');
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -73,7 +75,9 @@ export function SignUpForm({
                   id="password"
                   data-cy="password"
                   required
+                  onChange={(e) => setPassword(e.target.value)}
                 />
+                <PasswordStrengthMeter password={password} />
               </div>
               <div className="grid gap-2">
                 <div className="flex items-center">

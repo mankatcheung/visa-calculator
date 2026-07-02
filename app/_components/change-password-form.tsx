@@ -8,6 +8,7 @@ import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
+import { PasswordStrengthMeter } from '@/app/_components/password-strength-meter';
 import { Button } from '@/app/_components/ui/button';
 import {
   Form,
@@ -24,10 +25,12 @@ const DataInput = ({
   value,
   onChange,
   label,
+  extra,
 }: {
   value: string;
   onChange: (s: string) => void;
   label: string;
+  extra?: React.ReactNode;
 }) => {
   return (
     <FormItem className="flex flex-col">
@@ -40,6 +43,7 @@ const DataInput = ({
           onChange={(e) => onChange(e.target.value)}
         />
       </FormControl>
+      {extra}
       <FormMessage />
     </FormItem>
   );
@@ -110,6 +114,7 @@ export function ChangePasswordForm({}: ChangePasswordFormProps) {
               value={field.value}
               onChange={field.onChange}
               label={t('newPassword')}
+              extra={<PasswordStrengthMeter password={field.value} />}
             />
           )}
         />

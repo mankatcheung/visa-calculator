@@ -28,6 +28,23 @@ it('renders all three password fields and a submit button', () => {
   expect(screen.getByRole('button', { name: 'submit' })).toBeInTheDocument();
 });
 
+it('shows the password strength meter under newPassword as it is typed', async () => {
+  render(<ChangePasswordForm />);
+
+  expect(
+    screen.queryByText('passwordStrength:', { exact: false })
+  ).not.toBeInTheDocument();
+
+  await userEvent.type(
+    screen.getByLabelText('newPassword'),
+    'Tr0ub4dor&Xk9mPqLz!'
+  );
+
+  expect(
+    screen.getByText('passwordStrength: passwordStrengthStrong')
+  ).toBeInTheDocument();
+});
+
 it('shows pleaseInput under each field when submitted empty', async () => {
   render(<ChangePasswordForm />);
 
