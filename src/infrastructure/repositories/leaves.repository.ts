@@ -159,4 +159,29 @@ export class LeavesRepository implements ILeavesRepository {
       }
     );
   }
+
+  async deleteLeavesForUser(userId: string, tx?: Transaction): Promise<void> {
+    const invoker = tx ?? db;
+
+    await this.instrumentationService.startSpan(
+      { name: 'LeavesRepository > deleteLeavesForUser' },
+      async () => {
+        try {
+          const query = invoker.delete(leaves).where(eq(leaves.userId, userId));
+
+          await this.instrumentationService.startSpan(
+            {
+              name: query.toSQL().sql,
+              op: 'db.query',
+              attributes: { 'db.system': 'sqlite' },
+            },
+            () => query.execute()
+          );
+        } catch (err) {
+          this.crashReporterService.report(err);
+          throw err; // leave: convert to Entities error
+        }
+      }
+    );
+  }
 }

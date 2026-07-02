@@ -117,4 +117,33 @@ export class UserSettingsRepository implements IUserSettingsRepository {
       }
     );
   }
+
+  async deleteUserSettingsForUser(
+    userId: string,
+    tx?: Transaction
+  ): Promise<void> {
+    const invoker = tx ?? db;
+    return await this.instrumentationService.startSpan(
+      { name: 'UserSettingsRepository > deleteUserSettingsForUser' },
+      async () => {
+        try {
+          const query = invoker
+            .delete(userSettings)
+            .where(eq(userSettings.userId, userId));
+
+          await this.instrumentationService.startSpan(
+            {
+              name: query.toSQL().sql,
+              op: 'db.query',
+              attributes: { 'db.system': 'sqlite' },
+            },
+            () => query.execute()
+          );
+        } catch (err) {
+          this.crashReporterService.report(err);
+          throw err; // leave: convert to Entities error
+        }
+      }
+    );
+  }
 }

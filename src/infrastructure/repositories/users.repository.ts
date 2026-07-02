@@ -261,4 +261,27 @@ export class UsersRepository implements IUsersRepository {
       }
     );
   }
+
+  async deleteUser(id: string, tx?: Transaction): Promise<void> {
+    const invoker = tx ?? db;
+    return await this.instrumentationService.startSpan(
+      { name: 'UsersRepository > deleteUser' },
+      async () => {
+        try {
+          const query = invoker.delete(users).where(eq(users.id, id));
+          await this.instrumentationService.startSpan(
+            {
+              name: query.toSQL().sql,
+              op: 'db.query',
+              attributes: { 'db.system': 'sqlite' },
+            },
+            () => query.execute()
+          );
+        } catch (err) {
+          this.crashReporterService.report(err);
+          throw err;
+        }
+      }
+    );
+  }
 }
