@@ -4,6 +4,8 @@ import {
   encodeHexLowerCase,
 } from '@oslojs/encoding';
 
+import { APP_URL, SupportedLocale } from '@/config';
+
 import { IEmailVerificationTokensRepository } from '@/src/application/repositories/email-verification-tokens.repository.interface';
 import { IUsersRepository } from '@/src/application/repositories/users.repository.interface';
 import { IEmailService } from '@/src/application/services/email.service.interface';
@@ -20,7 +22,7 @@ export const resendVerificationEmailUseCase =
     emailVerificationTokensRepository: IEmailVerificationTokensRepository,
     emailService: IEmailService
   ) =>
-  async (userId: string, verifyBaseUrl: string): Promise<void> => {
+  async (userId: string, locale: SupportedLocale): Promise<void> => {
     return await instrumentationService.startSpan(
       { name: 'resendVerificationEmail Use Case' },
       async () => {
@@ -45,7 +47,10 @@ export const resendVerificationEmailUseCase =
           expiresAt
         );
 
-        const verifyUrl = `${verifyBaseUrl}?token=${token}`;
+        // SECURITY: the base URL is always built from the trusted, server-
+        // configured APP_URL — never from client input or the `Host` header —
+        // to prevent verification-link poisoning (CWE-640).
+        const verifyUrl = `${APP_URL}/${locale}/verify-email?token=${token}`;
         await emailService.sendVerificationEmail(user.email, verifyUrl);
       }
     );

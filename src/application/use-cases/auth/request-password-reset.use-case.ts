@@ -4,6 +4,8 @@ import {
   encodeHexLowerCase,
 } from '@oslojs/encoding';
 
+import { APP_URL, SupportedLocale } from '@/config';
+
 import { IPasswordResetTokensRepository } from '@/src/application/repositories/password-reset-tokens.repository.interface';
 import { IUsersRepository } from '@/src/application/repositories/users.repository.interface';
 import { IEmailService } from '@/src/application/services/email.service.interface';
@@ -20,7 +22,7 @@ export const requestPasswordResetUseCase =
     passwordResetTokensRepository: IPasswordResetTokensRepository,
     emailService: IEmailService
   ) =>
-  async (email: string, resetBaseUrl: string): Promise<void> => {
+  async (email: string, locale: SupportedLocale): Promise<void> => {
     return await instrumentationService.startSpan(
       { name: 'requestPasswordReset Use Case' },
       async () => {
@@ -46,7 +48,10 @@ export const requestPasswordResetUseCase =
           expiresAt
         );
 
-        const resetUrl = `${resetBaseUrl}?token=${token}`;
+        // SECURITY: the base URL is always built from the trusted, server-
+        // configured APP_URL — never from client input or the `Host` header —
+        // to prevent password-reset link poisoning (CWE-640).
+        const resetUrl = `${APP_URL}/${locale}/reset-password?token=${token}`;
         await emailService.sendPasswordResetEmail(email, resetUrl);
       }
     );

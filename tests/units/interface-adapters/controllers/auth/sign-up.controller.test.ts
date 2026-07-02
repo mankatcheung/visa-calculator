@@ -8,8 +8,6 @@ import { InputParseError } from '@/src/entities/errors/common';
 
 const signUpController = getInjection('ISignUpController');
 
-const TEST_VERIFY_BASE_URL = 'http://localhost:3000/en/verify-email';
-
 beforeAll(() => {
   vi.spyOn(global, 'fetch').mockResolvedValue(
     new Response(null, { status: 200 })
@@ -27,7 +25,7 @@ it('returns cookie', async () => {
     email: 'newUser@test.com',
     password: 'password',
     confirmPassword: 'password',
-    verifyBaseUrl: TEST_VERIFY_BASE_URL,
+    locale: 'en',
   });
 
   expect(user).toBeDefined();
@@ -47,7 +45,7 @@ it('throws for invalid input', async () => {
       email: 'no',
       password: 'no',
       confirmPassword: 'nah',
-      verifyBaseUrl: TEST_VERIFY_BASE_URL,
+      locale: 'en',
     })
   ).rejects.toBeInstanceOf(InputParseError);
 
@@ -57,7 +55,18 @@ it('throws for invalid input', async () => {
       email: 'nikolovlazar',
       password: 'password',
       confirmPassword: 'passwords',
-      verifyBaseUrl: TEST_VERIFY_BASE_URL,
+      locale: 'en',
+    })
+  ).rejects.toBeInstanceOf(InputParseError);
+
+  // unsupported locale
+  await expect(
+    signUpController({
+      email: 'someone@test.com',
+      password: 'password',
+      confirmPassword: 'password',
+      // @ts-expect-error intentionally invalid locale
+      locale: 'fr',
     })
   ).rejects.toBeInstanceOf(InputParseError);
 });
@@ -68,7 +77,7 @@ it('throws for existing email', async () => {
       email: 'one@test.com',
       password: 'doesntmatter',
       confirmPassword: 'doesntmatter',
-      verifyBaseUrl: TEST_VERIFY_BASE_URL,
+      locale: 'en',
     })
   ).rejects.toBeInstanceOf(AuthenticationError);
 });

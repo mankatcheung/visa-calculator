@@ -8,6 +8,10 @@ concurrency:
 # Centralize environment variables
 env:
   NODE_VERSION: '22.x'
+  # e2e-tests and lighthouse build/run Next.js in production mode
+  # (`next build`/`next start` force NODE_ENV=production), which requires
+  # a trusted APP_URL to be configured -- see config.ts.
+  APP_URL: http://localhost:3000
 
 permissions:
   contents: read

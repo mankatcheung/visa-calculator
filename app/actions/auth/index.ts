@@ -3,7 +3,7 @@
 import { cookies, headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 
-import { SESSION_COOKIE } from '@/config';
+import { DEFAULT_LOCALE, SESSION_COOKIE, SUPPORTED_LOCALES } from '@/config';
 
 import { getInjection } from '@/di/container';
 import {
@@ -12,6 +12,19 @@ import {
 } from '@/src/entities/errors/auth';
 import { InputParseError } from '@/src/entities/errors/common';
 import { Cookie } from '@/src/entities/models/cookie';
+
+// SECURITY: resolves the current request's locale for building links that
+// get emailed to users (password reset, email verification). The locale
+// header is client-influenceable, but it only ever selects a path segment
+// under our own trusted APP_URL — see `config.ts` — never the origin/host
+// itself, so it cannot be used to redirect a link to an attacker's domain.
+async function resolveLocale() {
+  const headersList = await headers();
+  const requested = headersList.get('x-your-custom-locale');
+  return (SUPPORTED_LOCALES as readonly string[]).includes(requested ?? '')
+    ? (requested as (typeof SUPPORTED_LOCALES)[number])
+    : DEFAULT_LOCALE;
+}
 
 export async function signUp(formData: FormData) {
   const instrumentationService = getInjection('IInstrumentationService');
@@ -22,13 +35,7 @@ export async function signUp(formData: FormData) {
       const email = formData.get('email')?.toString();
       const password = formData.get('password')?.toString();
       const confirmPassword = formData.get('confirmPassword')?.toString();
-
-      const headersList = await headers();
-      const host = headersList.get('host') ?? 'localhost:3000';
-      const protocol =
-        process.env.NODE_ENV === 'production' ? 'https' : 'http';
-      const locale = headersList.get('x-your-custom-locale') ?? 'en';
-      const verifyBaseUrl = `${protocol}://${host}/${locale}/verify-email`;
+      const locale = await resolveLocale();
 
       let sessionCookie: Cookie;
       try {
@@ -37,7 +44,7 @@ export async function signUp(formData: FormData) {
           email,
           password,
           confirmPassword,
-          verifyBaseUrl,
+          locale,
         });
         sessionCookie = cookie;
       } catch (err) {
@@ -116,18 +123,13 @@ export async function resendVerificationEmail() {
         return { error: 'Not authenticated.' };
       }
 
-      const headersList = await headers();
-      const host = headersList.get('host') ?? 'localhost:3000';
-      const protocol =
-        process.env.NODE_ENV === 'production' ? 'https' : 'http';
-      const locale = headersList.get('x-your-custom-locale') ?? 'en';
-      const verifyBaseUrl = `${protocol}://${host}/${locale}/verify-email`;
+      const locale = await resolveLocale();
 
       try {
         const authenticationService = getInjection('IAuthenticationService');
         const { user } = await authenticationService.validateSession(sessionId);
         const controller = getInjection('IResendVerificationEmailController');
-        await controller({ userId: user.id, verifyBaseUrl });
+        await controller({ userId: user.id, locale });
       } catch (err) {
         if (err instanceof InputParseError) {
           return { error: 'Invalid request.' };
@@ -193,16 +195,11 @@ export async function requestPasswordReset(formData: FormData) {
     { recordResponse: true },
     async () => {
       const email = formData.get('email')?.toString();
-      const headersList = await headers();
-      const host = headersList.get('host') ?? 'localhost:3000';
-      const protocol =
-        process.env.NODE_ENV === 'production' ? 'https' : 'http';
-      const locale = headersList.get('x-your-custom-locale') ?? 'en';
-      const resetBaseUrl = `${protocol}://${host}/${locale}/reset-password`;
+      const locale = await resolveLocale();
 
       try {
         const controller = getInjection('IRequestPasswordResetController');
-        await controller({ email, resetBaseUrl });
+        await controller({ email, locale });
       } catch (err) {
         if (err instanceof InputParseError) {
           return { error: 'Please enter a valid email address.' };

@@ -27,6 +27,14 @@ export async function seed() {
       email: 'four@test.com',
       passwordHash: hashSync('password-four', PASSWORD_SALT_ROUNDS),
     },
+    // Dedicated seed user (non-numeric id, out of the '1'-'11' range other
+    // tests dynamically create/consume) for the reset-password session-
+    // revocation test, so it doesn't collide with unrelated test isolation.
+    {
+      id: 'password-reset-seed',
+      email: 'password-reset-seed@test.com',
+      passwordHash: hashSync('password-reset-seed', PASSWORD_SALT_ROUNDS),
+    },
   ]);
   await db.insert(userSettings).values([
     {

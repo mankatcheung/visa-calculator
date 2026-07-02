@@ -1,12 +1,14 @@
 import { z } from 'zod';
 
+import { SUPPORTED_LOCALES } from '@/config';
+
 import { IInstrumentationService } from '@/src/application/services/instrumentation.service.interface';
 import { IRequestPasswordResetUseCase } from '@/src/application/use-cases/auth/request-password-reset.use-case';
 import { InputParseError } from '@/src/entities/errors/common';
 
 const inputSchema = z.object({
   email: z.string().email(),
-  resetBaseUrl: z.string().url(),
+  locale: z.enum(SUPPORTED_LOCALES),
 });
 
 export type IRequestPasswordResetController = ReturnType<
@@ -26,7 +28,7 @@ export const requestPasswordResetController =
         if (error) {
           throw new InputParseError('Invalid data', { cause: error });
         }
-        await requestPasswordResetUseCase(data.email, data.resetBaseUrl);
+        await requestPasswordResetUseCase(data.email, data.locale);
       }
     );
   };

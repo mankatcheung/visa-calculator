@@ -1,12 +1,14 @@
 import { z } from 'zod';
 
+import { SUPPORTED_LOCALES } from '@/config';
+
 import { IInstrumentationService } from '@/src/application/services/instrumentation.service.interface';
 import { IResendVerificationEmailUseCase } from '@/src/application/use-cases/auth/resend-verification-email.use-case';
 import { InputParseError } from '@/src/entities/errors/common';
 
 const inputSchema = z.object({
   userId: z.string().min(1),
-  verifyBaseUrl: z.string().url(),
+  locale: z.enum(SUPPORTED_LOCALES),
 });
 
 export type IResendVerificationEmailController = ReturnType<
@@ -26,7 +28,7 @@ export const resendVerificationEmailController =
         if (error) {
           throw new InputParseError('Invalid data', { cause: error });
         }
-        await resendVerificationEmailUseCase(data.userId, data.verifyBaseUrl);
+        await resendVerificationEmailUseCase(data.userId, data.locale);
       }
     );
   };
