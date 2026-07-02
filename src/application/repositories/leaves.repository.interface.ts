@@ -14,4 +14,5 @@ export interface ILeavesRepository {
     tx?: any
   ): Promise<Leave>;
   deleteLeave(id: number, tx?: any): Promise<void>;
+  deleteLeavesForUser(userId: string, tx?: any): Promise<void>;
 }

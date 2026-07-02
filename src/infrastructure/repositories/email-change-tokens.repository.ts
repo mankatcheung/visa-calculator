@@ -1,4 +1,4 @@
-import { db } from '@/drizzle';
+import { Transaction, db } from '@/drizzle';
 import { and, eq, gt } from 'drizzle-orm';
 
 import { emailChangeTokens } from '@/drizzle/schema';
@@ -120,12 +120,13 @@ export class EmailChangeTokensRepository implements IEmailChangeTokensRepository
     );
   }
 
-  async deleteTokensByUserId(userId: string): Promise<void> {
+  async deleteTokensByUserId(userId: string, tx?: Transaction): Promise<void> {
+    const invoker = tx ?? db;
     return await this.instrumentationService.startSpan(
       { name: 'EmailChangeTokensRepository > deleteTokensByUserId' },
       async () => {
         try {
-          const query = db
+          const query = invoker
             .delete(emailChangeTokens)
             .where(eq(emailChangeTokens.userId, userId));
           await this.instrumentationService.startSpan(

@@ -11,4 +11,5 @@ export interface IUserSettingsRepository {
     input: Partial<UserSettingUpdate>,
     tx?: any
   ): Promise<UserSetting>;
+  deleteUserSettingsForUser(userId: string, tx?: any): Promise<void>;
 }

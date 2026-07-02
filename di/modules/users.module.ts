@@ -1,11 +1,13 @@
 import { createModule } from '@evyweb/ioctopus';
 
 import { DI_SYMBOLS } from '@/di/types';
+import { deleteAccountUseCase } from '@/src/application/use-cases/users/delete-account.use-case';
 import { getUserDataExportUseCase } from '@/src/application/use-cases/users/get-user-data-export.use-case';
 import { getUserUseCase } from '@/src/application/use-cases/users/get-user.use-case';
 import { updateUserPasswordUseCase } from '@/src/application/use-cases/users/update-user-password.use-case';
 import { UsersRepository } from '@/src/infrastructure/repositories/users.repository';
 import { EmailBloomFilterService } from '@/src/infrastructure/services/email-bloom-filter.service';
+import { deleteAccountController } from '@/src/interface-adapters/controllers/users/delete-account.controller';
 import { getSelfUserController } from '@/src/interface-adapters/controllers/users/get-self-user.controller';
 import { getUserDataExportController } from '@/src/interface-adapters/controllers/users/get-user-data-export.controller';
 import { updateUserPasswordController } from '@/src/interface-adapters/controllers/users/update-user-password.controller';
@@ -52,6 +54,20 @@ export function createUsersModule() {
     ]);
 
   usersModule
+    .bind(DI_SYMBOLS.IDeleteAccountUseCase)
+    .toHigherOrderFunction(deleteAccountUseCase, [
+      DI_SYMBOLS.IInstrumentationService,
+      DI_SYMBOLS.IAuthenticationService,
+      DI_SYMBOLS.IUsersRepository,
+      DI_SYMBOLS.ILeavesRepository,
+      DI_SYMBOLS.IUserSettingsRepository,
+      DI_SYMBOLS.IPasswordResetTokensRepository,
+      DI_SYMBOLS.IEmailVerificationTokensRepository,
+      DI_SYMBOLS.IEmailChangeTokensRepository,
+      DI_SYMBOLS.ISessionRepository,
+    ]);
+
+  usersModule
     .bind(DI_SYMBOLS.IGetSelfUserController)
     .toHigherOrderFunction(getSelfUserController, [
       DI_SYMBOLS.IInstrumentationService,
@@ -75,6 +91,15 @@ export function createUsersModule() {
       DI_SYMBOLS.IInstrumentationService,
       DI_SYMBOLS.IAuthenticationService,
       DI_SYMBOLS.IGetUserDataExportUseCase,
+    ]);
+
+  usersModule
+    .bind(DI_SYMBOLS.IDeleteAccountController)
+    .toHigherOrderFunction(deleteAccountController, [
+      DI_SYMBOLS.IInstrumentationService,
+      DI_SYMBOLS.IAuthenticationService,
+      DI_SYMBOLS.ITransactionManagerService,
+      DI_SYMBOLS.IDeleteAccountUseCase,
     ]);
 
   return usersModule;

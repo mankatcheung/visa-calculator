@@ -1,4 +1,5 @@
 import { EmailChangeToken } from '@/src/entities/models/email-change-token';
+import type { ITransaction } from '@/src/entities/models/transaction.interface';
 
 export interface IEmailChangeTokensRepository {
   createToken(
@@ -10,5 +11,5 @@ export interface IEmailChangeTokensRepository {
   getToken(tokenHash: string): Promise<EmailChangeToken | undefined>;
   getActiveTokenByUserId(userId: string): Promise<EmailChangeToken | undefined>;
   deleteToken(tokenHash: string): Promise<void>;
-  deleteTokensByUserId(userId: string): Promise<void>;
+  deleteTokensByUserId(userId: string, tx?: ITransaction): Promise<void>;
 }
