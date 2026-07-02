@@ -20,7 +20,11 @@ export const verifyEmailChangeUseCase =
     usersRepository: IUsersRepository,
     sessionsRepository: ISessionsRepository
   ) =>
-  async (otp: string, userId: string, currentSessionId: string): Promise<User> => {
+  async (
+    otp: string,
+    userId: string,
+    currentSessionId: string
+  ): Promise<User> => {
     return await instrumentationService.startSpan(
       { name: 'verifyEmailChange Use Case', op: 'function' },
       async () => {

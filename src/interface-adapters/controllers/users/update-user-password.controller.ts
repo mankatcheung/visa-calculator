@@ -68,7 +68,8 @@ export const updateUserPasswordController =
         if (!token) {
           throw new UnauthenticatedError('Must be logged in to update a leave');
         }
-        const { session, user } = await authenticationService.validateSession(token);
+        const { session, user } =
+          await authenticationService.validateSession(token);
 
         const { data, error: inputParseError } = inputSchema.safeParse(input);
 
@@ -96,7 +97,10 @@ export const updateUserPasswordController =
             })
         );
         if (!newUser) throw new Error('no user is updated');
-        await sessionsRepository.deleteOtherSessionsByUserId(user.id, session.id);
+        await sessionsRepository.deleteOtherSessionsByUserId(
+          user.id,
+          session.id
+        );
         return presenter(newUser!, instrumentationService);
       }
     );

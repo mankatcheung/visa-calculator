@@ -60,9 +60,13 @@ it('revokes other sessions on successful email change', async () => {
   await verifyEmailChangeUseCase(capturedOtp, sessionA.userId, sessionA.id);
 
   // sessionA should still be valid (current session kept)
-  await expect(sessionsRepository.getSession(sessionA.id)).resolves.toBeTruthy();
+  await expect(
+    sessionsRepository.getSession(sessionA.id)
+  ).resolves.toBeTruthy();
   // sessionB should be revoked
-  await expect(sessionsRepository.getSession(sessionB.id)).resolves.toBeUndefined();
+  await expect(
+    sessionsRepository.getSession(sessionB.id)
+  ).resolves.toBeUndefined();
 });
 
 it('throws on wrong OTP', async () => {
