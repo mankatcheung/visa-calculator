@@ -111,5 +111,6 @@
   "passwordStrengthWeak": "Weak",
   "passwordStrengthFair": "Fair",
   "passwordStrengthGood": "Good",
-  "passwordStrengthStrong": "Strong"
+  "passwordStrengthStrong": "Strong",
+  "remarksPrivacyNotice": "Avoid including sensitive personal details (e.g. health or family information)."
 }

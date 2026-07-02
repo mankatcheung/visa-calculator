@@ -167,6 +167,7 @@ export function LeaveForm({ leave }: LeaveFormProps) {
                   {...field}
                 />
               </FormControl>
+              <FormDescription>{t('remarksPrivacyNotice')}</FormDescription>
               <FormMessage />
             </FormItem>
           )}

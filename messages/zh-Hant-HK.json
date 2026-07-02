@@ -111,5 +111,6 @@
   "passwordStrengthWeak": "弱",
   "passwordStrengthFair": "普通",
   "passwordStrengthGood": "良好",
-  "passwordStrengthStrong": "強"
+  "passwordStrengthStrong": "強",
+  "remarksPrivacyNotice": "請避免填寫敏感個人資料（例如健康或家庭狀況）。"
 }
