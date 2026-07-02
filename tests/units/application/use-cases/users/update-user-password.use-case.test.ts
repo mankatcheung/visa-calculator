@@ -21,23 +21,23 @@ afterAll(() => {
 
 it('update user password', async () => {
   const { session, user } = await signUpUseCase({
-    email: 'four@test.com',
-    password: 'password-four',
+    email: 'six@test.com',
+    password: 'password-six',
     verifyBaseUrl: TEST_VERIFY_BASE_URL,
   });
 
   await updateUserPasswordUseCase(
     {
-      currentPassword: 'password-four',
-      newPassword: 'password-four-new',
+      currentPassword: 'password-six',
+      newPassword: 'password-six-new',
       currentPasswordHash: user.passwordHash,
     },
     session.userId
   );
 
   const result = await signInUseCase({
-    email: 'four@test.com',
-    password: 'password-four-new',
+    email: 'six@test.com',
+    password: 'password-six-new',
   });
   expect(result).toHaveProperty('session');
   expect(result).toHaveProperty('cookie');
@@ -46,14 +46,14 @@ it('update user password', async () => {
 
 it('throws authentication error', async () => {
   const { session, user } = await signUpUseCase({
-    email: 'five@test.com',
-    password: 'password-five',
+    email: 'seven@test.com',
+    password: 'password-seven',
     verifyBaseUrl: TEST_VERIFY_BASE_URL,
   });
   await expect(
     updateUserPasswordUseCase(
       {
-        currentPassword: 'password-five-wrong',
+        currentPassword: 'password-seven-wrong',
         newPassword: 'doesntmatter',
         currentPasswordHash: user.passwordHash,
       },
