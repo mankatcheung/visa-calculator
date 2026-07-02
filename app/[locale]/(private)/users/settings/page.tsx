@@ -1,6 +1,7 @@
 import { getTranslations } from 'next-intl/server';
 
 import { ChangePasswordForm } from '@/app/_components/change-password-form';
+import { DataExportButton } from '@/app/_components/data-export-button';
 import { DeleteAccountForm } from '@/app/_components/delete-account-form';
 import { SettingsDateForm } from '@/app/_components/settings-date-form';
 import { Separator } from '@/app/_components/ui/separator';
@@ -47,6 +48,12 @@ export default async function UserSettingsPage() {
       <Separator />
       <div className="text-lg font-bold">{t('changePassword')}</div>
       <ChangePasswordForm />
+      <Separator />
+      <div className="text-lg font-bold">{t('yourData')}</div>
+      <p className="text-sm text-muted-foreground">
+        {t('downloadMyDataDescription')}
+      </p>
+      <DataExportButton />
       <Separator />
       <div className="text-lg font-bold text-destructive">
         {t('dangerZone')}

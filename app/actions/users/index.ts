@@ -211,6 +211,40 @@ export async function cancelEmailChange() {
   );
 }
 
+export async function getDataExport() {
+  const instrumentationService = getInjection('IInstrumentationService');
+  return await instrumentationService.instrumentServerAction(
+    'getDataExport',
+    { recordResponse: true },
+    async () => {
+      try {
+        const getUserDataExportController = getInjection(
+          'IGetUserDataExportController'
+        );
+        const cookieStore = await cookies();
+        const token = cookieStore.get(SESSION_COOKIE)?.value;
+        const data = await getUserDataExportController(token);
+
+        return { result: data };
+      } catch (err) {
+        if (
+          err instanceof AuthenticationError ||
+          err instanceof UnauthenticatedError
+        ) {
+          return { error: err.message };
+        }
+        const crashReporterService = getInjection('ICrashReporterService');
+        crashReporterService.report(err);
+
+        return {
+          error:
+            'An error happened. The developers have been notified. Please try again later.',
+        };
+      }
+    }
+  );
+}
+
 export async function deleteAccount(formData: FormData) {
   const instrumentationService = getInjection('IInstrumentationService');
   return await instrumentationService.instrumentServerAction(
