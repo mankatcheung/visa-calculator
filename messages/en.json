@@ -106,5 +106,11 @@
   "deleteAccount": "Delete Account",
   "deleteAccountDescription": "Permanently delete your account, visa settings, and leave records. This action cannot be undone.",
   "deleteAccountConfirmation": "This will permanently delete your account and all associated data. This action cannot be undone. Enter your password to confirm.",
+  "passwordStrength": "Password strength",
+  "passwordStrengthVeryWeak": "Very weak",
+  "passwordStrengthWeak": "Weak",
+  "passwordStrengthFair": "Fair",
+  "passwordStrengthGood": "Good",
+  "passwordStrengthStrong": "Strong",
   "remarksPrivacyNotice": "Avoid including sensitive personal details (e.g. health or family information)."
 }
