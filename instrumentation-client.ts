@@ -6,8 +6,23 @@ import * as Sentry from '@sentry/nextjs';
 Sentry.init({
   dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
 
+  // COMPLIANCE/PRIVACY: explicit opt-out of Sentry's "send default PII"
+  // behavior (IP addresses, request headers/cookies, etc.). Keep this
+  // false unless there's a documented reason to collect it -- see the
+  // Privacy Policy's data-inventory section.
+  sendDefaultPii: false,
+
   // Add optional integrations for additional features
-  integrations: [Sentry.replayIntegration()],
+  integrations: [
+    Sentry.replayIntegration({
+      // COMPLIANCE/PRIVACY: session replay records real user screens.
+      // These are Sentry's privacy-safe defaults, made explicit here so
+      // the choice is self-documenting and can't silently regress if the
+      // SDK's defaults ever change.
+      maskAllText: true,
+      blockAllMedia: true,
+    }),
+  ],
 
   // Define how likely traces are sampled. Adjust this value in production, or use tracesSampler for greater control.
   tracesSampleRate: 1,
