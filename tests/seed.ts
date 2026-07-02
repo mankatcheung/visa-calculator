@@ -35,6 +35,18 @@ export async function seed() {
       email: 'password-reset-seed@test.com',
       passwordHash: hashSync('password-reset-seed', PASSWORD_SALT_ROUNDS),
     },
+    // Dedicated seed user for the reset-password transaction-rollback test
+    // (verifies a failure mid-transaction leaves nothing committed), kept
+    // separate from the seed user above so the two tests can't interfere
+    // with each other's password/session state across test files.
+    {
+      id: 'reset-password-rollback-seed',
+      email: 'reset-password-rollback-seed@test.com',
+      passwordHash: hashSync(
+        'reset-password-rollback-seed',
+        PASSWORD_SALT_ROUNDS
+      ),
+    },
   ]);
   await db.insert(userSettings).values([
     {

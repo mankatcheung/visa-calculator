@@ -65,6 +65,7 @@ export function createAuthenticationModule() {
     .bind(DI_SYMBOLS.ISignUpController)
     .toHigherOrderFunction(signUpController, [
       DI_SYMBOLS.IInstrumentationService,
+      DI_SYMBOLS.ITransactionManagerService,
       DI_SYMBOLS.ISignUpUseCase,
     ]);
 

@@ -1,4 +1,4 @@
-import { db } from '@/drizzle';
+import { Transaction, db } from '@/drizzle';
 import { encodeBase32LowerCaseNoPadding } from '@oslojs/encoding';
 import { and, eq, ne } from 'drizzle-orm';
 
@@ -23,8 +23,8 @@ export class SessionsRepository implements ISessionsRepository {
     return token;
   }
 
-  async createSession(session: Session): Promise<Session> {
-    const invoker = db;
+  async createSession(session: Session, tx?: Transaction): Promise<Session> {
+    const invoker = tx ?? db;
     return await this.instrumentationService.startSpan(
       { name: 'SessionsRepository > createSession' },
       async () => {
@@ -203,8 +203,8 @@ export class SessionsRepository implements ISessionsRepository {
     );
   }
 
-  async deleteUserSession(userId: string): Promise<void> {
-    const invoker = db;
+  async deleteUserSession(userId: string, tx?: Transaction): Promise<void> {
+    const invoker = tx ?? db;
     return await this.instrumentationService.startSpan(
       { name: 'SessionsRepository > deleteUserSession' },
       async () => {

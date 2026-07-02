@@ -6,6 +6,7 @@ import { ISessionsRepository } from '@/src/application/repositories/sessions.rep
 import { IUsersRepository } from '@/src/application/repositories/users.repository.interface';
 import { IInstrumentationService } from '@/src/application/services/instrumentation.service.interface';
 import { AuthenticationError } from '@/src/entities/errors/auth';
+import type { ITransaction } from '@/src/entities/models/transaction.interface';
 
 export type IResetPasswordUseCase = ReturnType<typeof resetPasswordUseCase>;
 
@@ -16,7 +17,11 @@ export const resetPasswordUseCase =
     usersRepository: IUsersRepository,
     sessionsRepository: ISessionsRepository
   ) =>
-  async (token: string, newPassword: string): Promise<void> => {
+  async (
+    token: string,
+    newPassword: string,
+    tx?: ITransaction
+  ): Promise<void> => {
     return await instrumentationService.startSpan(
       { name: 'resetPassword Use Case' },
       async () => {
@@ -33,23 +38,30 @@ export const resetPasswordUseCase =
         }
 
         if (Date.now() >= resetToken.expiresAt.getTime()) {
-          await passwordResetTokensRepository.deleteToken(tokenHash);
+          await passwordResetTokensRepository.deleteToken(tokenHash, tx);
           throw new AuthenticationError(
             'Invalid or expired password reset token'
           );
         }
 
-        await usersRepository.updateUser(resetToken.userId, {
-          password: newPassword,
-        });
-        await passwordResetTokensRepository.deleteToken(tokenHash);
+        // Password update, token invalidation, and session revocation are
+        // all part of the same atomic write: a partial failure must never
+        // leave the password changed without the token consumed (replay
+        // risk) or without every session revoked (the whole point of this
+        // flow -- see comment below).
+        await usersRepository.updateUser(
+          resetToken.userId,
+          { password: newPassword },
+          tx
+        );
+        await passwordResetTokensRepository.deleteToken(tokenHash, tx);
 
         // SECURITY: forgot-password reset is the account-recovery path used
         // when a user suspects their credentials were compromised. Revoke
         // every existing session (there is no "current" session to spare
         // here, unlike an in-app password change) so a stolen session
         // cookie can no longer be used after the owner regains control.
-        await sessionsRepository.deleteUserSession(resetToken.userId);
+        await sessionsRepository.deleteUserSession(resetToken.userId, tx);
       }
     );
   };

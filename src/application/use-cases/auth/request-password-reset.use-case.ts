@@ -10,6 +10,7 @@ import { IPasswordResetTokensRepository } from '@/src/application/repositories/p
 import { IUsersRepository } from '@/src/application/repositories/users.repository.interface';
 import { IEmailService } from '@/src/application/services/email.service.interface';
 import { IInstrumentationService } from '@/src/application/services/instrumentation.service.interface';
+import type { ITransaction } from '@/src/entities/models/transaction.interface';
 
 export type IRequestPasswordResetUseCase = ReturnType<
   typeof requestPasswordResetUseCase
@@ -22,7 +23,11 @@ export const requestPasswordResetUseCase =
     passwordResetTokensRepository: IPasswordResetTokensRepository,
     emailService: IEmailService
   ) =>
-  async (email: string, locale: SupportedLocale): Promise<void> => {
+  async (
+    email: string,
+    locale: SupportedLocale,
+    tx?: ITransaction
+  ): Promise<void> => {
     return await instrumentationService.startSpan(
       { name: 'requestPasswordReset Use Case' },
       async () => {
@@ -32,7 +37,10 @@ export const requestPasswordResetUseCase =
           return;
         }
 
-        await passwordResetTokensRepository.deleteTokensByUserId(user.id);
+        // Old tokens are invalidated and the new one created atomically, so
+        // a failure between the two never leaves the user without any valid
+        // token and without the old one either.
+        await passwordResetTokensRepository.deleteTokensByUserId(user.id, tx);
 
         const bytes = new Uint8Array(20);
         crypto.getRandomValues(bytes);
@@ -45,7 +53,8 @@ export const requestPasswordResetUseCase =
         await passwordResetTokensRepository.createToken(
           tokenHash,
           user.id,
-          expiresAt
+          expiresAt,
+          tx
         );
 
         // SECURITY: the base URL is always built from the trusted, server-

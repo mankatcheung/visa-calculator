@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { SUPPORTED_LOCALES } from '@/config';
 
 import { IInstrumentationService } from '@/src/application/services/instrumentation.service.interface';
+import { ITransactionManagerService } from '@/src/application/services/transaction-manager.service.interface';
 import { IResendVerificationEmailUseCase } from '@/src/application/use-cases/auth/resend-verification-email.use-case';
 import { InputParseError } from '@/src/entities/errors/common';
 
@@ -18,6 +19,7 @@ export type IResendVerificationEmailController = ReturnType<
 export const resendVerificationEmailController =
   (
     instrumentationService: IInstrumentationService,
+    transactionManagerService: ITransactionManagerService,
     resendVerificationEmailUseCase: IResendVerificationEmailUseCase
   ) =>
   async (input: Partial<z.infer<typeof inputSchema>>): Promise<void> => {
@@ -28,7 +30,12 @@ export const resendVerificationEmailController =
         if (error) {
           throw new InputParseError('Invalid data', { cause: error });
         }
-        await resendVerificationEmailUseCase(data.userId, data.locale);
+        // Invalidating the old token(s) and creating the new one happens
+        // atomically. No manual try/catch + tx.rollback(): Drizzle already
+        // rolls back and rethrows the original error on any failure.
+        await transactionManagerService.startTransaction((tx) =>
+          resendVerificationEmailUseCase(data.userId, data.locale, tx)
+        );
       }
     );
   };

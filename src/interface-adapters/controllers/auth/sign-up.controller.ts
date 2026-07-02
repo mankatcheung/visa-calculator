@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { SUPPORTED_LOCALES } from '@/config';
 
 import { IInstrumentationService } from '@/src/application/services/instrumentation.service.interface';
+import { ITransactionManagerService } from '@/src/application/services/transaction-manager.service.interface';
 import { ISignUpUseCase } from '@/src/application/use-cases/auth/sign-up.use-case';
 import { InputParseError } from '@/src/entities/errors/common';
 
@@ -33,6 +34,7 @@ export type ISignUpController = ReturnType<typeof signUpController>;
 export const signUpController =
   (
     instrumentationService: IInstrumentationService,
+    transactionManagerService: ITransactionManagerService,
     signUpUseCase: ISignUpUseCase
   ) =>
   async (
@@ -47,7 +49,15 @@ export const signUpController =
           throw new InputParseError('Invalid data', { cause: inputParseError });
         }
 
-        return await signUpUseCase(data);
+        // The user row, settings, verification token, and session are all
+        // created atomically. No manual try/catch + tx.rollback() here:
+        // Drizzle's transaction() already rolls back automatically on any
+        // thrown error and rethrows it unchanged -- which matters, since
+        // callers rely on AuthenticationError ('Email taken') surfacing
+        // intact.
+        return await transactionManagerService.startTransaction((tx) =>
+          signUpUseCase(data, tx)
+        );
       }
     );
   };

@@ -1,15 +1,13 @@
+import { Transaction, db } from '@/drizzle';
 import { eq } from 'drizzle-orm';
 
-import { db } from '@/drizzle';
 import { passwordResetTokens } from '@/drizzle/schema';
 import { IPasswordResetTokensRepository } from '@/src/application/repositories/password-reset-tokens.repository.interface';
 import type { ICrashReporterService } from '@/src/application/services/crash-reporter.service.interface';
 import type { IInstrumentationService } from '@/src/application/services/instrumentation.service.interface';
 import { PasswordResetToken } from '@/src/entities/models/password-reset-token';
 
-export class PasswordResetTokensRepository
-  implements IPasswordResetTokensRepository
-{
+export class PasswordResetTokensRepository implements IPasswordResetTokensRepository {
   constructor(
     private readonly instrumentationService: IInstrumentationService,
     private readonly crashReporterService: ICrashReporterService
@@ -18,13 +16,15 @@ export class PasswordResetTokensRepository
   async createToken(
     tokenHash: string,
     userId: string,
-    expiresAt: Date
+    expiresAt: Date,
+    tx?: Transaction
   ): Promise<void> {
+    const invoker = tx ?? db;
     return await this.instrumentationService.startSpan(
       { name: 'PasswordResetTokensRepository > createToken' },
       async () => {
         try {
-          const query = db
+          const query = invoker
             .insert(passwordResetTokens)
             .values({ tokenHash, userId, expiresAt });
           await this.instrumentationService.startSpan(
@@ -67,12 +67,13 @@ export class PasswordResetTokensRepository
     );
   }
 
-  async deleteToken(tokenHash: string): Promise<void> {
+  async deleteToken(tokenHash: string, tx?: Transaction): Promise<void> {
+    const invoker = tx ?? db;
     return await this.instrumentationService.startSpan(
       { name: 'PasswordResetTokensRepository > deleteToken' },
       async () => {
         try {
-          const query = db
+          const query = invoker
             .delete(passwordResetTokens)
             .where(eq(passwordResetTokens.tokenHash, tokenHash));
           await this.instrumentationService.startSpan(
@@ -91,12 +92,13 @@ export class PasswordResetTokensRepository
     );
   }
 
-  async deleteTokensByUserId(userId: string): Promise<void> {
+  async deleteTokensByUserId(userId: string, tx?: Transaction): Promise<void> {
+    const invoker = tx ?? db;
     return await this.instrumentationService.startSpan(
       { name: 'PasswordResetTokensRepository > deleteTokensByUserId' },
       async () => {
         try {
-          const query = db
+          const query = invoker
             .delete(passwordResetTokens)
             .where(eq(passwordResetTokens.userId, userId));
           await this.instrumentationService.startSpan(
