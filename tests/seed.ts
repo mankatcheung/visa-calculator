@@ -22,6 +22,11 @@ export async function seed() {
       email: 'three@test.com',
       passwordHash: hashSync('password-three', PASSWORD_SALT_ROUNDS),
     },
+    {
+      id: '4',
+      email: 'four@test.com',
+      passwordHash: hashSync('password-four', PASSWORD_SALT_ROUNDS),
+    },
   ]);
   await db.insert(userSettings).values([
     {
@@ -44,6 +49,13 @@ export async function seed() {
       visaExpiryDate: new Date(2030, 5, 5),
       arrivalDate: new Date(2025, 6, 5),
       userId: '3',
+    },
+    {
+      id: 4,
+      visaStartDate: new Date(2025, 5, 5),
+      visaExpiryDate: new Date(2030, 5, 5),
+      arrivalDate: new Date(2025, 6, 5),
+      userId: '4',
     },
   ]);
 }

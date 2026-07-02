@@ -44,16 +44,16 @@ it('updates email on correct OTP', async () => {
 
 it('revokes other sessions on successful email change', async () => {
   const { session: sessionA } = await signInUseCase({
-    email: 'three@test.com',
-    password: 'password-three',
+    email: 'four@test.com',
+    password: 'password-four',
   });
   const { session: sessionB } = await signInUseCase({
-    email: 'three@test.com',
-    password: 'password-three',
+    email: 'four@test.com',
+    password: 'password-four',
   });
 
   await requestEmailChangeUseCase(
-    { email: 'three-devices-new@test.com' },
+    { email: 'four-devices-new@test.com' },
     sessionA.userId
   );
 
