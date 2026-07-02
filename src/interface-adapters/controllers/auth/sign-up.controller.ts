@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
+import { SUPPORTED_LOCALES } from '@/config';
+
 import { IInstrumentationService } from '@/src/application/services/instrumentation.service.interface';
 import { ISignUpUseCase } from '@/src/application/use-cases/auth/sign-up.use-case';
 import { InputParseError } from '@/src/entities/errors/common';
@@ -9,7 +11,7 @@ const inputSchema = z
     email: z.email(),
     password: z.string().min(6).max(31),
     confirmPassword: z.string().min(6).max(31),
-    verifyBaseUrl: z.string().url(),
+    locale: z.enum(SUPPORTED_LOCALES),
   })
   .superRefine(({ password, confirmPassword }, ctx) => {
     if (confirmPassword !== password) {

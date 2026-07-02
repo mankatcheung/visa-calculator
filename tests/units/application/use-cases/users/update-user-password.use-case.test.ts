@@ -7,8 +7,6 @@ const signInUseCase = getInjection('ISignInUseCase');
 const signUpUseCase = getInjection('ISignUpUseCase');
 const updateUserPasswordUseCase = getInjection('IUpdateUserPasswordUseCase');
 
-const TEST_VERIFY_BASE_URL = 'http://localhost:3000/en/verify-email';
-
 beforeAll(() => {
   vi.spyOn(global, 'fetch').mockResolvedValue(
     new Response(null, { status: 200 })
@@ -23,7 +21,7 @@ it('update user password', async () => {
   const { session, user } = await signUpUseCase({
     email: 'six@test.com',
     password: 'password-six',
-    verifyBaseUrl: TEST_VERIFY_BASE_URL,
+    locale: 'en',
   });
 
   await updateUserPasswordUseCase(
@@ -48,7 +46,7 @@ it('throws authentication error', async () => {
   const { session, user } = await signUpUseCase({
     email: 'seven@test.com',
     password: 'password-seven',
-    verifyBaseUrl: TEST_VERIFY_BASE_URL,
+    locale: 'en',
   });
   await expect(
     updateUserPasswordUseCase(

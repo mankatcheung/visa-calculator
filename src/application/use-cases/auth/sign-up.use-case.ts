@@ -4,6 +4,8 @@ import {
   encodeHexLowerCase,
 } from '@oslojs/encoding';
 
+import { APP_URL, SupportedLocale } from '@/config';
+
 import { IEmailVerificationTokensRepository } from '@/src/application/repositories/email-verification-tokens.repository.interface';
 import { IUserSettingsRepository } from '@/src/application/repositories/user-settings.repository.interface';
 import type { IUsersRepository } from '@/src/application/repositories/users.repository.interface';
@@ -32,7 +34,7 @@ export const signUpUseCase =
   (input: {
     email: string;
     password: string;
-    verifyBaseUrl: string;
+    locale: SupportedLocale;
   }): Promise<{
     session: Session;
     cookie: Cookie;
@@ -83,10 +85,11 @@ export const signUpUseCase =
           expiresAt
         );
         try {
-          await emailService.sendVerificationEmail(
-            input.email,
-            `${input.verifyBaseUrl}?token=${token}`
-          );
+          // SECURITY: the base URL is always built from the trusted, server-
+          // configured APP_URL — never from client input or the `Host`
+          // header — to prevent verification-link poisoning (CWE-640).
+          const verifyUrl = `${APP_URL}/${input.locale}/verify-email?token=${token}`;
+          await emailService.sendVerificationEmail(input.email, verifyUrl);
         } catch {
           // Email delivery failure is non-fatal: the token is stored and the
           // user can request a resend from /verify-email.

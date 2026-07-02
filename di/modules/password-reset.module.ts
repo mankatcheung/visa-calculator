@@ -37,6 +37,7 @@ export function createPasswordResetModule() {
       DI_SYMBOLS.IInstrumentationService,
       DI_SYMBOLS.IPasswordResetTokensRepository,
       DI_SYMBOLS.IUsersRepository,
+      DI_SYMBOLS.ISessionRepository,
     ]);
 
   passwordResetModule

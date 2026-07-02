@@ -5,8 +5,6 @@ import { AuthenticationError } from '@/src/entities/errors/auth';
 
 const signUpUseCase = getInjection('ISignUpUseCase');
 
-const TEST_VERIFY_BASE_URL = 'http://localhost:3000/en/verify-email';
-
 beforeAll(() => {
   vi.spyOn(global, 'fetch').mockResolvedValue(
     new Response(null, { status: 200 })
@@ -23,7 +21,7 @@ it('returns session and cookie', async () => {
   const result = await signUpUseCase({
     email: 'new@test.com',
     password: 'password-new',
-    verifyBaseUrl: TEST_VERIFY_BASE_URL,
+    locale: 'en',
   });
   expect(result).toHaveProperty('session');
   expect(result).toHaveProperty('cookie');
@@ -35,7 +33,7 @@ it('throws for invalid input', async () => {
     signUpUseCase({
       email: 'one@test.com',
       password: 'doesntmatter',
-      verifyBaseUrl: TEST_VERIFY_BASE_URL,
+      locale: 'en',
     })
   ).rejects.toBeInstanceOf(AuthenticationError);
 });
