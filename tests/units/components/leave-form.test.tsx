@@ -97,6 +97,7 @@ it('renders the date, color, remarks fields and a submit button', () => {
   expect(screen.getByLabelText('endDate')).toBeInTheDocument();
   expect(screen.getByLabelText('color')).toBeInTheDocument();
   expect(screen.getByLabelText('remarks')).toBeInTheDocument();
+  expect(screen.getByText('remarksPrivacyNotice')).toBeInTheDocument();
   expect(screen.getByRole('button', { name: 'submit' })).toBeInTheDocument();
 });
 
