@@ -97,5 +97,9 @@
   "emailChangeOtpInvalid": "請輸入有效的6位數字驗證碼",
   "emailChangeOtpSuccess": "電郵地址更新成功",
   "emailChangeOtpResent": "新驗證碼已發送",
-  "emailChangeOtpResend": "重新發送驗證碼"
+  "emailChangeOtpResend": "重新發送驗證碼",
+  "yourData": "您的資料",
+  "downloadMyData": "下載我的資料",
+  "downloadMyDataDescription": "以 JSON 檔案下載您的帳戶、簽證設定及離開記錄副本。",
+  "downloadMyDataError": "無法匯出您的資料，請稍後再試。"
 }

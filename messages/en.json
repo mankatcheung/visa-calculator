@@ -97,5 +97,9 @@
   "emailChangeOtpInvalid": "Please enter a valid 6-digit code",
   "emailChangeOtpSuccess": "Email address updated successfully",
   "emailChangeOtpResent": "A new code has been sent",
-  "emailChangeOtpResend": "Resend code"
+  "emailChangeOtpResend": "Resend code",
+  "yourData": "Your Data",
+  "downloadMyData": "Download My Data",
+  "downloadMyDataDescription": "Download a copy of your account, visa settings, and leave records as a JSON file.",
+  "downloadMyDataError": "Could not export your data. Please try again later."
 }
