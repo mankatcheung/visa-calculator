@@ -17,6 +17,7 @@ import { AuthenticationError } from '@/src/entities/errors/auth';
 import { ConflictError } from '@/src/entities/errors/common';
 import { Cookie } from '@/src/entities/models/cookie';
 import { Session } from '@/src/entities/models/session';
+import type { ITransaction } from '@/src/entities/models/transaction.interface';
 import { User } from '@/src/entities/models/user';
 
 export type ISignUpUseCase = ReturnType<typeof signUpUseCase>;
@@ -31,11 +32,14 @@ export const signUpUseCase =
     emailVerificationTokensRepository: IEmailVerificationTokensRepository,
     emailService: IEmailService
   ) =>
-  (input: {
-    email: string;
-    password: string;
-    locale: SupportedLocale;
-  }): Promise<{
+  (
+    input: {
+      email: string;
+      password: string;
+      locale: SupportedLocale;
+    },
+    tx?: ITransaction
+  ): Promise<{
     session: Session;
     cookie: Cookie;
     user: User;
@@ -56,11 +60,14 @@ export const signUpUseCase =
 
         let newUser: User;
         try {
-          newUser = await usersRepository.createUser({
-            id: userId,
-            email: input.email,
-            password: input.password,
-          });
+          newUser = await usersRepository.createUser(
+            {
+              id: userId,
+              email: input.email,
+              password: input.password,
+            },
+            tx
+          );
         } catch (err) {
           if (err instanceof ConflictError) {
             throw new AuthenticationError('Email taken');
@@ -70,7 +77,7 @@ export const signUpUseCase =
 
         await emailBloomFilterService.recordEmail(input.email);
 
-        await userSettingsRepository.createUserSettings(userId);
+        await userSettingsRepository.createUserSettings(userId, tx);
 
         const bytes = new Uint8Array(20);
         crypto.getRandomValues(bytes);
@@ -82,21 +89,36 @@ export const signUpUseCase =
         await emailVerificationTokensRepository.createToken(
           tokenHash,
           userId,
-          expiresAt
+          expiresAt,
+          tx
         );
+
+        const { cookie, session } = await authenticationService.createSession(
+          newUser,
+          tx
+        );
+
         try {
           // SECURITY: the base URL is always built from the trusted, server-
           // configured APP_URL — never from client input or the `Host`
           // header — to prevent verification-link poisoning (CWE-640).
+          //
+          // Sent after all writes for this transaction have been queued, but
+          // note the actual COMMIT only happens once this whole callback
+          // returns (SQLite/libsql transaction semantics) -- so this call is
+          // still effectively "mid-transaction". If a later write in this
+          // same use case were added and failed, causing a rollback, an
+          // already-sent email could point at a token that no longer
+          // exists. None of the current steps after this point can fail in
+          // a way that should block sign-up, so this is an accepted
+          // tradeoff; keep this the last side effect in the function if more
+          // steps are ever added here.
           const verifyUrl = `${APP_URL}/${input.locale}/verify-email?token=${token}`;
           await emailService.sendVerificationEmail(input.email, verifyUrl);
         } catch {
           // Email delivery failure is non-fatal: the token is stored and the
           // user can request a resend from /verify-email.
         }
-
-        const { cookie, session } =
-          await authenticationService.createSession(newUser);
 
         return {
           cookie,

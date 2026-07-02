@@ -10,6 +10,7 @@ import { IEmailVerificationTokensRepository } from '@/src/application/repositori
 import { IUsersRepository } from '@/src/application/repositories/users.repository.interface';
 import { IEmailService } from '@/src/application/services/email.service.interface';
 import { IInstrumentationService } from '@/src/application/services/instrumentation.service.interface';
+import type { ITransaction } from '@/src/entities/models/transaction.interface';
 
 export type IResendVerificationEmailUseCase = ReturnType<
   typeof resendVerificationEmailUseCase
@@ -22,7 +23,11 @@ export const resendVerificationEmailUseCase =
     emailVerificationTokensRepository: IEmailVerificationTokensRepository,
     emailService: IEmailService
   ) =>
-  async (userId: string, locale: SupportedLocale): Promise<void> => {
+  async (
+    userId: string,
+    locale: SupportedLocale,
+    tx?: ITransaction
+  ): Promise<void> => {
     return await instrumentationService.startSpan(
       { name: 'resendVerificationEmail Use Case' },
       async () => {
@@ -31,7 +36,13 @@ export const resendVerificationEmailUseCase =
           return;
         }
 
-        await emailVerificationTokensRepository.deleteTokensByUserId(userId);
+        // Old tokens are invalidated and the new one created atomically, so
+        // a failure between the two never leaves the user without any valid
+        // token and without the old one either.
+        await emailVerificationTokensRepository.deleteTokensByUserId(
+          userId,
+          tx
+        );
 
         const bytes = new Uint8Array(20);
         crypto.getRandomValues(bytes);
@@ -44,7 +55,8 @@ export const resendVerificationEmailUseCase =
         await emailVerificationTokensRepository.createToken(
           tokenHash,
           userId,
-          expiresAt
+          expiresAt,
+          tx
         );
 
         // SECURITY: the base URL is always built from the trusted, server-

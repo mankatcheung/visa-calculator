@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 import { IInstrumentationService } from '@/src/application/services/instrumentation.service.interface';
+import { ITransactionManagerService } from '@/src/application/services/transaction-manager.service.interface';
 import { IResetPasswordUseCase } from '@/src/application/use-cases/auth/reset-password.use-case';
 import { InputParseError } from '@/src/entities/errors/common';
 
@@ -27,6 +28,7 @@ export type IResetPasswordController = ReturnType<
 export const resetPasswordController =
   (
     instrumentationService: IInstrumentationService,
+    transactionManagerService: ITransactionManagerService,
     resetPasswordUseCase: IResetPasswordUseCase
   ) =>
   async (input: Partial<z.infer<typeof inputSchema>>): Promise<void> => {
@@ -37,7 +39,14 @@ export const resetPasswordController =
         if (error) {
           throw new InputParseError('Invalid data', { cause: error });
         }
-        await resetPasswordUseCase(data.token, data.password);
+        // Password update, token invalidation, and session revocation all
+        // happen atomically -- see reset-password.use-case.ts. No manual
+        // try/catch + tx.rollback(): Drizzle already rolls back and
+        // rethrows the original error (e.g. AuthenticationError) on any
+        // failure, which callers rely on for user-facing messaging.
+        await transactionManagerService.startTransaction((tx) =>
+          resetPasswordUseCase(data.token, data.password, tx)
+        );
       }
     );
   };

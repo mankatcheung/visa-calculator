@@ -97,7 +97,8 @@ export class UsersRepository implements IUsersRepository {
     );
   }
 
-  async createUser(input: CreateUser): Promise<User> {
+  async createUser(input: CreateUser, tx?: Transaction): Promise<User> {
+    const invoker = tx ?? db;
     return await this.instrumentationService.startSpan(
       { name: 'UsersRepository > createUser' },
       async () => {
@@ -113,7 +114,7 @@ export class UsersRepository implements IUsersRepository {
             passwordHash,
             emailVerified: false,
           };
-          const query = db.insert(users).values(newUser).returning();
+          const query = invoker.insert(users).values(newUser).returning();
 
           const [created] = await this.instrumentationService.startSpan(
             {

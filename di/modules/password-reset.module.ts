@@ -44,6 +44,7 @@ export function createPasswordResetModule() {
     .bind(DI_SYMBOLS.IRequestPasswordResetController)
     .toHigherOrderFunction(requestPasswordResetController, [
       DI_SYMBOLS.IInstrumentationService,
+      DI_SYMBOLS.ITransactionManagerService,
       DI_SYMBOLS.IRequestPasswordResetUseCase,
     ]);
 
@@ -51,6 +52,7 @@ export function createPasswordResetModule() {
     .bind(DI_SYMBOLS.IResetPasswordController)
     .toHigherOrderFunction(resetPasswordController, [
       DI_SYMBOLS.IInstrumentationService,
+      DI_SYMBOLS.ITransactionManagerService,
       DI_SYMBOLS.IResetPasswordUseCase,
     ]);
 

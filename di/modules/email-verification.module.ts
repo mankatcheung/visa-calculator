@@ -45,6 +45,7 @@ export function createEmailVerificationModule() {
     .bind(DI_SYMBOLS.IResendVerificationEmailController)
     .toHigherOrderFunction(resendVerificationEmailController, [
       DI_SYMBOLS.IInstrumentationService,
+      DI_SYMBOLS.ITransactionManagerService,
       DI_SYMBOLS.IResendVerificationEmailUseCase,
     ]);
 

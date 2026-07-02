@@ -1,15 +1,13 @@
+import { Transaction, db } from '@/drizzle';
 import { eq } from 'drizzle-orm';
 
-import { db } from '@/drizzle';
 import { emailVerificationTokens } from '@/drizzle/schema';
 import { IEmailVerificationTokensRepository } from '@/src/application/repositories/email-verification-tokens.repository.interface';
 import type { ICrashReporterService } from '@/src/application/services/crash-reporter.service.interface';
 import type { IInstrumentationService } from '@/src/application/services/instrumentation.service.interface';
 import { EmailVerificationToken } from '@/src/entities/models/email-verification-token';
 
-export class EmailVerificationTokensRepository
-  implements IEmailVerificationTokensRepository
-{
+export class EmailVerificationTokensRepository implements IEmailVerificationTokensRepository {
   constructor(
     private readonly instrumentationService: IInstrumentationService,
     private readonly crashReporterService: ICrashReporterService
@@ -18,13 +16,15 @@ export class EmailVerificationTokensRepository
   async createToken(
     tokenHash: string,
     userId: string,
-    expiresAt: Date
+    expiresAt: Date,
+    tx?: Transaction
   ): Promise<void> {
+    const invoker = tx ?? db;
     return await this.instrumentationService.startSpan(
       { name: 'EmailVerificationTokensRepository > createToken' },
       async () => {
         try {
-          const query = db
+          const query = invoker
             .insert(emailVerificationTokens)
             .values({ tokenHash, userId, expiresAt });
           await this.instrumentationService.startSpan(
@@ -69,12 +69,13 @@ export class EmailVerificationTokensRepository
     );
   }
 
-  async deleteToken(tokenHash: string): Promise<void> {
+  async deleteToken(tokenHash: string, tx?: Transaction): Promise<void> {
+    const invoker = tx ?? db;
     return await this.instrumentationService.startSpan(
       { name: 'EmailVerificationTokensRepository > deleteToken' },
       async () => {
         try {
-          const query = db
+          const query = invoker
             .delete(emailVerificationTokens)
             .where(eq(emailVerificationTokens.tokenHash, tokenHash));
           await this.instrumentationService.startSpan(
@@ -93,12 +94,13 @@ export class EmailVerificationTokensRepository
     );
   }
 
-  async deleteTokensByUserId(userId: string): Promise<void> {
+  async deleteTokensByUserId(userId: string, tx?: Transaction): Promise<void> {
+    const invoker = tx ?? db;
     return await this.instrumentationService.startSpan(
       { name: 'EmailVerificationTokensRepository > deleteTokensByUserId' },
       async () => {
         try {
-          const query = db
+          const query = invoker
             .delete(emailVerificationTokens)
             .where(eq(emailVerificationTokens.userId, userId));
           await this.instrumentationService.startSpan(

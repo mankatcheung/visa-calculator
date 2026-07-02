@@ -17,6 +17,7 @@ import type { IInstrumentationService } from '@/src/application/services/instrum
 import { UnauthenticatedError } from '@/src/entities/errors/auth';
 import { Cookie } from '@/src/entities/models/cookie';
 import { Session } from '@/src/entities/models/session';
+import type { ITransaction } from '@/src/entities/models/transaction.interface';
 import { User } from '@/src/entities/models/user';
 
 function generateIdFromEntropySize(entropyBytes: number): string {
@@ -97,7 +98,8 @@ export class AuthenticationService implements IAuthenticationService {
   }
 
   async createSession(
-    user: User
+    user: User,
+    tx?: ITransaction
   ): Promise<{ session: Session; cookie: Cookie }> {
     return await this._instrumentationService.startSpan(
       { name: 'AuthenticationService > createSession' },
@@ -111,11 +113,14 @@ export class AuthenticationService implements IAuthenticationService {
           sha256(new TextEncoder().encode(token))
         );
         const expiresAt = new Date(Date.now() + SESSION_EXPIRY_MS);
-        const session = await this._sessionRepository.createSession({
-          id: sessionId,
-          userId: user.id,
-          expiresAt: expiresAt,
-        });
+        const session = await this._sessionRepository.createSession(
+          {
+            id: sessionId,
+            userId: user.id,
+            expiresAt: expiresAt,
+          },
+          tx
+        );
 
         const cookie = this.buildSessionCookie(token, expiresAt);
 
