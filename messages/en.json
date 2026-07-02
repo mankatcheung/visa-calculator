@@ -97,5 +97,9 @@
   "emailChangeOtpInvalid": "Please enter a valid 6-digit code",
   "emailChangeOtpSuccess": "Email address updated successfully",
   "emailChangeOtpResent": "A new code has been sent",
-  "emailChangeOtpResend": "Resend code"
+  "emailChangeOtpResend": "Resend code",
+  "dangerZone": "Danger Zone",
+  "deleteAccount": "Delete Account",
+  "deleteAccountDescription": "Permanently delete your account, visa settings, and leave records. This action cannot be undone.",
+  "deleteAccountConfirmation": "This will permanently delete your account and all associated data. This action cannot be undone. Enter your password to confirm."
 }

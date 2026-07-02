@@ -13,4 +13,5 @@ export interface IUsersRepository {
   ): Promise<User>;
   verifyUserEmail(id: string): Promise<User>;
   applyEmailChange(userId: string, newEmail: string): Promise<User>;
+  deleteUser(id: string, tx?: ITransaction): Promise<void>;
 }

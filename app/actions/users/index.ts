@@ -2,6 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
 
 import { SESSION_COOKIE } from '@/config';
 
@@ -206,6 +207,51 @@ export async function cancelEmailChange() {
             'An error happened. The developers have been notified. Please try again later.',
         };
       }
+    }
+  );
+}
+
+export async function deleteAccount(formData: FormData) {
+  const instrumentationService = getInjection('IInstrumentationService');
+  return await instrumentationService.instrumentServerAction(
+    'deleteAccount',
+    { recordResponse: true },
+    async () => {
+      const cookieStore = await cookies();
+      const token = cookieStore.get(SESSION_COOKIE)?.value;
+      const data = Object.fromEntries(formData.entries());
+
+      let blankCookie;
+      try {
+        const deleteAccountController = getInjection(
+          'IDeleteAccountController'
+        );
+        ({ blankCookie } = await deleteAccountController(data, token));
+      } catch (err) {
+        if (err instanceof InputParseError) {
+          return { error: err.message };
+        }
+        if (
+          err instanceof AuthenticationError ||
+          err instanceof UnauthenticatedError
+        ) {
+          return { error: err.message };
+        }
+        const crashReporterService = getInjection('ICrashReporterService');
+        crashReporterService.report(err);
+        return {
+          error:
+            'An error happened. The developers have been notified. Please try again later.',
+        };
+      }
+
+      cookieStore.set(
+        blankCookie.name,
+        blankCookie.value,
+        blankCookie.attributes
+      );
+
+      redirect('/sign-in');
     }
   );
 }
