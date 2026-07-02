@@ -44,16 +44,16 @@ it('updates email on correct OTP', async () => {
 
 it('revokes other sessions on successful email change', async () => {
   const { session: sessionA } = await signInUseCase({
-    email: 'two@test.com',
-    password: 'password-two',
+    email: 'three@test.com',
+    password: 'password-three',
   });
   const { session: sessionB } = await signInUseCase({
-    email: 'two@test.com',
-    password: 'password-two',
+    email: 'three@test.com',
+    password: 'password-three',
   });
 
   await requestEmailChangeUseCase(
-    { email: 'two-devices-new@test.com' },
+    { email: 'three-devices-new@test.com' },
     sessionA.userId
   );
 
@@ -67,12 +67,12 @@ it('revokes other sessions on successful email change', async () => {
 
 it('throws on wrong OTP', async () => {
   const { session } = await signInUseCase({
-    email: 'three@test.com',
-    password: 'password-three',
+    email: 'two@test.com',
+    password: 'password-two',
   });
 
   await requestEmailChangeUseCase(
-    { email: 'three-new@test.com' },
+    { email: 'two-new@test.com' },
     session.userId
   );
 
