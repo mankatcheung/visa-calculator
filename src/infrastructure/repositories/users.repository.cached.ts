@@ -57,7 +57,12 @@ export class CachedUsersRepository implements IUsersRepository {
 
   async verifyUserEmail(id: string): Promise<User> {
     const user = await this.inner.verifyUserEmail(id);
-    await this.cacheManager.invalidate(`users:id:${id}`);
+    await Promise.all([
+      this.cacheManager.invalidate(`users:id:${id}`),
+      // session cache embeds emailVerified — clear all session entries so
+      // requests after verification don't see stale emailVerified:false
+      this.cacheManager.invalidateByPrefix('sessions:id:'),
+    ]);
     return user;
   }
 

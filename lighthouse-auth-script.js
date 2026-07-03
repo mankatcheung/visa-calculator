@@ -24,9 +24,6 @@ module.exports = async (browser) => {
     page.click('[data-cy=submit]'),
   ]);
 
-  // Debug: log where we landed after sign-up
-  console.log('[LH-AUTH] After sign-up navigation, URL:', page.url());
-
   // Mark user as verified directly in the DB — email delivery is not possible
   // in CI, so we bypass it here the same way the Cypress verifyUser task does.
   // eslint-disable-next-line @typescript-eslint/no-require-imports -- CJS script loaded directly by LHCI
@@ -43,26 +40,19 @@ module.exports = async (browser) => {
     client.close();
   }
 
-  // Debug: log cookies before navigating to the dashboard
-  const cookies = await page.cookies('http://localhost:3000');
-  console.log('[LH-AUTH] Cookies before dashboard nav:', JSON.stringify(cookies.map((c) => ({ name: c.name, value: c.value.slice(0, 10) + '…' }))));
+  // Sign in with the now-verified credentials so the session used by LHCI
+  // starts fresh (no stale emailVerified:false in the session cache).
+  await page.goto('http://localhost:3000/en/sign-in', {
+    waitUntil: 'networkidle0',
+  });
+  await page.waitForSelector('[data-cy=email]');
+  await page.type('[data-cy=email]', email);
+  await page.type('[data-cy=password]', password);
+  await Promise.all([
+    page.waitForNavigation({ waitUntil: 'networkidle0', timeout: 30000 }),
+    page.click('[data-cy=submit]'),
+  ]);
 
-  // Navigate to the dashboard now that the session user is verified
-  await page.goto('http://localhost:3000/en', { waitUntil: 'networkidle0' });
-
-  // Debug: log where we ended up
-  console.log('[LH-AUTH] After goto /en, URL:', page.url());
-
-  try {
-    await page.waitForSelector('[data-cy=dashboard-content]', {
-      timeout: 30000,
-    });
-  } catch (e) {
-    // Log current URL and page excerpt for diagnosis
-    console.error('[LH-AUTH] waitForSelector failed. URL:', page.url());
-    const html = await page.content();
-    console.error('[LH-AUTH] Page content (first 3000 chars):\n', html.slice(0, 3000));
-    throw e;
-  }
+  await page.waitForSelector('[data-cy=dashboard-content]', { timeout: 30000 });
   await page.close();
 };
