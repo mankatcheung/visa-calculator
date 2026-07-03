@@ -17,10 +17,12 @@ module.exports = async (browser) => {
   await page.type('[data-cy=email]', email);
   await page.type('[data-cy=password]', password);
   await page.type('[data-cy=confirmPassword]', password);
-  await page.click('[data-cy=submit]');
-
-  // After sign-up, user is redirected to /verify-email (email not yet confirmed)
-  await page.waitForNavigation({ waitUntil: 'networkidle0', timeout: 30000 });
+  // Race click + waitForNavigation together to avoid the "missed navigation"
+  // race that can occur when the server responds before the listener is set up.
+  await Promise.all([
+    page.waitForNavigation({ waitUntil: 'networkidle0', timeout: 30000 }),
+    page.click('[data-cy=submit]'),
+  ]);
 
   // Mark user as verified directly in the DB — email delivery is not possible
   // in CI, so we bypass it here the same way the Cypress verifyUser task does.
@@ -38,10 +40,19 @@ module.exports = async (browser) => {
     client.close();
   }
 
-  // Navigate to the dashboard now that the session user is verified
-  await page.goto('http://localhost:3000/en', { waitUntil: 'networkidle0' });
-  await page.waitForSelector('[data-cy=dashboard-content]', {
-    timeout: 30000,
+  // Sign in with the now-verified credentials so the session used by LHCI
+  // starts fresh (no stale emailVerified:false in the session cache).
+  await page.goto('http://localhost:3000/en/sign-in', {
+    waitUntil: 'networkidle0',
   });
+  await page.waitForSelector('[data-cy=email]');
+  await page.type('[data-cy=email]', email);
+  await page.type('[data-cy=password]', password);
+  await Promise.all([
+    page.waitForNavigation({ waitUntil: 'networkidle0', timeout: 30000 }),
+    page.click('[data-cy=submit]'),
+  ]);
+
+  await page.waitForSelector('[data-cy=dashboard-content]', { timeout: 30000 });
   await page.close();
 };

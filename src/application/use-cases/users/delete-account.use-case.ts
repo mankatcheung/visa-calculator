@@ -28,6 +28,7 @@ export const deleteAccountUseCase =
     input: {
       currentPassword: string;
       currentPasswordHash: string;
+      email: string;
     },
     userId: string,
     tx?: ITransaction
@@ -60,7 +61,7 @@ export const deleteAccountUseCase =
         await sessionsRepository.deleteUserSession(userId, tx);
         // The user row must be deleted last, after every table referencing
         // it has been cleared.
-        await usersRepository.deleteUser(userId, tx);
+        await usersRepository.deleteUser(userId, input.email, tx);
       }
     );
   };

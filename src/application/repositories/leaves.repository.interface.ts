@@ -13,6 +13,6 @@ export interface ILeavesRepository {
     input: Partial<LeaveUpdate>,
     tx?: any
   ): Promise<Leave>;
-  deleteLeave(id: number, tx?: any): Promise<void>;
+  deleteLeave(id: number, userId: string, tx?: any): Promise<void>;
   deleteLeavesForUser(userId: string, tx?: any): Promise<void>;
 }

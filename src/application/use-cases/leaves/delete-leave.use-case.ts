@@ -34,7 +34,7 @@ export const deleteLeaveUseCase =
           );
         }
 
-        await leavesRepository.deleteLeave(leave.id, tx);
+        await leavesRepository.deleteLeave(leave.id, leave.userId, tx);
 
         return leave;
       }

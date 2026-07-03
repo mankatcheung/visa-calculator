@@ -111,5 +111,5 @@ it('delete leave', async () => {
     remarks: 'Testing remarks',
     userId: '1',
   });
-  await expect(leavesRepository.deleteLeave(leave.id)).resolves.not.toThrow();
+  await expect(leavesRepository.deleteLeave(leave.id, '1')).resolves.not.toThrow();
 });
