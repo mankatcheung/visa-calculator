@@ -5,6 +5,7 @@ import { deleteAccountUseCase } from '@/src/application/use-cases/users/delete-a
 import { getUserDataExportUseCase } from '@/src/application/use-cases/users/get-user-data-export.use-case';
 import { getUserUseCase } from '@/src/application/use-cases/users/get-user.use-case';
 import { updateUserPasswordUseCase } from '@/src/application/use-cases/users/update-user-password.use-case';
+import { CachedUsersRepository } from '@/src/infrastructure/repositories/users.repository.cached';
 import { UsersRepository } from '@/src/infrastructure/repositories/users.repository';
 import { EmailBloomFilterService } from '@/src/infrastructure/services/email-bloom-filter.service';
 import { deleteAccountController } from '@/src/interface-adapters/controllers/users/delete-account.controller';
@@ -12,14 +13,23 @@ import { getSelfUserController } from '@/src/interface-adapters/controllers/user
 import { getUserDataExportController } from '@/src/interface-adapters/controllers/users/get-user-data-export.controller';
 import { updateUserPasswordController } from '@/src/interface-adapters/controllers/users/update-user-password.controller';
 
+const USERS_REPO_IMPL = Symbol('UsersRepositoryImpl');
+
 export function createUsersModule() {
   const usersModule = createModule();
 
   usersModule
-    .bind(DI_SYMBOLS.IUsersRepository)
+    .bind(USERS_REPO_IMPL)
     .toClass(UsersRepository, [
       DI_SYMBOLS.IInstrumentationService,
       DI_SYMBOLS.ICrashReporterService,
+    ]);
+
+  usersModule
+    .bind(DI_SYMBOLS.IUsersRepository)
+    .toClass(CachedUsersRepository, [
+      DI_SYMBOLS.ICacheManager,
+      USERS_REPO_IMPL,
     ]);
 
   usersModule

@@ -6,6 +6,7 @@ import { ISessionsRepository } from '@/src/application/repositories/sessions.rep
 import { IUserSettingsRepository } from '@/src/application/repositories/user-settings.repository.interface';
 import { IUsersRepository } from '@/src/application/repositories/users.repository.interface';
 import { IAuthenticationService } from '@/src/application/services/authentication.service.interface';
+import { ICacheManager } from '@/src/application/services/cache-manager.service.interface';
 import { ICrashReporterService } from '@/src/application/services/crash-reporter.service.interface';
 import { IEmailBloomFilterService } from '@/src/application/services/email-bloom-filter.service.interface';
 import { IEmailService } from '@/src/application/services/email.service.interface';
@@ -58,6 +59,7 @@ import { IVerifyEmailChangeController } from '@/src/interface-adapters/controlle
 
 export const DI_SYMBOLS = {
   // Services
+  ICacheManager: Symbol.for('ICacheManager'),
   IAuthenticationService: Symbol.for('IAuthenticationService'),
   ITransactionManagerService: Symbol.for('ITransactionManagerService'),
   IInstrumentationService: Symbol.for('IInstrumentationService'),
@@ -137,6 +139,7 @@ export const DI_SYMBOLS = {
 
 export interface DI_RETURN_TYPES {
   // Services
+  ICacheManager: ICacheManager;
   IAuthenticationService: IAuthenticationService;
   ITransactionManagerService: ITransactionManagerService;
   IInstrumentationService: IInstrumentationService;

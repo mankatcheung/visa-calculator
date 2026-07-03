@@ -6,6 +6,7 @@ import { deleteLeaveUseCase } from '@/src/application/use-cases/leaves/delete-le
 import { getLeaveUseCase } from '@/src/application/use-cases/leaves/get-leave.use-case';
 import { getLeavesForUserUseCase } from '@/src/application/use-cases/leaves/get-leaves-for-user.use-case';
 import { updateLeaveUseCase } from '@/src/application/use-cases/leaves/update-leave.use-case';
+import { CachedLeavesRepository } from '@/src/infrastructure/repositories/leaves.repository.cached';
 import { LeavesRepository } from '@/src/infrastructure/repositories/leaves.repository';
 import { createLeaveController } from '@/src/interface-adapters/controllers/leaves/create-leave.controller';
 import { deleteLeaveController } from '@/src/interface-adapters/controllers/leaves/delete-leave.controller';
@@ -13,14 +14,23 @@ import { getLeaveController } from '@/src/interface-adapters/controllers/leaves/
 import { getLeavesForUserController } from '@/src/interface-adapters/controllers/leaves/get-leaves-for-user.controller';
 import { updateLeaveController } from '@/src/interface-adapters/controllers/leaves/update-leave.controller';
 
+const LEAVES_REPO_IMPL = Symbol('LeavesRepositoryImpl');
+
 export function createLeavesModule() {
   const leavesModule = createModule();
 
   leavesModule
-    .bind(DI_SYMBOLS.ILeavesRepository)
+    .bind(LEAVES_REPO_IMPL)
     .toClass(LeavesRepository, [
       DI_SYMBOLS.IInstrumentationService,
       DI_SYMBOLS.ICrashReporterService,
+    ]);
+
+  leavesModule
+    .bind(DI_SYMBOLS.ILeavesRepository)
+    .toClass(CachedLeavesRepository, [
+      DI_SYMBOLS.ICacheManager,
+      LEAVES_REPO_IMPL,
     ]);
 
   leavesModule

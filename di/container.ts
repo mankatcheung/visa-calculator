@@ -2,6 +2,7 @@ import { createContainer } from '@evyweb/ioctopus';
 
 import { createSessionModule } from '@/di//modules/sessions.module';
 import { createAuthenticationModule } from '@/di/modules/authentication.module';
+import { createCacheModule } from '@/di/modules/cache.module';
 import { createTransactionManagerModule } from '@/di/modules/database.module';
 import { createEmailChangeModule } from '@/di/modules/email-change.module';
 import { createEmailVerificationModule } from '@/di/modules/email-verification.module';
@@ -16,6 +17,7 @@ import { IInstrumentationService } from '@/src/application/services/instrumentat
 const ApplicationContainer = createContainer();
 
 ApplicationContainer.load(Symbol('MonitoringModule'), createMonitoringModule());
+ApplicationContainer.load(Symbol('CacheModule'), createCacheModule());
 ApplicationContainer.load(
   Symbol('TransactionManagerModule'),
   createTransactionManagerModule()
