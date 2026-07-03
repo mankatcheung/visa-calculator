@@ -262,7 +262,7 @@ export class UsersRepository implements IUsersRepository {
     );
   }
 
-  async deleteUser(id: string, tx?: Transaction): Promise<void> {
+  async deleteUser(id: string, _email: string, tx?: Transaction): Promise<void> {
     const invoker = tx ?? db;
     return await this.instrumentationService.startSpan(
       { name: 'UsersRepository > deleteUser' },

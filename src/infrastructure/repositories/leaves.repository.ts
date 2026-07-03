@@ -132,7 +132,7 @@ export class LeavesRepository implements ILeavesRepository {
     );
   }
 
-  async deleteLeave(id: number, tx?: Transaction): Promise<void> {
+  async deleteLeave(id: number, _userId: string, tx?: Transaction): Promise<void> {
     const invoker = tx ?? db;
 
     await this.instrumentationService.startSpan(

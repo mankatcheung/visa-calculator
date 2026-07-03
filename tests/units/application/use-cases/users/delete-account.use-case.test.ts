@@ -40,6 +40,7 @@ it('deletes the user and every row referencing them', async () => {
     {
       currentPassword: 'delete-account-password',
       currentPasswordHash: user.passwordHash,
+      email: user.email,
     },
     user.id
   );
@@ -68,6 +69,7 @@ it('throws for the wrong current password and deletes nothing', async () => {
       {
         currentPassword: 'not-the-password',
         currentPasswordHash: user.passwordHash,
+        email: user.email,
       },
       user.id
     )

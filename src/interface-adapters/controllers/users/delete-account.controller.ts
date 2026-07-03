@@ -54,6 +54,7 @@ export const deleteAccountController =
             {
               currentPassword: data.currentPassword,
               currentPasswordHash: user.passwordHash,
+              email: user.email,
             },
             user.id,
             tx

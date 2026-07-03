@@ -70,16 +70,11 @@ export class CachedUsersRepository implements IUsersRepository {
     return user;
   }
 
-  async deleteUser(id: string, tx?: ITransaction): Promise<void> {
-    const existing = await this.cacheManager.get<User | undefined>(
-      `users:id:${id}`,
-      () => this.inner.getUser(id),
-      { ttlMs: TTL_MS, staleTtlMs: STALE_TTL_MS, jitter: JITTER }
-    );
-    await this.inner.deleteUser(id, tx);
-    await this.cacheManager.invalidate(`users:id:${id}`);
-    if (existing?.email) {
-      await this.cacheManager.invalidate(`users:email:${existing.email}`);
-    }
+  async deleteUser(id: string, email: string, tx?: ITransaction): Promise<void> {
+    await this.inner.deleteUser(id, email, tx);
+    await Promise.all([
+      this.cacheManager.invalidate(`users:id:${id}`),
+      this.cacheManager.invalidate(`users:email:${email}`),
+    ]);
   }
 }

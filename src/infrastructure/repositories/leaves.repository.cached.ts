@@ -47,18 +47,12 @@ export class CachedLeavesRepository implements ILeavesRepository {
     return result;
   }
 
-  async deleteLeave(id: number, tx?: any): Promise<void> {
-    // Fetch from cache first to obtain userId for list invalidation
-    const existing = await this.cacheManager.get<Leave | undefined>(
-      `leaves:id:${id}`,
-      () => this.inner.getLeave(id),
-      { ttlMs: TTL_MS, staleTtlMs: STALE_TTL_MS, jitter: JITTER }
-    );
-    await this.inner.deleteLeave(id, tx);
-    await this.cacheManager.invalidate(`leaves:id:${id}`);
-    if (existing?.userId) {
-      await this.cacheManager.invalidate(`leaves:user:${existing.userId}`);
-    }
+  async deleteLeave(id: number, userId: string, tx?: any): Promise<void> {
+    await this.inner.deleteLeave(id, userId, tx);
+    await Promise.all([
+      this.cacheManager.invalidate(`leaves:id:${id}`),
+      this.cacheManager.invalidate(`leaves:user:${userId}`),
+    ]);
   }
 
   async deleteLeavesForUser(userId: string, tx?: any): Promise<void> {
