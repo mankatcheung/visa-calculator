@@ -6,7 +6,17 @@ import { getInjection } from './di/container';
 
 type localeType = 'en' | 'zh-Hant-HK';
 
-const AUTH_PATHS = ['sign-in', 'sign-up', 'forgot-password', 'reset-password', 'verify-email'];
+// Top-level path segments that don't require an authenticated session --
+// both the sign-in/sign-up/etc. auth flows and other pages that must be
+// reachable by anyone (e.g. legal pages linked from the sign-up form).
+const PUBLIC_PATHS = [
+  'sign-in',
+  'sign-up',
+  'forgot-password',
+  'reset-password',
+  'verify-email',
+  'terms',
+];
 
 export default async function proxy(request: NextRequest) {
   // Step 1: Use the incoming request (example)
@@ -23,9 +33,11 @@ export default async function proxy(request: NextRequest) {
   response.headers.set('x-your-custom-locale', defaultLocale);
 
   const [, , ...segments] = request.nextUrl.pathname.split('/');
-  const isAuthPath = segments?.[0] ? AUTH_PATHS.includes(segments?.[0]) : false;
+  const isPublicPath = segments?.[0]
+    ? PUBLIC_PATHS.includes(segments?.[0])
+    : false;
 
-  if (!isAuthPath) {
+  if (!isPublicPath) {
     const sessionId = request.cookies.get(SESSION_COOKIE)?.value;
     if (!sessionId) {
       return NextResponse.redirect(

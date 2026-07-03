@@ -93,6 +93,16 @@ export function SignUpForm({
                   required
                 />
               </div>
+              <p className="text-center text-sm text-muted-foreground">
+                {t('bySigningUpYouAgree')}{' '}
+                <Link
+                  href="/terms"
+                  data-cy="terms"
+                  className="underline underline-offset-4"
+                >
+                  {t('viewTerms')}
+                </Link>
+              </p>
               <Button
                 type="submit"
                 data-cy="submit"

@@ -9,6 +9,12 @@ describe('Accessibility', () => {
     cy.checkA11yAndLog();
   });
 
+  it('terms page has no detectable a11y violations', () => {
+    cy.visit('/en/terms');
+    cy.getBySel('terms-content').should('be.visible');
+    cy.checkA11yAndLog();
+  });
+
   it('dashboard page has no detectable a11y violations', () => {
     cy.login('test@test.com', 'admin123');
     cy.getBySel('dashboard-content').should('be.visible');
