@@ -43,6 +43,14 @@ it('renders the email, password, and confirm password fields', () => {
   expect(screen.getByRole('button', { name: 'signUp' })).toBeInTheDocument();
 });
 
+it('links to the terms and conditions page', () => {
+  render(<SignUpForm />);
+
+  const termsLink = screen.getByRole('link', { name: 'viewTerms' });
+  expect(termsLink).toBeInTheDocument();
+  expect(termsLink).toHaveAttribute('href', '/terms');
+});
+
 it('does not show the password strength meter before typing a password', () => {
   render(<SignUpForm />);
 
