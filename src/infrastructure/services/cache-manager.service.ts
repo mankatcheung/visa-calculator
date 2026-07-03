@@ -125,9 +125,7 @@ export class CacheManager implements ICacheManager {
     fetcher: () => Promise<T>,
     options: CacheOptions
   ): Promise<T> {
-    let tracked!: Promise<T>;
-
-    tracked = fetcher()
+    const tracked = fetcher()
       .then(async (data) => {
         await this.writeToStores(key, data, options);
         return data;
