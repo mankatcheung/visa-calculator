@@ -65,6 +65,42 @@ describe('InMemoryCacheStore', () => {
   });
 });
 
+describe('InMemoryCacheStore – proactive expiry sweep', () => {
+  it('purgeExpired removes expired entries without touching live ones', async () => {
+    const store = new InMemoryCacheStore(500, 0); // sweep disabled — call manually
+    await store.set('live', 'keep', 60_000);
+    await store.set('dead', 'gone', 1);
+
+    await new Promise((r) => setTimeout(r, 10)); // let 'dead' expire
+
+    store.purgeExpired();
+
+    await expect(store.get('dead')).resolves.toBeUndefined();
+    await expect(store.get('live')).resolves.toBe('keep');
+  });
+
+  it('purgeExpired is a no-op on an empty store', () => {
+    const store = new InMemoryCacheStore(500, 0);
+    expect(() => store.purgeExpired()).not.toThrow();
+  });
+
+  it('purgeExpired frees capacity so new entries can be added without LRU eviction', async () => {
+    const store = new InMemoryCacheStore(2, 0); // cap of 2
+    await store.set('a', 1, 1); // expires immediately
+    await store.set('b', 2, 60_000);
+
+    await new Promise((r) => setTimeout(r, 10)); // 'a' expires
+
+    store.purgeExpired(); // should free one slot
+
+    // 'c' can now be added without evicting 'b'
+    await store.set('c', 3, 60_000);
+
+    await expect(store.get('b')).resolves.toBe(2);
+    await expect(store.get('c')).resolves.toBe(3);
+  });
+});
+
 describe('InMemoryCacheStore – LRU eviction', () => {
   it('evicts the least-recently-used entry when the cap is reached', async () => {
     const store = new InMemoryCacheStore(3);
