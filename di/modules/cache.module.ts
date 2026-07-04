@@ -11,7 +11,8 @@ const L1_CACHE_STORE = Symbol('L1CacheStore');
 export function createCacheModule() {
   const cacheModule = createModule();
 
-  cacheModule.bind(L1_CACHE_STORE).toClass(InMemoryCacheStore, []);
+  const l1Max = process.env.L1_CACHE_MAX ? parseInt(process.env.L1_CACHE_MAX, 10) : 500;
+  cacheModule.bind(L1_CACHE_STORE).toFactory(() => new InMemoryCacheStore(l1Max));
 
   cacheModule
     .bind(DI_SYMBOLS.ICacheManager)
