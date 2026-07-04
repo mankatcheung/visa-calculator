@@ -64,3 +64,50 @@ describe('InMemoryCacheStore', () => {
     await expect(store.get('session:1')).resolves.toBe('c');
   });
 });
+
+describe('InMemoryCacheStore – LRU eviction', () => {
+  it('evicts the least-recently-used entry when the cap is reached', async () => {
+    const store = new InMemoryCacheStore(3);
+    await store.set('a', 1, 60_000);
+    await store.set('b', 2, 60_000);
+    await store.set('c', 3, 60_000);
+
+    // adding a 4th entry evicts 'a' (oldest / LRU)
+    await store.set('d', 4, 60_000);
+
+    await expect(store.get('a')).resolves.toBeUndefined();
+    await expect(store.get('b')).resolves.toBe(2);
+    await expect(store.get('c')).resolves.toBe(3);
+    await expect(store.get('d')).resolves.toBe(4);
+  });
+
+  it('a get promotes the entry so it is not the next eviction target', async () => {
+    const store = new InMemoryCacheStore(3);
+    await store.set('a', 1, 60_000);
+    await store.set('b', 2, 60_000);
+    await store.set('c', 3, 60_000);
+
+    // touch 'a' — now 'b' is the LRU
+    await store.get('a');
+    await store.set('d', 4, 60_000);
+
+    await expect(store.get('b')).resolves.toBeUndefined(); // 'b' evicted
+    await expect(store.get('a')).resolves.toBe(1);
+    await expect(store.get('c')).resolves.toBe(3);
+    await expect(store.get('d')).resolves.toBe(4);
+  });
+
+  it('overwriting an existing key does not evict another entry', async () => {
+    const store = new InMemoryCacheStore(3);
+    await store.set('a', 1, 60_000);
+    await store.set('b', 2, 60_000);
+    await store.set('c', 3, 60_000);
+
+    // overwriting 'a' does not evict because the store is not growing
+    await store.set('a', 99, 60_000);
+
+    await expect(store.get('a')).resolves.toBe(99);
+    await expect(store.get('b')).resolves.toBe(2);
+    await expect(store.get('c')).resolves.toBe(3);
+  });
+});
