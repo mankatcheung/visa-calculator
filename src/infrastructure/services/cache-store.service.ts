@@ -9,12 +9,28 @@ export class InMemoryCacheStore implements ICacheStore {
   private readonly store = new Map<string, StoreEntry>();
   private readonly max: number;
 
-  constructor(max = 500) {
+  constructor(max = 500, sweepIntervalMs = 60_000) {
     this.max = max;
+    if (sweepIntervalMs > 0) {
+      const timer = setInterval(() => this.purgeExpired(), sweepIntervalMs);
+      // Don't prevent the Node.js process from exiting cleanly
+      if (typeof timer === 'object' && timer !== null && 'unref' in timer) {
+        (timer as NodeJS.Timeout).unref();
+      }
+    }
   }
 
   getName(): string {
     return 'in-memory';
+  }
+
+  purgeExpired(): void {
+    const now = Date.now();
+    for (const [key, entry] of this.store) {
+      if (now > entry.expiresAt) {
+        this.store.delete(key);
+      }
+    }
   }
 
   async get<T>(key: string): Promise<T | undefined> {
