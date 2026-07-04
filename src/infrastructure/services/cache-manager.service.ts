@@ -2,6 +2,7 @@ import {
   CacheOptions,
   ICacheManager,
 } from '@/src/application/services/cache-manager.service.interface';
+import { ICacheInvalidationRelay } from '@/src/application/services/cache-invalidation-relay.service.interface';
 import { ICacheStore } from '@/src/application/services/cache-store.service.interface';
 
 interface CachedEntry<T> {
@@ -52,7 +53,8 @@ export class CacheManager implements ICacheManager {
 
   constructor(
     private readonly l1: ICacheStore,
-    private readonly l2?: ICacheStore
+    private readonly l2?: ICacheStore,
+    private readonly relay?: ICacheInvalidationRelay
   ) {}
 
   async get<T>(
@@ -195,6 +197,7 @@ export class CacheManager implements ICacheManager {
     await Promise.allSettled([
       this.l1.delete(key),
       this.l2 ? this.l2.delete(key) : Promise.resolve(),
+      this.relay ? this.relay.publish({ type: 'key', key }) : Promise.resolve(),
     ]);
   }
 
@@ -202,6 +205,9 @@ export class CacheManager implements ICacheManager {
     await Promise.allSettled([
       this.l1.deleteByPrefix(prefix),
       this.l2 ? this.l2.deleteByPrefix(prefix) : Promise.resolve(),
+      this.relay
+        ? this.relay.publish({ type: 'prefix', prefix })
+        : Promise.resolve(),
     ]);
   }
 }

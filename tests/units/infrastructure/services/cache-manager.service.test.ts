@@ -191,3 +191,38 @@ describe('CacheManager – L1 + L2', () => {
     expect(fetcher).toHaveBeenCalledTimes(2); // re-fetched from scratch
   });
 });
+
+describe('CacheManager – relay', () => {
+  function makeRelay() {
+    return {
+      publish: vi.fn().mockResolvedValue(undefined),
+      subscribe: vi.fn(),
+      close: vi.fn(),
+    };
+  }
+
+  it('publishes a key event when invalidate is called', async () => {
+    const relay = makeRelay();
+    const manager = new CacheManager(new InMemoryCacheStore(), undefined, relay);
+
+    await manager.invalidate('user:1');
+
+    expect(relay.publish).toHaveBeenCalledWith({ type: 'key', key: 'user:1' });
+  });
+
+  it('publishes a prefix event when invalidateByPrefix is called', async () => {
+    const relay = makeRelay();
+    const manager = new CacheManager(new InMemoryCacheStore(), undefined, relay);
+
+    await manager.invalidateByPrefix('user:');
+
+    expect(relay.publish).toHaveBeenCalledWith({ type: 'prefix', prefix: 'user:' });
+  });
+
+  it('does not publish when no relay is configured', async () => {
+    // just verify no error thrown — relay is undefined
+    const manager = new CacheManager(new InMemoryCacheStore());
+    await expect(manager.invalidate('k')).resolves.toBeUndefined();
+    await expect(manager.invalidateByPrefix('k:')).resolves.toBeUndefined();
+  });
+});
