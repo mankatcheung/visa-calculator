@@ -8,8 +8,8 @@ type McpResult = { content: { type: 'text'; text: string }[]; isError?: boolean 
 export async function getUserHandler(userId: string): Promise<McpResult> {
   try {
     const user = await getInjection('IGetUserUseCase')(userId);
-    const { passwordHash: _, ...safeUser } = user;
-    return { content: [{ type: 'text', text: JSON.stringify(safeUser) }] };
+    const { id, email, emailVerified } = user;
+    return { content: [{ type: 'text', text: JSON.stringify({ id, email, emailVerified }) }] };
   } catch (err) {
     if (err instanceof NotFoundError) {
       return {

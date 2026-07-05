@@ -3,7 +3,6 @@ import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 
 import { getInjection } from '@/di/container';
 import { getVisaStatus } from '@/lib/visa';
-import { NotFoundError } from '@/src/entities/errors/common';
 
 const updateUserSettingsShape = {
   visaStartDate: z.string().optional().describe('ISO 8601 date'),

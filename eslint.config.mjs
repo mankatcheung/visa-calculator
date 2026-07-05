@@ -72,6 +72,11 @@ const eslintConfig = [
         },
         {
           mode: 'full',
+          type: 'mcp',
+          pattern: ['src/interface-adapters/mcp/**/*'],
+        },
+        {
+          mode: 'full',
           type: 'di',
           pattern: ['di/**/*'],
         },
@@ -88,7 +93,11 @@ const eslintConfig = [
           rules: [
             {
               from: 'web',
-              allow: ['web', 'entities', 'di'],
+              allow: ['web', 'entities', 'di', 'mcp'],
+            },
+            {
+              from: 'mcp',
+              allow: ['mcp', 'entities', 'di'],
             },
             {
               from: 'controllers',
