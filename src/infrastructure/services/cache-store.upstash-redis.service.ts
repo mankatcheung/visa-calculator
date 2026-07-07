@@ -2,11 +2,29 @@ import { Redis } from '@upstash/redis';
 
 import { ICacheStore } from '@/src/application/services/cache-store.service.interface';
 
+// Scan and delete all keys matching a glob pattern atomically.
+// Lua runs atomically in Redis — no other commands execute between SCAN and DEL,
+// so keys written concurrently cannot slip through between the two operations.
+const DELETE_BY_PATTERN_SCRIPT = `
+  local cursor = "0"
+  repeat
+    local result = redis.call("SCAN", cursor, "MATCH", ARGV[1], "COUNT", 100)
+    cursor = result[1]
+    local keys = result[2]
+    if #keys > 0 then
+      redis.call("DEL", unpack(keys))
+    end
+  until cursor == "0"
+  return 1
+`;
+
 export class UpstashRedisCacheStore implements ICacheStore {
   private readonly client: Redis;
+  private readonly deleteByPatternScript;
 
   constructor(url: string, token: string) {
     this.client = new Redis({ url, token });
+    this.deleteByPatternScript = this.client.createScript<number>(DELETE_BY_PATTERN_SCRIPT);
   }
 
   getName(): string {
@@ -27,16 +45,6 @@ export class UpstashRedisCacheStore implements ICacheStore {
   }
 
   async deleteByPrefix(prefix: string): Promise<void> {
-    let cursor = '0';
-    do {
-      const [nextCursor, keys] = await this.client.scan(cursor, {
-        match: `${prefix}*`,
-        count: 100,
-      });
-      cursor = nextCursor;
-      if (keys.length > 0) {
-        await this.client.del(...keys);
-      }
-    } while (cursor !== '0');
+    await this.deleteByPatternScript.eval([], [`${prefix}*`]);
   }
 }
