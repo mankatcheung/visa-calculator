@@ -24,6 +24,11 @@ const deleteLeaveShape = {
   id: z.number().int().describe('Leave record ID to delete'),
 };
 
+const getLeavesShape = {
+  page: z.number().int().min(1).optional().describe('Page number, 1-based (default 1)'),
+  limit: z.number().int().min(1).max(100).optional().describe('Records per page (default 20)'),
+};
+
 type McpResult = { content: { type: 'text'; text: string }[]; isError?: boolean };
 
 function toText(data: unknown): McpResult {
@@ -43,7 +48,19 @@ function domainError(err: unknown): McpResult | undefined {
   }
 }
 
-export async function getLeavesHandler(userId: string): Promise<McpResult> {
+export async function getLeavesHandler(
+  userId: string,
+  page?: number,
+  limit?: number
+): Promise<McpResult> {
+  if (page !== undefined || limit !== undefined) {
+    const result = await getInjection('IGetPaginatedLeavesForUserUseCase')(
+      userId,
+      page ?? 1,
+      limit ?? 20
+    );
+    return toText(result);
+  }
   const leaves = await getInjection('IGetLeavesForUserUseCase')(userId);
   return toText(leaves);
 }
@@ -110,9 +127,9 @@ export async function deleteLeaveHandler(
 export function registerLeaveTools(server: McpServer, userId: string): void {
   server.tool(
     'get_leaves',
-    'List all leave absence records for the current user',
-    {},
-    () => getLeavesHandler(userId)
+    'List leave absence records for the current user. Omit page/limit for all records; provide both for a paginated response with total and totalPages.',
+    getLeavesShape,
+    (input) => getLeavesHandler(userId, input.page, input.limit)
   );
 
   server.tool(

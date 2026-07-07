@@ -47,6 +47,36 @@ export async function getLeavesForUser() {
     }
   );
 }
+export async function getPaginatedLeavesForUser(page = 1, limit = 20) {
+  const instrumentationService = getInjection('IInstrumentationService');
+  return await instrumentationService.startSpan(
+    { name: 'getPaginatedLeavesForUser' },
+    async () => {
+      try {
+        const controller = getInjection('IGetPaginatedLeavesForUserController');
+        const cookieStore = await cookies();
+        const token = cookieStore.get(SESSION_COOKIE)?.value;
+        const result = await controller(token, page, limit);
+        return { result };
+      } catch (err) {
+        if (
+          err instanceof UnauthenticatedError ||
+          err instanceof AuthenticationError
+        ) {
+          redirect('/sign-in');
+        }
+        const crashReporterService = getInjection('ICrashReporterService');
+        crashReporterService.report(err);
+        return {
+          error:
+            'An error happened. The developers have been notified. Please try again later. Message: ' +
+            (err as Error).message,
+        };
+      }
+    }
+  );
+}
+
 export async function createLeave(formData: FormData) {
   const instrumentationService = getInjection('IInstrumentationService');
   return await instrumentationService.instrumentServerAction(

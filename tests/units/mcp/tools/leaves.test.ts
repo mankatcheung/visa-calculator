@@ -72,3 +72,23 @@ it('create_leave rejects when startDate is after endDate', async () => {
     })
   ).rejects.toBeInstanceOf(InputParseError);
 });
+
+it('get_leaves with page/limit returns paginated shape', async () => {
+  // Seed two known leaves
+  await createLeaveHandler(USER_ID, { startDate: '2025-11-01', endDate: '2025-11-03' });
+  await createLeaveHandler(USER_ID, { startDate: '2025-11-04', endDate: '2025-11-06' });
+
+  const result = await getLeavesHandler(USER_ID, 1, 1);
+  const page = JSON.parse(result.content[0].text);
+
+  expect(page).toMatchObject({
+    data: expect.any(Array),
+    total: expect.any(Number),
+    page: 1,
+    limit: 1,
+    totalPages: expect.any(Number),
+  });
+  expect(page.data).toHaveLength(1);
+  expect(page.total).toBeGreaterThanOrEqual(2);
+  expect(page.totalPages).toBeGreaterThanOrEqual(2);
+});

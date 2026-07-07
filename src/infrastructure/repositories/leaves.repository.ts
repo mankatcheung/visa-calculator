@@ -1,12 +1,12 @@
 import { Transaction, db } from '@/drizzle';
-import { asc, eq } from 'drizzle-orm';
+import { asc, count, eq } from 'drizzle-orm';
 
 import { leaves } from '@/drizzle/schema';
 import { ILeavesRepository } from '@/src/application/repositories/leaves.repository.interface';
 import type { ICrashReporterService } from '@/src/application/services/crash-reporter.service.interface';
 import type { IInstrumentationService } from '@/src/application/services/instrumentation.service.interface';
 import { DatabaseOperationError } from '@/src/entities/errors/common';
-import { Leave, LeaveInsert, LeaveUpdate } from '@/src/entities/models/leave';
+import { Leave, LeaveInsert, LeaveUpdate, PaginatedLeaves } from '@/src/entities/models/leave';
 
 export class LeavesRepository implements ILeavesRepository {
   constructor(
@@ -94,6 +94,38 @@ export class LeavesRepository implements ILeavesRepository {
         } catch (err) {
           this.crashReporterService.report(err);
           throw err; // leave: convert to Entities error
+        }
+      }
+    );
+  }
+
+  async getPaginatedLeavesForUser(
+    userId: string,
+    page: number,
+    limit: number
+  ): Promise<PaginatedLeaves> {
+    return await this.instrumentationService.startSpan(
+      { name: 'LeavesRepository > getPaginatedLeavesForUser' },
+      async () => {
+        try {
+          const offset = (page - 1) * limit;
+          const where = eq(leaves.userId, userId);
+
+          const [data, totalResult] = await Promise.all([
+            db.query.leaves.findMany({
+              orderBy: [asc(leaves.startDate)],
+              where,
+              limit,
+              offset,
+            }),
+            db.select({ value: count() }).from(leaves).where(where),
+          ]);
+
+          const total = totalResult[0]?.value ?? 0;
+          return { data, total, page, limit, totalPages: Math.ceil(total / limit) };
+        } catch (err) {
+          this.crashReporterService.report(err);
+          throw err;
         }
       }
     );

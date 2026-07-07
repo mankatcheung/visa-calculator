@@ -27,3 +27,11 @@ export const updateLeaveSchema = insertLeaveSchema.omit({
 });
 
 export type LeaveUpdate = z.infer<typeof updateLeaveSchema>;
+
+export interface PaginatedLeaves {
+  data: Leave[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
