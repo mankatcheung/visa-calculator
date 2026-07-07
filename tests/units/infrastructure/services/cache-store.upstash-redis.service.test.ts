@@ -1,12 +1,19 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 // vi.hoisted ensures these are initialised before vi.mock() runs
-const mockRedis = vi.hoisted(() => ({
-  get: vi.fn(),
-  set: vi.fn(),
-  del: vi.fn(),
-  scan: vi.fn(),
-}));
+const { mockRedis, mockScript } = vi.hoisted(() => {
+  const mockScript = { eval: vi.fn() };
+  return {
+    mockScript,
+    mockRedis: {
+      get: vi.fn(),
+      set: vi.fn(),
+      del: vi.fn(),
+      scan: vi.fn(),
+      createScript: vi.fn().mockReturnValue(mockScript),
+    },
+  };
+});
 
 vi.mock('@upstash/redis', () => ({
   // Class-style mock so `new Redis(...)` is valid and instances carry the mock methods
@@ -15,6 +22,7 @@ vi.mock('@upstash/redis', () => ({
     set = mockRedis.set;
     del = mockRedis.del;
     scan = mockRedis.scan;
+    createScript = mockRedis.createScript;
   },
 }));
 
@@ -55,30 +63,15 @@ describe('UpstashRedisCacheStore', () => {
     expect(mockRedis.del).toHaveBeenCalledWith('k');
   });
 
-  it('deleteByPrefix scans all pages and deletes every matching key', async () => {
-    mockRedis.scan
-      .mockResolvedValueOnce(['42', ['user:1', 'user:2']])
-      .mockResolvedValueOnce(['0', ['user:3']]);
-    mockRedis.del.mockResolvedValue(3);
-
+  it('deleteByPrefix calls the Lua script with the glob pattern', async () => {
+    mockScript.eval.mockResolvedValue(1);
     await store.deleteByPrefix('user:');
-
-    expect(mockRedis.scan).toHaveBeenCalledTimes(2);
-    expect(mockRedis.scan).toHaveBeenNthCalledWith(1, '0', {
-      match: 'user:*',
-      count: 100,
-    });
-    expect(mockRedis.scan).toHaveBeenNthCalledWith(2, '42', {
-      match: 'user:*',
-      count: 100,
-    });
-    expect(mockRedis.del).toHaveBeenCalledWith('user:1', 'user:2');
-    expect(mockRedis.del).toHaveBeenCalledWith('user:3');
+    expect(mockScript.eval).toHaveBeenCalledWith([], ['user:*']);
   });
 
-  it('deleteByPrefix skips del when the scan returns no keys', async () => {
-    mockRedis.scan.mockResolvedValueOnce(['0', []]);
-    await store.deleteByPrefix('empty:');
-    expect(mockRedis.del).not.toHaveBeenCalled();
+  it('deleteByPrefix passes the correct glob for any prefix', async () => {
+    mockScript.eval.mockResolvedValue(1);
+    await store.deleteByPrefix('leaves:user:42:');
+    expect(mockScript.eval).toHaveBeenCalledWith([], ['leaves:user:42:*']);
   });
 });
