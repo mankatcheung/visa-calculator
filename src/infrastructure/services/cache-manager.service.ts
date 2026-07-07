@@ -4,6 +4,7 @@ import {
 } from '@/src/application/services/cache-manager.service.interface';
 import { ICacheInvalidationRelay } from '@/src/application/services/cache-invalidation-relay.service.interface';
 import { ICacheStore } from '@/src/application/services/cache-store.service.interface';
+import { IDistributedLockService } from '@/src/application/services/distributed-lock.service.interface';
 import { IInstrumentationService } from '@/src/application/services/instrumentation.service.interface';
 
 interface CachedEntry<T> {
@@ -71,6 +72,7 @@ export class CacheManager implements ICacheManager {
     private readonly l1: ICacheStore,
     private readonly l2?: ICacheStore,
     private readonly relay?: ICacheInvalidationRelay,
+    private readonly lockService?: IDistributedLockService,
     private readonly instrumentation?: IInstrumentationService
   ) {}
 
@@ -128,7 +130,7 @@ export class CacheManager implements ICacheManager {
     return this.fetchWithCoalescing(key, fetcher, options);
   }
 
-  private fetchWithCoalescing<T>(
+  private async fetchWithCoalescing<T>(
     key: string,
     fetcher: () => Promise<T>,
     options: CacheOptions
@@ -143,7 +145,53 @@ export class CacheManager implements ICacheManager {
         ),
       ]).catch(() => this.startFetch(key, fetcher, options));
     }
+
+    if (this.lockService) {
+      const lockKey = `dlock:${key}`;
+      // TTL is generous — covers fetch + write with headroom
+      const lockTtlMs = options.ttlMs + 5_000;
+      const token = await this.lockService.tryAcquire(lockKey, lockTtlMs);
+
+      if (!token) {
+        // Another instance holds the lock — wait, then try reading the cache
+        const waitMs = options.lockTimeoutMs ?? 100;
+        await new Promise<void>((r) => setTimeout(r, waitMs));
+        const cached = await this.readFromCacheOnly<T>(key);
+        if (cached !== undefined) return cached;
+        // Cache still empty after wait — do a local fetch without coordination
+      } else {
+        // We hold the distributed lock; release it once the write completes
+        const result = this.startFetch(key, fetcher, options);
+        result
+          .then(() => this.lockService!.release(lockKey, token))
+          .catch(() => {});
+        return result;
+      }
+    }
+
     return this.startFetch(key, fetcher, options);
+  }
+
+  private async readFromCacheOnly<T>(key: string): Promise<T | undefined> {
+    if (!this.l1Breaker.isOpen()) {
+      try {
+        const entry = await this.l1.get<CachedEntry<T>>(key);
+        this.l1Breaker.recordSuccess();
+        if (entry && Date.now() < entry.staleUntil) return entry.data;
+      } catch {
+        this.l1Breaker.recordFailure();
+      }
+    }
+    if (this.l2 && !this.l2Breaker.isOpen()) {
+      try {
+        const entry = await this.l2.get<CachedEntry<T>>(key);
+        this.l2Breaker.recordSuccess();
+        if (entry && Date.now() < entry.staleUntil) return entry.data;
+      } catch {
+        this.l2Breaker.recordFailure();
+      }
+    }
+    return undefined;
   }
 
   private startFetch<T>(
