@@ -14,7 +14,7 @@ export class CachedLeavesRepository implements ILeavesRepository {
 
   async createLeave(leave: LeaveInsert, tx?: any): Promise<Leave> {
     const result = await this.inner.createLeave(leave, tx);
-    await this.cacheManager.invalidate(`leaves:user:${leave.userId}`);
+    await this.cacheManager.invalidateByPrefix(`leaves:user:${leave.userId}:`);
     return result;
   }
 
@@ -28,7 +28,7 @@ export class CachedLeavesRepository implements ILeavesRepository {
 
   async getLeavesForUser(userId: string): Promise<Leave[]> {
     return this.cacheManager.get(
-      `leaves:user:${userId}`,
+      `leaves:user:${userId}:all`,
       () => this.inner.getLeavesForUser(userId),
       { ttlMs: TTL_MS, staleTtlMs: STALE_TTL_MS, jitter: JITTER }
     );
@@ -54,7 +54,7 @@ export class CachedLeavesRepository implements ILeavesRepository {
     const result = await this.inner.updateLeave(id, input, tx);
     await Promise.all([
       this.cacheManager.invalidate(`leaves:id:${id}`),
-      this.cacheManager.invalidate(`leaves:user:${result.userId}`),
+      this.cacheManager.invalidateByPrefix(`leaves:user:${result.userId}:`),
     ]);
     return result;
   }
@@ -63,12 +63,12 @@ export class CachedLeavesRepository implements ILeavesRepository {
     await this.inner.deleteLeave(id, userId, tx);
     await Promise.all([
       this.cacheManager.invalidate(`leaves:id:${id}`),
-      this.cacheManager.invalidate(`leaves:user:${userId}`),
+      this.cacheManager.invalidateByPrefix(`leaves:user:${userId}:`),
     ]);
   }
 
   async deleteLeavesForUser(userId: string, tx?: any): Promise<void> {
     await this.inner.deleteLeavesForUser(userId, tx);
-    await this.cacheManager.invalidateByPrefix(`leaves:user:${userId}`);
+    await this.cacheManager.invalidateByPrefix(`leaves:user:${userId}:`);
   }
 }
