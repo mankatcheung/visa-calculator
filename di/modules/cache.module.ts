@@ -8,6 +8,7 @@ import { UpstashInvalidationRelay } from '@/src/infrastructure/services/cache-in
 import { CacheManager } from '@/src/infrastructure/services/cache-manager.service';
 import { UpstashRedisCacheStore } from '@/src/infrastructure/services/cache-store.upstash-redis.service';
 import { InMemoryCacheStore } from '@/src/infrastructure/services/cache-store.service';
+import { UpstashDistributedLockService } from '@/src/infrastructure/services/distributed-lock.service';
 
 const L1_CACHE_STORE = Symbol('L1CacheStore');
 
@@ -31,10 +32,14 @@ export function createCacheModule() {
       const pollMs = process.env.L1_INVALIDATION_POLL_MS
         ? parseInt(process.env.L1_INVALIDATION_POLL_MS, 10)
         : 5_000;
-      const relay =
-        url && token
-          ? new UpstashInvalidationRelay(new Redis({ url, token }))
-          : undefined;
+
+      let redis: Redis | undefined;
+      if (url && token) {
+        redis = new Redis({ url, token });
+      }
+
+      const relay = redis ? new UpstashInvalidationRelay(redis) : undefined;
+      const lockService = redis ? new UpstashDistributedLockService(redis) : undefined;
 
       if (relay) {
         relay.subscribe((event) => {
@@ -43,7 +48,7 @@ export function createCacheModule() {
         }, pollMs);
       }
 
-      return new CacheManager(l1, l2, relay, instrumentation);
+      return new CacheManager(l1, l2, relay, lockService, instrumentation);
     });
 
   return cacheModule;
