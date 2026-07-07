@@ -4,6 +4,7 @@ import {
 } from '@/src/application/services/cache-manager.service.interface';
 import { ICacheInvalidationRelay } from '@/src/application/services/cache-invalidation-relay.service.interface';
 import { ICacheStore } from '@/src/application/services/cache-store.service.interface';
+import { IInstrumentationService } from '@/src/application/services/instrumentation.service.interface';
 
 interface CachedEntry<T> {
   data: T;
@@ -69,7 +70,8 @@ export class CacheManager implements ICacheManager {
   constructor(
     private readonly l1: ICacheStore,
     private readonly l2?: ICacheStore,
-    private readonly relay?: ICacheInvalidationRelay
+    private readonly relay?: ICacheInvalidationRelay,
+    private readonly instrumentation?: IInstrumentationService
   ) {}
 
   async get<T>(
@@ -84,15 +86,18 @@ export class CacheManager implements ICacheManager {
         if (entry) {
           const now = Date.now();
           if (now < entry.freshUntil) {
+            this.instrumentation?.recordMetric('cache.hit', { store: 'l1', type: 'fresh' });
             return entry.data;
           }
           if (now < entry.staleUntil) {
+            this.instrumentation?.recordMetric('cache.hit', { store: 'l1', type: 'stale' });
             this.triggerRevalidation(key, fetcher, options);
             return entry.data;
           }
         }
       } catch {
         this.l1Breaker.recordFailure();
+        this.instrumentation?.recordMetric('cache.error', { store: 'l1' });
       }
     }
 
@@ -105,17 +110,21 @@ export class CacheManager implements ICacheManager {
           if (now < entry.staleUntil) {
             void this.setInStore(this.l1, key, entry, entry.staleUntil - now);
             if (now < entry.freshUntil) {
+              this.instrumentation?.recordMetric('cache.hit', { store: 'l2', type: 'fresh' });
               return entry.data;
             }
+            this.instrumentation?.recordMetric('cache.hit', { store: 'l2', type: 'stale' });
             this.triggerRevalidation(key, fetcher, options);
             return entry.data;
           }
         }
       } catch {
         this.l2Breaker.recordFailure();
+        this.instrumentation?.recordMetric('cache.error', { store: 'l2' });
       }
     }
 
+    this.instrumentation?.recordMetric('cache.miss');
     return this.fetchWithCoalescing(key, fetcher, options);
   }
 
