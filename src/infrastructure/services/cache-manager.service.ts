@@ -15,6 +15,7 @@ class CircuitBreaker {
   private failures = 0;
   private openedAt = 0;
   private state: 'CLOSED' | 'OPEN' | 'HALF_OPEN' = 'CLOSED';
+  private probing = false;
 
   constructor(
     private readonly failureThreshold = 5,
@@ -25,19 +26,33 @@ class CircuitBreaker {
     if (this.state === 'OPEN') {
       if (Date.now() - this.openedAt >= this.recoveryTimeMs) {
         this.state = 'HALF_OPEN';
-        return false;
+        this.probing = false;
+      } else {
+        return true;
       }
-      return true;
+    }
+    if (this.state === 'HALF_OPEN') {
+      if (this.probing) return true; // one probe in flight — block all others
+      this.probing = true;           // claim the probe slot
+      return false;
     }
     return false;
   }
 
   recordSuccess(): void {
     this.failures = 0;
+    this.probing = false;
     this.state = 'CLOSED';
   }
 
   recordFailure(): void {
+    this.probing = false;
+    if (this.state === 'HALF_OPEN') {
+      // probe failed — re-open immediately without waiting for threshold
+      this.state = 'OPEN';
+      this.openedAt = Date.now();
+      return;
+    }
     this.failures++;
     if (this.failures >= this.failureThreshold) {
       this.state = 'OPEN';
