@@ -195,16 +195,16 @@ export class CacheManager implements ICacheManager {
 
   async invalidate(key: string): Promise<void> {
     await Promise.allSettled([
-      this.l1.delete(key),
-      this.l2 ? this.l2.delete(key) : Promise.resolve(),
+      this.l1Breaker.isOpen() ? Promise.resolve() : this.l1.delete(key),
+      this.l2 && !this.l2Breaker.isOpen() ? this.l2.delete(key) : Promise.resolve(),
       this.relay ? this.relay.publish({ type: 'key', key }) : Promise.resolve(),
     ]);
   }
 
   async invalidateByPrefix(prefix: string): Promise<void> {
     await Promise.allSettled([
-      this.l1.deleteByPrefix(prefix),
-      this.l2 ? this.l2.deleteByPrefix(prefix) : Promise.resolve(),
+      this.l1Breaker.isOpen() ? Promise.resolve() : this.l1.deleteByPrefix(prefix),
+      this.l2 && !this.l2Breaker.isOpen() ? this.l2.deleteByPrefix(prefix) : Promise.resolve(),
       this.relay
         ? this.relay.publish({ type: 'prefix', prefix })
         : Promise.resolve(),
