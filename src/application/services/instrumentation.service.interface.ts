@@ -8,4 +8,5 @@ export interface IInstrumentationService {
     options: Record<string, any>,
     callback: () => T
   ): Promise<T>;
+  recordMetric(name: string, tags?: Record<string, string>): void;
 }

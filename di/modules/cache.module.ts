@@ -3,6 +3,7 @@ import { createModule } from '@evyweb/ioctopus';
 
 import { DI_SYMBOLS } from '@/di/types';
 import { ICacheStore } from '@/src/application/services/cache-store.service.interface';
+import { IInstrumentationService } from '@/src/application/services/instrumentation.service.interface';
 import { UpstashInvalidationRelay } from '@/src/infrastructure/services/cache-invalidation-relay.service';
 import { CacheManager } from '@/src/infrastructure/services/cache-manager.service';
 import { UpstashRedisCacheStore } from '@/src/infrastructure/services/cache-store.upstash-redis.service';
@@ -21,6 +22,7 @@ export function createCacheModule() {
     .bind(DI_SYMBOLS.ICacheManager)
     .toFactory((resolve: (key: symbol | string) => unknown) => {
       const l1 = resolve(L1_CACHE_STORE) as InMemoryCacheStore;
+      const instrumentation = resolve(DI_SYMBOLS.IInstrumentationService) as IInstrumentationService;
       const url = process.env.UPSTASH_REDIS_REST_URL;
       const token = process.env.UPSTASH_REDIS_REST_TOKEN;
       const l2 =
@@ -41,7 +43,7 @@ export function createCacheModule() {
         }, pollMs);
       }
 
-      return new CacheManager(l1, l2, relay);
+      return new CacheManager(l1, l2, relay, instrumentation);
     });
 
   return cacheModule;

@@ -17,4 +17,8 @@ export class InstrumentationService implements IInstrumentationService {
   ): Promise<T> {
     return Sentry.withServerActionInstrumentation(name, options, callback);
   }
+
+  recordMetric(name: string, tags?: Record<string, string>): void {
+    Sentry.metrics.count(name, 1, { attributes: tags });
+  }
 }
