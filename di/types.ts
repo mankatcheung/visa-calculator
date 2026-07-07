@@ -23,6 +23,7 @@ import { ICreateLeaveUseCase } from '@/src/application/use-cases/leaves/create-l
 import { IDeleteLeaveUseCase } from '@/src/application/use-cases/leaves/delete-leave.use-case';
 import { IGetLeaveUseCase } from '@/src/application/use-cases/leaves/get-leave.use-case';
 import { IGetLeavesForUserUseCase } from '@/src/application/use-cases/leaves/get-leaves-for-user.use-case';
+import { IGetPaginatedLeavesForUserUseCase } from '@/src/application/use-cases/leaves/get-paginated-leaves-for-user.use-case';
 import { IUpdateLeaveUseCase } from '@/src/application/use-cases/leaves/update-leave.use-case';
 import { IGetUserSettingsForUserUseCase } from '@/src/application/use-cases/user-settings/get-user-settings-for-user.use-case';
 import { IUpdateUserSettingsUseCase } from '@/src/application/use-cases/user-settings/update-user-settings.use-case';
@@ -45,6 +46,7 @@ import { ICreateLeaveController } from '@/src/interface-adapters/controllers/lea
 import { IDeleteLeaveController } from '@/src/interface-adapters/controllers/leaves/delete-leave.controller';
 import { IGetLeaveController } from '@/src/interface-adapters/controllers/leaves/get-leave.controller';
 import { IGetLeavesForUserController } from '@/src/interface-adapters/controllers/leaves/get-leaves-for-user.controller';
+import { IGetPaginatedLeavesForUserController } from '@/src/interface-adapters/controllers/leaves/get-paginated-leaves-for-user.controller';
 import { IUpdateLeaveController } from '@/src/interface-adapters/controllers/leaves/update-leave.controller';
 import { IGetUserSettingsForUserController } from '@/src/interface-adapters/controllers/user-settings/get-user-settings-for-user.controller';
 import { IUpdateUserSettingsController } from '@/src/interface-adapters/controllers/user-settings/update-user-settings.controller';
@@ -82,6 +84,7 @@ export const DI_SYMBOLS = {
   ICreateLeaveUseCase: Symbol.for('ICreateLeaveUseCase'),
   IDeleteLeaveUseCase: Symbol.for('IDeleteLeaveUseCase'),
   IGetLeavesForUserUseCase: Symbol.for('IGetLeavesForUserUseCase'),
+  IGetPaginatedLeavesForUserUseCase: Symbol.for('IGetPaginatedLeavesForUserUseCase'),
   IGetLeaveUseCase: Symbol.for('IGetLeaveUseCase'),
   IUpdateLeaveUseCase: Symbol.for('IUpdateLeaveUseCase'),
   ISignInUseCase: Symbol.for('ISignInUseCase'),
@@ -119,6 +122,7 @@ export const DI_SYMBOLS = {
   ICreateLeaveController: Symbol.for('ICreateLeaveController'),
   IDeleteLeaveController: Symbol.for('IDeleteLeaveController'),
   IGetLeavesForUserController: Symbol.for('IGetLeavesForUserController'),
+  IGetPaginatedLeavesForUserController: Symbol.for('IGetPaginatedLeavesForUserController'),
   IGetLeaveController: Symbol.for('IGetLeaveController'),
   IUpdateLeaveController: Symbol.for('IUpdateLeaveController'),
   IGetSelfUserController: Symbol.for('IGetSelfUserController'),
@@ -160,6 +164,7 @@ export interface DI_RETURN_TYPES {
   ICreateLeaveUseCase: ICreateLeaveUseCase;
   IDeleteLeaveUseCase: IDeleteLeaveUseCase;
   IGetLeavesForUserUseCase: IGetLeavesForUserUseCase;
+  IGetPaginatedLeavesForUserUseCase: IGetPaginatedLeavesForUserUseCase;
   IGetLeaveUseCase: IGetLeaveUseCase;
   IUpdateLeaveUseCase: IUpdateLeaveUseCase;
   ISignInUseCase: ISignInUseCase;
@@ -192,6 +197,7 @@ export interface DI_RETURN_TYPES {
   IDeleteLeaveController: IDeleteLeaveController;
   IGetLeaveController: IGetLeaveController;
   IGetLeavesForUserController: IGetLeavesForUserController;
+  IGetPaginatedLeavesForUserController: IGetPaginatedLeavesForUserController;
   IUpdateLeaveController: IUpdateLeaveController;
   IGetSelfUserController: IGetSelfUserController;
   IRequestEmailChangeController: IRequestEmailChangeController;

@@ -5,6 +5,7 @@ import { createLeaveUseCase } from '@/src/application/use-cases/leaves/create-le
 import { deleteLeaveUseCase } from '@/src/application/use-cases/leaves/delete-leave.use-case';
 import { getLeaveUseCase } from '@/src/application/use-cases/leaves/get-leave.use-case';
 import { getLeavesForUserUseCase } from '@/src/application/use-cases/leaves/get-leaves-for-user.use-case';
+import { getPaginatedLeavesForUserUseCase } from '@/src/application/use-cases/leaves/get-paginated-leaves-for-user.use-case';
 import { updateLeaveUseCase } from '@/src/application/use-cases/leaves/update-leave.use-case';
 import { CachedLeavesRepository } from '@/src/infrastructure/repositories/leaves.repository.cached';
 import { LeavesRepository } from '@/src/infrastructure/repositories/leaves.repository';
@@ -12,6 +13,7 @@ import { createLeaveController } from '@/src/interface-adapters/controllers/leav
 import { deleteLeaveController } from '@/src/interface-adapters/controllers/leaves/delete-leave.controller';
 import { getLeaveController } from '@/src/interface-adapters/controllers/leaves/get-leave.controller';
 import { getLeavesForUserController } from '@/src/interface-adapters/controllers/leaves/get-leaves-for-user.controller';
+import { getPaginatedLeavesForUserController } from '@/src/interface-adapters/controllers/leaves/get-paginated-leaves-for-user.controller';
 import { updateLeaveController } from '@/src/interface-adapters/controllers/leaves/update-leave.controller';
 
 const LEAVES_REPO_IMPL = Symbol('LeavesRepositoryImpl');
@@ -55,6 +57,13 @@ export function createLeavesModule() {
     ]);
 
   leavesModule
+    .bind(DI_SYMBOLS.IGetPaginatedLeavesForUserUseCase)
+    .toHigherOrderFunction(getPaginatedLeavesForUserUseCase, [
+      DI_SYMBOLS.IInstrumentationService,
+      DI_SYMBOLS.ILeavesRepository,
+    ]);
+
+  leavesModule
     .bind(DI_SYMBOLS.IGetLeaveUseCase)
     .toHigherOrderFunction(getLeaveUseCase, [
       DI_SYMBOLS.IInstrumentationService,
@@ -92,6 +101,14 @@ export function createLeavesModule() {
       DI_SYMBOLS.IInstrumentationService,
       DI_SYMBOLS.IAuthenticationService,
       DI_SYMBOLS.IGetLeavesForUserUseCase,
+    ]);
+
+  leavesModule
+    .bind(DI_SYMBOLS.IGetPaginatedLeavesForUserController)
+    .toHigherOrderFunction(getPaginatedLeavesForUserController, [
+      DI_SYMBOLS.IInstrumentationService,
+      DI_SYMBOLS.IAuthenticationService,
+      DI_SYMBOLS.IGetPaginatedLeavesForUserUseCase,
     ]);
 
   leavesModule
