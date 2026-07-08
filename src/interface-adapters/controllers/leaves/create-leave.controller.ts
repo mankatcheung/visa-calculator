@@ -2,6 +2,7 @@ import { z } from 'zod';
 
 import { IAuthenticationService } from '@/src/application/services/authentication.service.interface';
 import { IInstrumentationService } from '@/src/application/services/instrumentation.service.interface';
+import { ILoggerService } from '@/src/application/services/logger.service.interface';
 import { ITransactionManagerService } from '@/src/application/services/transaction-manager.service.interface';
 import { ICreateLeaveUseCase } from '@/src/application/use-cases/leaves/create-leave.use-case';
 import { UnauthenticatedError } from '@/src/entities/errors/auth';
@@ -38,6 +39,7 @@ export type ICreateLeaveController = ReturnType<typeof createLeaveController>;
 export const createLeaveController =
   (
     instrumentationService: IInstrumentationService,
+    loggerService: ILoggerService,
     authenticationService: IAuthenticationService,
     transactionManagerService: ITransactionManagerService,
     createLeaveUseCase: ICreateLeaveUseCase
@@ -76,8 +78,10 @@ export const createLeaveController =
                   user.id,
                   tx
                 );
-              } catch {
-                console.error('Rolling back!');
+              } catch (err) {
+                loggerService.error('create leave transaction rolled back', {
+                  error: err instanceof Error ? err.message : String(err),
+                });
                 tx.rollback();
               }
             })

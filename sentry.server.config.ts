@@ -12,9 +12,13 @@ Sentry.init({
   // Privacy Policy's data-inventory section.
   sendDefaultPii: false,
 
-  // Define how likely traces are sampled. Adjust this value in production, or use tracesSampler for greater control.
-  tracesSampleRate: 1,
+  // Tracing and metrics are handled by OTel → Axiom.
+  // Sentry is retained for error/exception capture only.
+  tracesSampleRate: 0,
 
-  // Setting this option to true will print useful information to the console while you're setting up Sentry.
+  // Prevent Sentry from registering its own OTel providers, which would
+  // conflict with the @vercel/otel provider registered in instrumentation.ts.
+  skipOpenTelemetrySetup: true,
+
   debug: false,
 });
