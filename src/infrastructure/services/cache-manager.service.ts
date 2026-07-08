@@ -25,32 +25,25 @@ class CircuitBreaker {
   ) {}
 
   // Returns true if the circuit is blocking traffic to the store.
-  // Also drives state transitions as a side effect — no background timer needed.
   isOpen(): boolean {
-    if (this.state === 'OPEN') {
-      if (Date.now() - this.openedAt >= this.recoveryTimeMs) {
-        // Recovery window elapsed — move to HALF_OPEN so one probe can test
-        // whether the store has recovered. Reset probing so the slot is free.
-        this.state = 'HALF_OPEN';
-        this.probing = false;
-      } else {
-        // Still within the recovery window — keep blocking all traffic.
-        return true;
-      }
-    }
-    if (this.state === 'HALF_OPEN') {
-      if (this.probing) {
-        // A probe request is already in flight. Block every other concurrent
-        // caller to avoid hammering a store that may still be broken.
-        return true;
-      }
-      // No probe in flight yet — claim the slot and let this request through.
-      // The caller must report the outcome via recordSuccess() or recordFailure().
-      this.probing = true;
-      return false;
-    }
-    // CLOSED — store is healthy, allow all traffic.
+    this.tryRecover();
+
+    if (this.state === 'CLOSED') return false;
+    if (this.state === 'OPEN') return true;
+
+    // HALF_OPEN: let exactly one probe through to test if the store recovered.
+    if (this.probing) return true;
+    this.probing = true;
     return false;
+  }
+
+  // Lazily advances OPEN → HALF_OPEN once the recovery window elapses.
+  // Called on every isOpen() so no background timer is needed.
+  private tryRecover(): void {
+    if (this.state === 'OPEN' && Date.now() - this.openedAt >= this.recoveryTimeMs) {
+      this.state = 'HALF_OPEN';
+      this.probing = false;
+    }
   }
 
   recordSuccess(): void {
