@@ -111,6 +111,61 @@ describe('CacheManager – L1 only', () => {
 
 });
 
+describe('CacheManager – XFetch', () => {
+  // Seed L1 directly so we control delta precisely.
+  // XFetch triggers when: now − delta × beta × ln(rand) ≥ freshUntil
+  // With rand = Number.EPSILON, ln(epsilon) ≈ −36.04.
+  // So: delta × 36 must exceed the remaining TTL for the check to fire.
+  // Example: delta=100ms, ttlMs=1_000ms → 100×36=3600 > 1000 ✓
+  function seedL1(l1: InMemoryCacheStore, delta: number, ttlMs: number) {
+    const now = Date.now();
+    return l1.set('k', { data: 'v1', freshUntil: now + ttlMs, staleUntil: now + ttlMs * 2, delta }, ttlMs * 2);
+  }
+
+  it('returns the cached value immediately and triggers background recompute', async () => {
+    const l1 = new InMemoryCacheStore();
+    const manager = new CacheManager(l1);
+    await seedL1(l1, 100, 1_000); // delta=100ms, ttl=1s → 100×36 >> 1000 ✓
+
+    vi.spyOn(Math, 'random').mockReturnValue(Number.EPSILON);
+    const fetcher = vi.fn().mockResolvedValue('v2');
+    const result = await manager.get('k', fetcher, { ttlMs: 1_000, beta: 1 });
+
+    expect(result).toBe('v1');        // returns cached value immediately
+    expect(fetcher).toHaveBeenCalledTimes(1); // background revalidation fired
+    vi.restoreAllMocks();
+  });
+
+  it('does not trigger early recompute when beta is 0', async () => {
+    const l1 = new InMemoryCacheStore();
+    const manager = new CacheManager(l1);
+    await seedL1(l1, 100, 1_000);
+
+    vi.spyOn(Math, 'random').mockReturnValue(Number.EPSILON);
+    const fetcher = vi.fn().mockResolvedValue('v2');
+    await manager.get('k', fetcher, { ttlMs: 1_000, beta: 0 });
+
+    expect(fetcher).not.toHaveBeenCalled(); // XFetch disabled
+    vi.restoreAllMocks();
+  });
+
+  it('does not trigger when delta is 0 (entry populated externally)', async () => {
+    const l1 = new InMemoryCacheStore();
+    const manager = new CacheManager(l1);
+    const now = Date.now();
+    // delta=0: now − 0 × … = now, which is never ≥ freshUntil while fresh
+    await l1.set('k', { data: 'external', freshUntil: now + 60_000, staleUntil: now + 120_000, delta: 0 }, 120_000);
+
+    vi.spyOn(Math, 'random').mockReturnValue(Number.EPSILON);
+    const fetcher = vi.fn().mockResolvedValue('new');
+    const result = await manager.get('k', fetcher, { ttlMs: 60_000, beta: 1 });
+
+    expect(result).toBe('external');
+    expect(fetcher).not.toHaveBeenCalled();
+    vi.restoreAllMocks();
+  });
+});
+
 describe('CacheManager – L1 + L2', () => {
   it('returns the L2 value on an L1 miss and backfills L1', async () => {
     const l1 = new InMemoryCacheStore();
