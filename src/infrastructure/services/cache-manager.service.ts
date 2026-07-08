@@ -65,7 +65,6 @@ class CircuitBreaker {
 
 export class CacheManager implements ICacheManager {
   private readonly inFlight = new Map<string, Promise<unknown>>();
-  private readonly l1Breaker = new CircuitBreaker();
   private readonly l2Breaker = new CircuitBreaker();
 
   constructor(
@@ -81,25 +80,17 @@ export class CacheManager implements ICacheManager {
     fetcher: () => Promise<T>,
     options: CacheOptions
   ): Promise<T> {
-    if (!this.l1Breaker.isOpen()) {
-      try {
-        const entry = await this.l1.get<CachedEntry<T>>(key);
-        this.l1Breaker.recordSuccess();
-        if (entry) {
-          const now = Date.now();
-          if (now < entry.freshUntil) {
-            this.instrumentation?.recordMetric('cache.hit', { store: 'l1', type: 'fresh' });
-            return entry.data;
-          }
-          if (now < entry.staleUntil) {
-            this.instrumentation?.recordMetric('cache.hit', { store: 'l1', type: 'stale' });
-            this.triggerRevalidation(key, fetcher, options);
-            return entry.data;
-          }
-        }
-      } catch {
-        this.l1Breaker.recordFailure();
-        this.instrumentation?.recordMetric('cache.error', { store: 'l1' });
+    const l1Entry = await this.l1.get<CachedEntry<T>>(key);
+    if (l1Entry) {
+      const now = Date.now();
+      if (now < l1Entry.freshUntil) {
+        this.instrumentation?.recordMetric('cache.hit', { store: 'l1', type: 'fresh' });
+        return l1Entry.data;
+      }
+      if (now < l1Entry.staleUntil) {
+        this.instrumentation?.recordMetric('cache.hit', { store: 'l1', type: 'stale' });
+        this.triggerRevalidation(key, fetcher, options);
+        return l1Entry.data;
       }
     }
 
@@ -173,15 +164,8 @@ export class CacheManager implements ICacheManager {
   }
 
   private async readFromCacheOnly<T>(key: string): Promise<T | undefined> {
-    if (!this.l1Breaker.isOpen()) {
-      try {
-        const entry = await this.l1.get<CachedEntry<T>>(key);
-        this.l1Breaker.recordSuccess();
-        if (entry && Date.now() < entry.staleUntil) return entry.data;
-      } catch {
-        this.l1Breaker.recordFailure();
-      }
-    }
+    const l1Entry = await this.l1.get<CachedEntry<T>>(key);
+    if (l1Entry && Date.now() < l1Entry.staleUntil) return l1Entry.data;
     if (this.l2 && !this.l2Breaker.isOpen()) {
       try {
         const entry = await this.l2.get<CachedEntry<T>>(key);
@@ -267,7 +251,7 @@ export class CacheManager implements ICacheManager {
 
   async invalidate(key: string): Promise<void> {
     await Promise.allSettled([
-      this.l1Breaker.isOpen() ? Promise.resolve() : this.l1.delete(key),
+      this.l1.delete(key),
       this.l2 && !this.l2Breaker.isOpen() ? this.l2.delete(key) : Promise.resolve(),
       this.relay ? this.relay.publish({ type: 'key', key }) : Promise.resolve(),
     ]);
@@ -275,7 +259,7 @@ export class CacheManager implements ICacheManager {
 
   async invalidateByPrefix(prefix: string): Promise<void> {
     await Promise.allSettled([
-      this.l1Breaker.isOpen() ? Promise.resolve() : this.l1.deleteByPrefix(prefix),
+      this.l1.deleteByPrefix(prefix),
       this.l2 && !this.l2Breaker.isOpen() ? this.l2.deleteByPrefix(prefix) : Promise.resolve(),
       this.relay
         ? this.relay.publish({ type: 'prefix', prefix })
