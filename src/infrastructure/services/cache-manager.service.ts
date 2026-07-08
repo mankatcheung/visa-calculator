@@ -24,21 +24,26 @@ class CircuitBreaker {
     private readonly recoveryTimeMs = 30_000
   ) {}
 
+  // Returns true if the circuit is blocking traffic to the store.
   isOpen(): boolean {
-    if (this.state === 'OPEN') {
-      if (Date.now() - this.openedAt >= this.recoveryTimeMs) {
-        this.state = 'HALF_OPEN';
-        this.probing = false;
-      } else {
-        return true;
-      }
-    }
-    if (this.state === 'HALF_OPEN') {
-      if (this.probing) return true; // one probe in flight — block all others
-      this.probing = true;           // claim the probe slot
-      return false;
-    }
+    this.tryRecover();
+
+    if (this.state === 'CLOSED') return false;
+    if (this.state === 'OPEN') return true;
+
+    // HALF_OPEN: let exactly one probe through to test if the store recovered.
+    if (this.probing) return true;
+    this.probing = true;
     return false;
+  }
+
+  // Lazily advances OPEN → HALF_OPEN once the recovery window elapses.
+  // Called on every isOpen() so no background timer is needed.
+  private tryRecover(): void {
+    if (this.state === 'OPEN' && Date.now() - this.openedAt >= this.recoveryTimeMs) {
+      this.state = 'HALF_OPEN';
+      this.probing = false;
+    }
   }
 
   recordSuccess(): void {
