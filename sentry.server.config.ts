@@ -12,9 +12,10 @@ Sentry.init({
   // Privacy Policy's data-inventory section.
   sendDefaultPii: false,
 
-  // Define how likely traces are sampled. Adjust this value in production, or use tracesSampler for greater control.
-  tracesSampleRate: 1,
+  // OTel provider is owned by @vercel/otel (see instrumentation.ts).
+  // SentrySpanProcessor is wired in as a second span processor, so Sentry
+  // receives spans for error-linked tracing without running its own provider.
+  skipOpenTelemetrySetup: true,
 
-  // Setting this option to true will print useful information to the console while you're setting up Sentry.
   debug: false,
 });

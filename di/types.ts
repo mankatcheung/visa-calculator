@@ -11,6 +11,7 @@ import { ICrashReporterService } from '@/src/application/services/crash-reporter
 import { IEmailBloomFilterService } from '@/src/application/services/email-bloom-filter.service.interface';
 import { IEmailService } from '@/src/application/services/email.service.interface';
 import { IInstrumentationService } from '@/src/application/services/instrumentation.service.interface';
+import { ILoggerService } from '@/src/application/services/logger.service.interface';
 import { ITransactionManagerService } from '@/src/application/services/transaction-manager.service.interface';
 import { IRequestPasswordResetUseCase } from '@/src/application/use-cases/auth/request-password-reset.use-case';
 import { IResendVerificationEmailUseCase } from '@/src/application/use-cases/auth/resend-verification-email.use-case';
@@ -65,6 +66,7 @@ export const DI_SYMBOLS = {
   IAuthenticationService: Symbol.for('IAuthenticationService'),
   ITransactionManagerService: Symbol.for('ITransactionManagerService'),
   IInstrumentationService: Symbol.for('IInstrumentationService'),
+  ILoggerService: Symbol.for('ILoggerService'),
   ICrashReporterService: Symbol.for('ICrashReporterService'),
   IEmailBloomFilterService: Symbol.for('IEmailBloomFilterService'),
   IEmailService: Symbol.for('IEmailService'),
@@ -147,6 +149,7 @@ export interface DI_RETURN_TYPES {
   IAuthenticationService: IAuthenticationService;
   ITransactionManagerService: ITransactionManagerService;
   IInstrumentationService: IInstrumentationService;
+  ILoggerService: ILoggerService;
   ICrashReporterService: ICrashReporterService;
   IEmailBloomFilterService: IEmailBloomFilterService;
   IEmailService: IEmailService;
