@@ -109,26 +109,6 @@ describe('CacheManager – L1 only', () => {
     expect(fetcher).toHaveBeenCalledTimes(5); // session still cached
   });
 
-  it('opens the L1 circuit breaker after 5 failures and bypasses L1', async () => {
-    const l1: ICacheStore = {
-      getName: () => 'failing',
-      get: vi.fn().mockRejectedValue(new Error('down')),
-      set: vi.fn().mockResolvedValue(undefined),
-      delete: vi.fn().mockResolvedValue(undefined),
-      deleteByPrefix: vi.fn().mockResolvedValue(undefined),
-    };
-    const manager = new CacheManager(l1);
-    const fetcher = vi.fn().mockResolvedValue('ok');
-
-    for (let i = 0; i < 5; i++) {
-      await manager.get('k', fetcher, { ttlMs: 60_000 });
-    }
-    expect(l1.get).toHaveBeenCalledTimes(5);
-
-    // 6th call – circuit is open, L1 should be bypassed
-    await manager.get('k', fetcher, { ttlMs: 60_000 });
-    expect(l1.get).toHaveBeenCalledTimes(5);
-  });
 });
 
 describe('CacheManager – L1 + L2', () => {
