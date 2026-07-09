@@ -11,6 +11,8 @@ interface CachedEntry<T> {
   data: T;
   freshUntil: number;
   staleUntil: number;
+  /** Milliseconds the original fetch took — used by the XFetch algorithm. */
+  delta: number;
 }
 
 class CircuitBreaker {
@@ -89,6 +91,10 @@ export class CacheManager implements ICacheManager {
     if (l1Entry) {
       const now = Date.now();
       if (now < l1Entry.freshUntil) {
+        if (this.xfetchShouldRecompute(l1Entry, options.beta ?? 1)) {
+          // Probabilistically refresh before expiry to avoid a future stampede.
+          this.triggerRevalidation(key, fetcher, options);
+        }
         this.instrumentation?.recordMetric('cache.hit', { store: 'l1', type: 'fresh' });
         return l1Entry.data;
       }
@@ -108,6 +114,9 @@ export class CacheManager implements ICacheManager {
           if (now < entry.staleUntil) {
             void this.setInStore(this.l1, key, entry, entry.staleUntil - now);
             if (now < entry.freshUntil) {
+              if (this.xfetchShouldRecompute(entry, options.beta ?? 1)) {
+                this.triggerRevalidation(key, fetcher, options);
+              }
               this.instrumentation?.recordMetric('cache.hit', { store: 'l2', type: 'fresh' });
               return entry.data;
             }
@@ -188,9 +197,11 @@ export class CacheManager implements ICacheManager {
     fetcher: () => Promise<T>,
     options: CacheOptions
   ): Promise<T> {
+    const fetchStart = Date.now();
     const tracked = fetcher()
       .then(async (data) => {
-        await this.writeToStores(key, data, options);
+        const delta = Date.now() - fetchStart;
+        await this.writeToStores(key, data, options, delta);
         return data;
       })
       .finally(() => {
@@ -215,7 +226,8 @@ export class CacheManager implements ICacheManager {
   private async writeToStores<T>(
     key: string,
     data: T,
-    options: CacheOptions
+    options: CacheOptions,
+    delta = 0
   ): Promise<void> {
     const now = Date.now();
     const freshMs = this.applyJitter(options.ttlMs, options.jitter ?? 0);
@@ -225,6 +237,7 @@ export class CacheManager implements ICacheManager {
       data,
       freshUntil: now + freshMs,
       staleUntil: now + freshMs + staleMs,
+      delta,
     };
 
     await Promise.allSettled([
@@ -246,6 +259,18 @@ export class CacheManager implements ICacheManager {
     } catch {
       // silently ignore write failures — cache is best-effort
     }
+  }
+
+  // XFetch: probabilistically decide whether to refresh a still-fresh entry.
+  // Formula: now − delta × beta × ln(rand) ≥ freshUntil
+  // ln(rand) is always negative, so the left side exceeds `now`. As freshUntil
+  // approaches, the inequality becomes easier to satisfy. Expensive fetches
+  // (large delta) also increase urgency. beta=0 disables XFetch entirely.
+  private xfetchShouldRecompute(entry: CachedEntry<unknown>, beta: number): boolean {
+    if (beta === 0) return false;
+    // When delta=0, the formula reduces to `now >= freshUntil` which is false
+    // for a fresh entry — so zero-delta entries are handled correctly by the math.
+    return Date.now() - entry.delta * beta * Math.log(Math.random()) >= entry.freshUntil;
   }
 
   private applyJitter(valueMs: number, jitter: number): number {
