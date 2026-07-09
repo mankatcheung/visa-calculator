@@ -15,6 +15,8 @@ Sentry.init({
   // OTel provider is owned by @vercel/otel (see instrumentation.ts).
   // SentrySpanProcessor is wired in as a second span processor, so Sentry
   // receives spans for error-linked tracing without running its own provider.
+  // tracesSampleRate=0 disables Sentry's own tracer — OTel handles sampling.
+  tracesSampleRate: 0,
   skipOpenTelemetrySetup: true,
 
   debug: false,

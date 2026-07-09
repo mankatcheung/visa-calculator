@@ -90,6 +90,7 @@ export function createLeavesModule() {
     .bind(DI_SYMBOLS.ICreateLeaveController)
     .toHigherOrderFunction(createLeaveController, [
       DI_SYMBOLS.IInstrumentationService,
+      DI_SYMBOLS.ILoggerService,
       DI_SYMBOLS.IAuthenticationService,
       DI_SYMBOLS.ITransactionManagerService,
       DI_SYMBOLS.ICreateLeaveUseCase,

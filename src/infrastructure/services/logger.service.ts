@@ -1,4 +1,4 @@
-import { SeverityNumber, logs } from '@opentelemetry/api-logs';
+import { logs, SeverityNumber } from '@opentelemetry/api-logs';
 
 import { ILoggerService } from '@/src/application/services/logger.service.interface';
 
