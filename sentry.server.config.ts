@@ -12,12 +12,11 @@ Sentry.init({
   // Privacy Policy's data-inventory section.
   sendDefaultPii: false,
 
-  // Tracing and metrics are handled by OTel → Axiom.
-  // Sentry is retained for error/exception capture only.
+  // OTel provider is owned by @vercel/otel (see instrumentation.ts).
+  // SentrySpanProcessor is wired in as a second span processor, so Sentry
+  // receives spans for error-linked tracing without running its own provider.
+  // tracesSampleRate=0 disables Sentry's own tracer — OTel handles sampling.
   tracesSampleRate: 0,
-
-  // Prevent Sentry from registering its own OTel providers, which would
-  // conflict with the @vercel/otel provider registered in instrumentation.ts.
   skipOpenTelemetrySetup: true,
 
   debug: false,

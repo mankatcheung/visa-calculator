@@ -9,7 +9,9 @@ Sentry.init({
 
   sendDefaultPii: false,
 
-  // Tracing handled by OTel → Axiom; Sentry is errors only.
+  // OTel provider is owned by @vercel/otel. Sentry handles errors only on Edge
+  // (SentrySpanProcessor is not available for Edge runtime).
+  // tracesSampleRate=0 disables Sentry's own tracer — OTel handles sampling.
   tracesSampleRate: 0,
   skipOpenTelemetrySetup: true,
 

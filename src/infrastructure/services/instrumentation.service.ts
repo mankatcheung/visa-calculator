@@ -43,6 +43,7 @@ export class InstrumentationService implements IInstrumentationService {
     return this.startSpan({ name, op: 'server_action' }, callback) as Promise<T>;
   }
 
+  // Counter increments flow through the OTel MeterProvider to Axiom.
   recordMetric(name: string, tags?: Record<string, string>): void {
     metrics.getMeter(SERVICE_NAME).createCounter(name).add(1, tags);
   }
