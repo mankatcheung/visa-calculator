@@ -19,7 +19,7 @@ export class CachedSessionsRepository implements ISessionsRepository {
 
   async getSession(
     sessionId: string
-  ): Promise<{ session: Session; user: User }> {
+  ): Promise<{ session: Session; user: User } | null> {
     return this.cacheManager.get(
       `sessions:id:${sessionId}`,
       () => this.inner.getSession(sessionId),
