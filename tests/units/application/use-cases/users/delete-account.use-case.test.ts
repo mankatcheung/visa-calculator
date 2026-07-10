@@ -45,13 +45,13 @@ it('deletes the user and every row referencing them', async () => {
     user.id
   );
 
-  await expect(usersRepository.getUser(user.id)).resolves.toBeNull();
+  await expect(usersRepository.getUser(user.id)).resolves.toBeUndefined();
   await expect(leavesRepository.getLeavesForUser(user.id)).resolves.toEqual(
     []
   );
   await expect(
     userSettingsRepository.getUserSettingsForUser(user.id)
-  ).resolves.toBeNull();
+  ).resolves.toBeUndefined();
   await expect(
     sessionsRepository.getSession(session.id)
   ).resolves.toBeNull();
