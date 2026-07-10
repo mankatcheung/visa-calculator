@@ -35,4 +35,9 @@ jobs:
         run: yarn install --frozen-lockfile
 
       - name: Audit dependencies for high/critical vulnerabilities
-        run: yarn audit --level high
+        # yarn audit exit codes are a severity bitmask: 2=low, 4=moderate, 8=high, 16=critical.
+        # --level high filters the printed report; the exit code still reflects all severities
+        # found, so we inspect the bitmask manually and only fail on high (8) or critical (16).
+        run: |
+          yarn audit --level high || code=$?
+          if [ $(( ${code:-0} & 24 )) -ne 0 ]; then exit 1; fi
