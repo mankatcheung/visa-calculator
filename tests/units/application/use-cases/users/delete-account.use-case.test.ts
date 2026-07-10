@@ -45,16 +45,16 @@ it('deletes the user and every row referencing them', async () => {
     user.id
   );
 
-  await expect(usersRepository.getUser(user.id)).resolves.toBeUndefined();
+  await expect(usersRepository.getUser(user.id)).resolves.toBeNull();
   await expect(leavesRepository.getLeavesForUser(user.id)).resolves.toEqual(
     []
   );
   await expect(
     userSettingsRepository.getUserSettingsForUser(user.id)
-  ).resolves.toBeUndefined();
+  ).resolves.toBeNull();
   await expect(
     sessionsRepository.getSession(session.id)
-  ).resolves.toBeUndefined();
+  ).resolves.toBeNull();
 });
 
 it('throws for the wrong current password and deletes nothing', async () => {
