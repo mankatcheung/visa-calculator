@@ -69,7 +69,7 @@ export class AuthenticationService implements IAuthenticationService {
         );
         const result = await this._sessionRepository.getSession(sessionId);
 
-        if (!result.user || !result.session) {
+        if (!result) {
           throw new UnauthenticatedError('Unauthenticated');
         }
         if (Date.now() >= new Date(result.session.expiresAt).getTime()) {
@@ -86,10 +86,6 @@ export class AuthenticationService implements IAuthenticationService {
             sessionId,
             new Date(Date.now() + SESSION_EXPIRY_MS)
           );
-        }
-
-        if (!result.user) {
-          throw new UnauthenticatedError("User doesn't exist");
         }
 
         return { user: result.user, session };
