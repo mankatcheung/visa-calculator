@@ -142,5 +142,5 @@ it('delete other sessions by userId keeps current session and removes the rest',
 
   await expect(
     sessionsRepository.getSession(otherSessionId)
-  ).resolves.toBeNull();
+  ).resolves.toEqual({});
 });

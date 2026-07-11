@@ -66,7 +66,7 @@ it('revokes other sessions on successful email change', async () => {
   // sessionB should be revoked
   await expect(
     sessionsRepository.getSession(sessionB.id)
-  ).resolves.toBeNull();
+  ).resolves.toEqual({});
 });
 
 it('throws on wrong OTP', async () => {

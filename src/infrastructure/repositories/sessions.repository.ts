@@ -55,7 +55,7 @@ export class SessionsRepository implements ISessionsRepository {
 
   async getSession(
     sessionId: string
-  ): Promise<{ session: Session; user: User } | null> {
+  ): Promise<Partial<{ session: Session; user: User }>> {
     const invoker = db;
     return await this.instrumentationService.startSpan(
       { name: 'SessionsRepository > getSession' },
@@ -74,7 +74,7 @@ export class SessionsRepository implements ISessionsRepository {
             },
             () => query.execute()
           );
-          return result[0] ?? null;
+          return result[0] ?? {};
         } catch (err) {
           this.crashReporterService.report(err);
           throw err;

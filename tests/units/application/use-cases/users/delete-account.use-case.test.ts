@@ -54,7 +54,7 @@ it('deletes the user and every row referencing them', async () => {
   ).resolves.toBeUndefined();
   await expect(
     sessionsRepository.getSession(session.id)
-  ).resolves.toBeNull();
+  ).resolves.toEqual({});
 });
 
 it('throws for the wrong current password and deletes nothing', async () => {

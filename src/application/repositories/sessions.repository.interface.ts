@@ -4,7 +4,7 @@ import { User } from '@/src/entities/models/user';
 
 export interface ISessionsRepository {
   createSession(session: Session, tx?: ITransaction): Promise<Session>;
-  getSession(sessionId: string): Promise<{ session: Session; user: User } | null>;
+  getSession(sessionId: string): Promise<Partial<{ session: Session; user: User }>>;
   getUserSession(userId: string): Promise<{ session: Session; user: User }>;
   updateSessionExpiresAt(
     sessionId: string,
