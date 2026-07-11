@@ -76,7 +76,7 @@ it('revokes other sessions on password change', async () => {
   await expect(sessionRepository.getSession(sessionA.id)).resolves.toBeTruthy();
   await expect(
     sessionRepository.getSession(sessionB.id)
-  ).resolves.toEqual({});
+  ).resolves.toBeUndefined();
 });
 
 it('throws for unauthenticated', async () => {

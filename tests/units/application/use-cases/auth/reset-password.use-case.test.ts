@@ -44,10 +44,10 @@ it('revokes every existing session after a successful reset', async () => {
   // account-recovery flow and there is no "current" session to spare.
   await expect(
     sessionsRepository.getSession(sessionA.id)
-  ).resolves.toEqual({});
+  ).resolves.toBeUndefined();
   await expect(
     sessionsRepository.getSession(sessionB.id)
-  ).resolves.toEqual({});
+  ).resolves.toBeUndefined();
 
   // The new password works.
   await expect(
