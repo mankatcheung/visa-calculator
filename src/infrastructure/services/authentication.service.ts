@@ -88,6 +88,10 @@ export class AuthenticationService implements IAuthenticationService {
           );
         }
 
+        if (!result.user) {
+          throw new UnauthenticatedError("User doesn't exist");
+        }
+
         return { user: result.user, session };
       }
     );
