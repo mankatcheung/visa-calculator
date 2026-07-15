@@ -55,7 +55,7 @@ export class SessionsRepository implements ISessionsRepository {
 
   async getSession(
     sessionId: string
-  ): Promise<{ session: Session; user: User }> {
+  ): Promise<{ session: Session; user: User } | undefined> {
     const invoker = db;
     return await this.instrumentationService.startSpan(
       { name: 'SessionsRepository > getSession' },
