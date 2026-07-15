@@ -1,0 +1,43 @@
+name: Security
+
+on:
+  push:
+  schedule:
+    # Run every Monday at 06:00 UTC to catch newly disclosed vulnerabilities
+    # even when the codebase hasn't changed.
+    - cron: '0 6 * * 1'
+
+permissions:
+  contents: read
+
+jobs:
+  dependency-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: '22.x'
+          cache: 'yarn'
+
+      - name: Cache node_modules
+        id: node-modules-cache
+        uses: actions/cache@v5
+        with:
+          path: node_modules
+          key: node-modules-${{ runner.os }}-${{ hashFiles('yarn.lock') }}
+
+      - name: Install dependencies
+        if: steps.node-modules-cache.outputs.cache-hit != 'true'
+        run: yarn install --frozen-lockfile
+
+      - name: Audit dependencies for high/critical vulnerabilities
+        # yarn audit exit codes are a severity bitmask: 2=low, 4=moderate, 8=high, 16=critical.
+        # --level high filters the printed report; the exit code still reflects all severities
+        # found, so we inspect the bitmask manually and only fail on high (8) or critical (16).
+        run: |
+          yarn audit --level high || code=$?
+          if [ $(( ${code:-0} & 24 )) -ne 0 ]; then exit 1; fi
