@@ -20,7 +20,7 @@ export class CachedSessionsRepository implements ISessionsRepository {
   async getSession(
     sessionId: string
   ): Promise<{ session: Session; user: User } | undefined> {
-    return this.cacheManager.get(
+    return this.cacheManager.get<{ session: Session; user: User } | undefined>(
       `sessions:id:${sessionId}`,
       () => this.inner.getSession(sessionId),
       { ttlMs: TTL_MS, staleTtlMs: STALE_TTL_MS, jitter: JITTER }

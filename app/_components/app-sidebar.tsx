@@ -39,6 +39,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             title: t('leavesRecords'),
             url: '/leaves',
           },
+          {
+            key: 'visas',
+            title: t('visas'),
+            url: '/visas',
+          },
         ],
       },
       {
