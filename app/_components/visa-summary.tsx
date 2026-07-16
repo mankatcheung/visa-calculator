@@ -11,10 +11,10 @@ import {
 import { Progress } from '@/app/_components/ui/progress';
 import { displayUKDateTime } from '@/lib/utils';
 import { getVisaStatus } from '@/lib/visa';
-import type { VisaPresenterOutput } from '@/src/interface-adapters/presenters/visas/visa.presenter';
+import type { Visa } from '@/src/entities/models/visa';
 
 type VisaSummaryProps = {
-  visa: VisaPresenterOutput;
+  visa: Visa;
   leaves?: { startDate: Date; endDate: Date }[];
 };
 
