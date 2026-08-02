@@ -1,4 +1,6 @@
-# UK Visa Leave Tracker
+<p align="center">
+  <img src="public/brand/logo-full.svg" alt="UK Visa Leave Tracker" width="420" />
+</p>
 
 A web application for recording and tracking the number of leaves (absences) for
 UK visa compliance, built with Next.js, following clean architecture principles,

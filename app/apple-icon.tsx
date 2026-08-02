@@ -17,16 +17,19 @@ export default function AppleIcon() {
         background: '#171717',
       }}
     >
-      <div
-        style={{
-          color: '#fafafa',
-          fontSize: 100,
-          fontWeight: 700,
-          fontFamily: 'sans-serif',
-        }}
-      >
-        V
-      </div>
+      <svg width={96} height={96} viewBox="120 140 272 272" fill="none">
+        <rect x={160} y={140} width={32} height={72} rx={16} fill="#fafafa" />
+        <rect x={320} y={140} width={32} height={72} rx={16} fill="#fafafa" />
+        <rect x={120} y={180} width={272} height={232} rx={28} fill="#fafafa" />
+        <rect x={120} y={236} width={272} height={12} fill="#171717" />
+        <path
+          d="M188 330 L232 374 L338 268"
+          stroke="#171717"
+          strokeWidth={30}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
     </div>,
     { ...size }
   );
