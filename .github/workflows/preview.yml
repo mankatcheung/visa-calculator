@@ -1,0 +1,207 @@
+name: Preview
+# Deploys a Vercel preview build for each pull request, backed by its own
+# Turso database (created via the Turso CLI and migrated to the current
+# schema). The database is destroyed when the PR closes.
+#
+# Required repo configuration:
+#   - secrets.VERCEL_TOKEN / secrets.VERCEL_ORG_ID / secrets.VERCEL_PROJECT_ID
+#     (already used by deploy.yml)
+#   - secrets.TURSO_API_TOKEN -- create with `turso auth api-tokens mint <name>`
+#   - vars.TURSO_GROUP (optional) -- Turso group to create preview databases
+#     in; defaults to the org's default group when unset
+#
+# Note: pull_request workflows from forked repos don't get secrets access
+# (by GitHub design, to stop untrusted code exfiltrating them), so this only
+# fully runs for PRs from branches within this repo -- same constraint the
+# old Turso-backed e2e setup hit (see the e2e-tests job in test.yml).
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, closed]
+
+concurrency:
+  group: preview-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: '22.x'
+  DB_NAME: visa-calc-pr-${{ github.event.pull_request.number }}
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  # Job for detecting whether secrets are available. Dependabot PRs (and PRs
+  # from forks) don't get secrets access by GitHub's own design, and job-level
+  # `if:` can't reference `secrets` directly -- so check it here in a step
+  # and expose the result as an output, matching test.yml's e2e-tests job.
+  check-secrets:
+    runs-on: ubuntu-latest
+    outputs:
+      has-secrets: ${{ steps.check.outputs.has-secrets }}
+    steps:
+      - id: check
+        env:
+          TURSO_API_TOKEN: ${{ secrets.TURSO_API_TOKEN }}
+        run: |
+          if [ -n "$TURSO_API_TOKEN" ]; then
+            echo "has-secrets=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has-secrets=false" >> "$GITHUB_OUTPUT"
+          fi
+
+  # Job for deploying a PR preview: provisions/reuses a Turso database for
+  # this PR, migrates it, then deploys the app to Vercel wired to it.
+  deploy-preview:
+    needs: check-secrets
+    if: github.event.action != 'closed' && needs.check-secrets.outputs.has-secrets == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'yarn'
+
+      - name: Cache node_modules
+        id: node-modules-cache
+        uses: actions/cache@v5
+        with:
+          path: node_modules
+          key: node-modules-${{ runner.os }}-${{ hashFiles('yarn.lock') }}
+
+      - name: Install dependencies
+        if: steps.node-modules-cache.outputs.cache-hit != 'true'
+        run: yarn install --frozen-lockfile
+
+      - name: Install Turso CLI
+        run: |
+          curl -sSfL https://get.tur.so/install.sh | bash
+          echo "$HOME/.turso" >> "$GITHUB_PATH"
+
+      - name: Create preview database
+        env:
+          TURSO_API_TOKEN: ${{ secrets.TURSO_API_TOKEN }}
+          TURSO_GROUP: ${{ vars.TURSO_GROUP }}
+        run: |
+          # Reuse the same DB across pushes to this PR instead of destroying
+          # and recreating it -- a prior create/migrate cycle on every push
+          # raced with in-flight deletes and flaked (see test.yml's e2e-tests
+          # comment). drizzle-kit migrate is idempotent, so re-running it
+          # against an already-migrated DB on subsequent pushes is a no-op
+          # for tables that already exist.
+          if turso db show "$DB_NAME" >/dev/null 2>&1; then
+            echo "Reusing existing preview database $DB_NAME"
+          else
+            echo "Creating preview database $DB_NAME"
+            GROUP_FLAG=()
+            if [ -n "$TURSO_GROUP" ]; then
+              GROUP_FLAG=(--group "$TURSO_GROUP")
+            fi
+            turso db create "$DB_NAME" "${GROUP_FLAG[@]}" --wait
+          fi
+
+      - name: Fetch database credentials
+        id: turso
+        env:
+          TURSO_API_TOKEN: ${{ secrets.TURSO_API_TOKEN }}
+        run: |
+          DB_URL=$(turso db show "$DB_NAME" --url)
+          DB_TOKEN=$(turso db tokens create "$DB_NAME" --expiration 7d)
+          echo "::add-mask::$DB_TOKEN"
+          {
+            echo "db_url=$DB_URL"
+            echo "db_token=$DB_TOKEN"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Run database migrations
+        env:
+          DATABASE_URL: ${{ steps.turso.outputs.db_url }}
+          DATABASE_AUTH_TOKEN: ${{ steps.turso.outputs.db_token }}
+        run: |
+          # A freshly-created database can 502 on its first few queries
+          # while it finishes provisioning -- retry instead of failing the
+          # whole deploy on that transient window.
+          for attempt in 1 2 3 4 5; do
+            if yarn db:migrate; then
+              exit 0
+            fi
+            echo "Migration attempt $attempt failed, retrying in 5s..."
+            sleep 5
+          done
+          echo "Migrations failed after 5 attempts"
+          exit 1
+
+      - name: Install Vercel CLI
+        run: npm install -g vercel
+
+      - name: Deploy preview to Vercel
+        id: deploy
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+          DATABASE_URL: ${{ steps.turso.outputs.db_url }}
+          DATABASE_AUTH_TOKEN: ${{ steps.turso.outputs.db_token }}
+        run: |
+          URL=$(vercel deploy --token="$VERCEL_TOKEN" \
+            -e DATABASE_URL="$DATABASE_URL" \
+            -e DATABASE_AUTH_TOKEN="$DATABASE_AUTH_TOKEN" \
+            -b DATABASE_URL="$DATABASE_URL" \
+            -b DATABASE_AUTH_TOKEN="$DATABASE_AUTH_TOKEN")
+          echo "url=$URL" >> "$GITHUB_OUTPUT"
+
+      - name: Comment preview URL on PR
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const marker = '<!-- preview-deploy-comment -->';
+            const body = [
+              marker,
+              '### Preview deployment',
+              '',
+              `- **App:** ${{ steps.deploy.outputs.url }}`,
+              `- **Database:** \`${{ env.DB_NAME }}\` (Turso)`,
+            ].join('\n');
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+            const existing = comments.find((c) => c.body.includes(marker));
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body,
+              });
+            }
+
+  # Job for tearing down the PR's preview database once the PR closes
+  # (merged or abandoned), so preview databases don't accumulate.
+  cleanup-preview:
+    needs: check-secrets
+    if: github.event.action == 'closed' && needs.check-secrets.outputs.has-secrets == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install Turso CLI
+        run: |
+          curl -sSfL https://get.tur.so/install.sh | bash
+          echo "$HOME/.turso" >> "$GITHUB_PATH"
+
+      - name: Destroy preview database
+        env:
+          TURSO_API_TOKEN: ${{ secrets.TURSO_API_TOKEN }}
+        run: turso db destroy "$DB_NAME" --yes || true
