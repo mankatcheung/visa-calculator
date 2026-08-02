@@ -3,7 +3,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { CircleX, Loader2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { useEffect, useState, useTransition } from 'react';
+import { useState, useTransition } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
@@ -41,10 +41,13 @@ export function UpdateEmailForm({
   const [pendingEmail, setPendingEmail] = useState<string | null>(
     initialPendingEmail
   );
-
-  useEffect(() => {
+  const [prevInitialPendingEmail, setPrevInitialPendingEmail] = useState(
+    initialPendingEmail
+  );
+  if (initialPendingEmail !== prevInitialPendingEmail) {
+    setPrevInitialPendingEmail(initialPendingEmail);
     setPendingEmail(initialPendingEmail);
-  }, [initialPendingEmail]);
+  }
 
   const EmailSchema = z.object({
     email: z.email({ message: t('pleaseInput') }),
