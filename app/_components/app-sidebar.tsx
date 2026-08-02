@@ -2,6 +2,7 @@ import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import { LocalePicker } from '@/app/_components/locale-picker';
+import { Logo } from '@/app/_components/logo';
 import { ThemePicker } from '@/app/_components/theme-picker';
 import {
   Sidebar,
@@ -57,7 +58,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar {...props}>
       <SidebarHeader>
-        <div className="p-2">Visa</div>
+        <Logo className="p-2" />
       </SidebarHeader>
       <SidebarContent>
         {/* We create a SidebarGroup for each parent. */}
