@@ -148,7 +148,11 @@ jobs:
           DATABASE_URL: ${{ steps.turso.outputs.db_url }}
           DATABASE_AUTH_TOKEN: ${{ steps.turso.outputs.db_token }}
         run: |
-          URL=$(vercel deploy --token="$VERCEL_TOKEN" \
+          # --force skips Vercel's build cache. Different PRs can have very
+          # different dependency states, so reusing a cache built from an
+          # unrelated (possibly much older) deployment risks a broken
+          # install/build -- which is exactly what happened here once.
+          URL=$(vercel deploy --token="$VERCEL_TOKEN" --force \
             -e DATABASE_URL="$DATABASE_URL" \
             -e DATABASE_AUTH_TOKEN="$DATABASE_AUTH_TOKEN" \
             -b DATABASE_URL="$DATABASE_URL" \
