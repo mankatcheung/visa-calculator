@@ -5,10 +5,11 @@ import { AuthenticationError } from '@/src/entities/errors/auth';
 
 const signUpUseCase = getInjection('ISignUpUseCase');
 const createLeaveUseCase = getInjection('ICreateLeaveUseCase');
+const createVisaUseCase = getInjection('ICreateVisaUseCase');
 const deleteAccountUseCase = getInjection('IDeleteAccountUseCase');
 const usersRepository = getInjection('IUsersRepository');
 const leavesRepository = getInjection('ILeavesRepository');
-const userSettingsRepository = getInjection('IUserSettingsRepository');
+const visasRepository = getInjection('IVisasRepository');
 const sessionsRepository = getInjection('ISessionRepository');
 
 beforeAll(() => {
@@ -36,6 +37,21 @@ it('deletes the user and every row referencing them', async () => {
     user.id
   );
 
+  await createVisaUseCase(
+    {
+      country: 'United Kingdom',
+      name: 'Skilled Worker',
+      startDate: new Date(2025, 5, 5),
+      expiryDate: new Date(2030, 5, 5),
+      arrivalDate: new Date(2025, 6, 5),
+      maxStayDays: null,
+      rollingWindowDays: null,
+      qualifyingPeriodYears: 5,
+      remarks: null,
+    },
+    user.id
+  );
+
   await deleteAccountUseCase(
     {
       currentPassword: 'delete-account-password',
@@ -46,12 +62,8 @@ it('deletes the user and every row referencing them', async () => {
   );
 
   await expect(usersRepository.getUser(user.id)).resolves.toBeUndefined();
-  await expect(leavesRepository.getLeavesForUser(user.id)).resolves.toEqual(
-    []
-  );
-  await expect(
-    userSettingsRepository.getUserSettingsForUser(user.id)
-  ).resolves.toBeUndefined();
+  await expect(leavesRepository.getLeavesForUser(user.id)).resolves.toEqual([]);
+  await expect(visasRepository.getVisasForUser(user.id)).resolves.toEqual([]);
   await expect(
     sessionsRepository.getSession(session.id)
   ).resolves.toBeUndefined();

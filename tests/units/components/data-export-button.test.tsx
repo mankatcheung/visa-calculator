@@ -52,7 +52,7 @@ it('downloads a JSON file built from the export data on click', async () => {
     result: {
       exportedAt: '2025-01-01T00:00:00.000Z',
       account: { id: '1', email: 'one@test.com', emailVerified: true },
-      visaSettings: null,
+      visas: [],
       leaves: [],
     },
   });

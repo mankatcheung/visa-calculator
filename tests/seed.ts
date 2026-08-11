@@ -3,7 +3,7 @@ import { hashSync } from 'bcrypt-ts';
 
 import { PASSWORD_SALT_ROUNDS } from '@/config';
 
-import { userSettings, users } from '@/drizzle/schema';
+import { users, visas } from '@/drizzle/schema';
 
 export async function seed() {
   await db.insert(users).values([
@@ -48,33 +48,41 @@ export async function seed() {
       ),
     },
   ]);
-  await db.insert(userSettings).values([
+  await db.insert(visas).values([
     {
-      id: 1,
-      visaStartDate: new Date(2025, 5, 5),
-      visaExpiryDate: new Date(2030, 5, 5),
+      country: 'United Kingdom',
+      name: 'Skilled Worker',
+      startDate: new Date(2025, 5, 5),
+      expiryDate: new Date(2030, 5, 5),
       arrivalDate: new Date(2025, 6, 5),
+      qualifyingPeriodYears: 5,
       userId: '1',
     },
     {
-      id: 2,
-      visaStartDate: new Date(2025, 5, 5),
-      visaExpiryDate: new Date(2030, 5, 5),
+      country: 'United Kingdom',
+      name: 'Skilled Worker',
+      startDate: new Date(2025, 5, 5),
+      expiryDate: new Date(2030, 5, 5),
       arrivalDate: new Date(2025, 6, 5),
+      qualifyingPeriodYears: 5,
       userId: '2',
     },
     {
-      id: 3,
-      visaStartDate: new Date(2025, 5, 5),
-      visaExpiryDate: new Date(2030, 5, 5),
+      country: 'United Kingdom',
+      name: 'Skilled Worker',
+      startDate: new Date(2025, 5, 5),
+      expiryDate: new Date(2030, 5, 5),
       arrivalDate: new Date(2025, 6, 5),
+      qualifyingPeriodYears: 5,
       userId: '3',
     },
     {
-      id: 4,
-      visaStartDate: new Date(2025, 5, 5),
-      visaExpiryDate: new Date(2030, 5, 5),
+      country: 'United Kingdom',
+      name: 'Skilled Worker',
+      startDate: new Date(2025, 5, 5),
+      expiryDate: new Date(2030, 5, 5),
       arrivalDate: new Date(2025, 6, 5),
+      qualifyingPeriodYears: 5,
       userId: '4',
     },
   ]);

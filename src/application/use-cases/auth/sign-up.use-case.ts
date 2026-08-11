@@ -7,7 +7,6 @@ import {
 import { APP_URL, SupportedLocale } from '@/config';
 
 import { IEmailVerificationTokensRepository } from '@/src/application/repositories/email-verification-tokens.repository.interface';
-import { IUserSettingsRepository } from '@/src/application/repositories/user-settings.repository.interface';
 import type { IUsersRepository } from '@/src/application/repositories/users.repository.interface';
 import type { IAuthenticationService } from '@/src/application/services/authentication.service.interface';
 import type { IEmailBloomFilterService } from '@/src/application/services/email-bloom-filter.service.interface';
@@ -27,7 +26,6 @@ export const signUpUseCase =
     instrumentationService: IInstrumentationService,
     authenticationService: IAuthenticationService,
     usersRepository: IUsersRepository,
-    userSettingsRepository: IUserSettingsRepository,
     emailBloomFilterService: IEmailBloomFilterService,
     emailVerificationTokensRepository: IEmailVerificationTokensRepository,
     emailService: IEmailService
@@ -76,8 +74,6 @@ export const signUpUseCase =
         }
 
         await emailBloomFilterService.recordEmail(input.email);
-
-        await userSettingsRepository.createUserSettings(userId, tx);
 
         const bytes = new Uint8Array(20);
         crypto.getRandomValues(bytes);

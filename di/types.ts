@@ -3,7 +3,7 @@ import { IEmailVerificationTokensRepository } from '@/src/application/repositori
 import { ILeavesRepository } from '@/src/application/repositories/leaves.repository.interface';
 import { IPasswordResetTokensRepository } from '@/src/application/repositories/password-reset-tokens.repository.interface';
 import { ISessionsRepository } from '@/src/application/repositories/sessions.repository.interface';
-import { IUserSettingsRepository } from '@/src/application/repositories/user-settings.repository.interface';
+import { IVisasRepository } from '@/src/application/repositories/visas.repository.interface';
 import { IUsersRepository } from '@/src/application/repositories/users.repository.interface';
 import { IAuthenticationService } from '@/src/application/services/authentication.service.interface';
 import { ICacheManager } from '@/src/application/services/cache-manager.service.interface';
@@ -26,8 +26,11 @@ import { IGetLeaveUseCase } from '@/src/application/use-cases/leaves/get-leave.u
 import { IGetLeavesForUserUseCase } from '@/src/application/use-cases/leaves/get-leaves-for-user.use-case';
 import { IGetPaginatedLeavesForUserUseCase } from '@/src/application/use-cases/leaves/get-paginated-leaves-for-user.use-case';
 import { IUpdateLeaveUseCase } from '@/src/application/use-cases/leaves/update-leave.use-case';
-import { IGetUserSettingsForUserUseCase } from '@/src/application/use-cases/user-settings/get-user-settings-for-user.use-case';
-import { IUpdateUserSettingsUseCase } from '@/src/application/use-cases/user-settings/update-user-settings.use-case';
+import { ICreateVisaUseCase } from '@/src/application/use-cases/visas/create-visa.use-case';
+import { IDeleteVisaUseCase } from '@/src/application/use-cases/visas/delete-visa.use-case';
+import { IGetVisaUseCase } from '@/src/application/use-cases/visas/get-visa.use-case';
+import { IGetVisasForUserUseCase } from '@/src/application/use-cases/visas/get-visas-for-user.use-case';
+import { IUpdateVisaUseCase } from '@/src/application/use-cases/visas/update-visa.use-case';
 import { ICancelEmailChangeUseCase } from '@/src/application/use-cases/users/cancel-email-change.use-case';
 import { IDeleteAccountUseCase } from '@/src/application/use-cases/users/delete-account.use-case';
 import { IGetPendingEmailChangeUseCase } from '@/src/application/use-cases/users/get-pending-email-change.use-case';
@@ -49,8 +52,11 @@ import { IGetLeaveController } from '@/src/interface-adapters/controllers/leaves
 import { IGetLeavesForUserController } from '@/src/interface-adapters/controllers/leaves/get-leaves-for-user.controller';
 import { IGetPaginatedLeavesForUserController } from '@/src/interface-adapters/controllers/leaves/get-paginated-leaves-for-user.controller';
 import { IUpdateLeaveController } from '@/src/interface-adapters/controllers/leaves/update-leave.controller';
-import { IGetUserSettingsForUserController } from '@/src/interface-adapters/controllers/user-settings/get-user-settings-for-user.controller';
-import { IUpdateUserSettingsController } from '@/src/interface-adapters/controllers/user-settings/update-user-settings.controller';
+import { ICreateVisaController } from '@/src/interface-adapters/controllers/visas/create-visa.controller';
+import { IDeleteVisaController } from '@/src/interface-adapters/controllers/visas/delete-visa.controller';
+import { IGetVisaController } from '@/src/interface-adapters/controllers/visas/get-visa.controller';
+import { IGetVisasForUserController } from '@/src/interface-adapters/controllers/visas/get-visas-for-user.controller';
+import { IUpdateVisaController } from '@/src/interface-adapters/controllers/visas/update-visa.controller';
 import { ICancelEmailChangeController } from '@/src/interface-adapters/controllers/users/cancel-email-change.controller';
 import { IDeleteAccountController } from '@/src/interface-adapters/controllers/users/delete-account.controller';
 import { IGetPendingEmailChangeController } from '@/src/interface-adapters/controllers/users/get-pending-email-change.controller';
@@ -75,7 +81,7 @@ export const DI_SYMBOLS = {
   ILeavesRepository: Symbol.for('ILeavesRepository'),
   IUsersRepository: Symbol.for('IUsersRepository'),
   ISessionRepository: Symbol.for('ISessionRepository'),
-  IUserSettingsRepository: Symbol.for('IUserSettingsRepository'),
+  IVisasRepository: Symbol.for('IVisasRepository'),
   IPasswordResetTokensRepository: Symbol.for('IPasswordResetTokensRepository'),
   IEmailVerificationTokensRepository: Symbol.for(
     'IEmailVerificationTokensRepository'
@@ -89,6 +95,11 @@ export const DI_SYMBOLS = {
   IGetPaginatedLeavesForUserUseCase: Symbol.for('IGetPaginatedLeavesForUserUseCase'),
   IGetLeaveUseCase: Symbol.for('IGetLeaveUseCase'),
   IUpdateLeaveUseCase: Symbol.for('IUpdateLeaveUseCase'),
+  ICreateVisaUseCase: Symbol.for('ICreateVisaUseCase'),
+  IDeleteVisaUseCase: Symbol.for('IDeleteVisaUseCase'),
+  IGetVisaUseCase: Symbol.for('IGetVisaUseCase'),
+  IGetVisasForUserUseCase: Symbol.for('IGetVisasForUserUseCase'),
+  IUpdateVisaUseCase: Symbol.for('IUpdateVisaUseCase'),
   ISignInUseCase: Symbol.for('ISignInUseCase'),
   ISignOutUseCase: Symbol.for('ISignOutUseCase'),
   ISignUpUseCase: Symbol.for('ISignUpUseCase'),
@@ -106,8 +117,6 @@ export const DI_SYMBOLS = {
   IUpdateUserPasswordUseCase: Symbol.for('IUpdateUserPasswordUseCase'),
   IGetUserDataExportUseCase: Symbol.for('IGetUserDataExportUseCase'),
   IDeleteAccountUseCase: Symbol.for('IDeleteAccountUseCase'),
-  IGetUserSettingsForUserUseCase: Symbol.for('IGetUserSettingsForUserUseCase'),
-  IUpdateUserSettingsUseCase: Symbol.for('IUpdateUserSettingsUseCase'),
 
   // Controllers
   ISignInController: Symbol.for('ISignInController'),
@@ -123,10 +132,15 @@ export const DI_SYMBOLS = {
   ),
   ICreateLeaveController: Symbol.for('ICreateLeaveController'),
   IDeleteLeaveController: Symbol.for('IDeleteLeaveController'),
+  IGetLeaveController: Symbol.for('IGetLeaveController'),
   IGetLeavesForUserController: Symbol.for('IGetLeavesForUserController'),
   IGetPaginatedLeavesForUserController: Symbol.for('IGetPaginatedLeavesForUserController'),
-  IGetLeaveController: Symbol.for('IGetLeaveController'),
   IUpdateLeaveController: Symbol.for('IUpdateLeaveController'),
+  ICreateVisaController: Symbol.for('ICreateVisaController'),
+  IDeleteVisaController: Symbol.for('IDeleteVisaController'),
+  IGetVisaController: Symbol.for('IGetVisaController'),
+  IGetVisasForUserController: Symbol.for('IGetVisasForUserController'),
+  IUpdateVisaController: Symbol.for('IUpdateVisaController'),
   IGetSelfUserController: Symbol.for('IGetSelfUserController'),
   IRequestEmailChangeController: Symbol.for('IRequestEmailChangeController'),
   IVerifyEmailChangeController: Symbol.for('IVerifyEmailChangeController'),
@@ -137,10 +151,6 @@ export const DI_SYMBOLS = {
   IUpdateUserPasswordController: Symbol.for('IUpdateUserPasswordController'),
   IGetUserDataExportController: Symbol.for('IGetUserDataExportController'),
   IDeleteAccountController: Symbol.for('IDeleteAccountController'),
-  IGetUserSettingsForUserController: Symbol.for(
-    'IGetUserSettingsForUserController'
-  ),
-  IUpdateUserSettingsController: Symbol.for('IUpdateUserSettingsController'),
 };
 
 export interface DI_RETURN_TYPES {
@@ -158,7 +168,7 @@ export interface DI_RETURN_TYPES {
   ILeavesRepository: ILeavesRepository;
   IUsersRepository: IUsersRepository;
   ISessionRepository: ISessionsRepository;
-  IUserSettingsRepository: IUserSettingsRepository;
+  IVisasRepository: IVisasRepository;
   IPasswordResetTokensRepository: IPasswordResetTokensRepository;
   IEmailVerificationTokensRepository: IEmailVerificationTokensRepository;
   IEmailChangeTokensRepository: IEmailChangeTokensRepository;
@@ -170,6 +180,11 @@ export interface DI_RETURN_TYPES {
   IGetPaginatedLeavesForUserUseCase: IGetPaginatedLeavesForUserUseCase;
   IGetLeaveUseCase: IGetLeaveUseCase;
   IUpdateLeaveUseCase: IUpdateLeaveUseCase;
+  ICreateVisaUseCase: ICreateVisaUseCase;
+  IDeleteVisaUseCase: IDeleteVisaUseCase;
+  IGetVisaUseCase: IGetVisaUseCase;
+  IGetVisasForUserUseCase: IGetVisasForUserUseCase;
+  IUpdateVisaUseCase: IUpdateVisaUseCase;
   ISignInUseCase: ISignInUseCase;
   ISignOutUseCase: ISignOutUseCase;
   ISignUpUseCase: ISignUpUseCase;
@@ -185,8 +200,6 @@ export interface DI_RETURN_TYPES {
   IUpdateUserPasswordUseCase: IUpdateUserPasswordUseCase;
   IGetUserDataExportUseCase: IGetUserDataExportUseCase;
   IDeleteAccountUseCase: IDeleteAccountUseCase;
-  IGetUserSettingsForUserUseCase: IGetUserSettingsForUserUseCase;
-  IUpdateUserSettingsUseCase: IUpdateUserSettingsUseCase;
 
   // Controllers
   ISignInController: ISignInController;
@@ -202,6 +215,11 @@ export interface DI_RETURN_TYPES {
   IGetLeavesForUserController: IGetLeavesForUserController;
   IGetPaginatedLeavesForUserController: IGetPaginatedLeavesForUserController;
   IUpdateLeaveController: IUpdateLeaveController;
+  ICreateVisaController: ICreateVisaController;
+  IDeleteVisaController: IDeleteVisaController;
+  IGetVisaController: IGetVisaController;
+  IGetVisasForUserController: IGetVisasForUserController;
+  IUpdateVisaController: IUpdateVisaController;
   IGetSelfUserController: IGetSelfUserController;
   IRequestEmailChangeController: IRequestEmailChangeController;
   IVerifyEmailChangeController: IVerifyEmailChangeController;
@@ -210,6 +228,4 @@ export interface DI_RETURN_TYPES {
   IUpdateUserPasswordController: IUpdateUserPasswordController;
   IGetUserDataExportController: IGetUserDataExportController;
   IDeleteAccountController: IDeleteAccountController;
-  IGetUserSettingsForUserController: IGetUserSettingsForUserController;
-  IUpdateUserSettingsController: IUpdateUserSettingsController;
 }

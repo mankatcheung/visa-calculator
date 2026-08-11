@@ -40,7 +40,6 @@ export function createAuthenticationModule() {
       DI_SYMBOLS.IInstrumentationService,
       DI_SYMBOLS.IAuthenticationService,
       DI_SYMBOLS.IUsersRepository,
-      DI_SYMBOLS.IUserSettingsRepository,
       DI_SYMBOLS.IEmailBloomFilterService,
       DI_SYMBOLS.IEmailVerificationTokensRepository,
       DI_SYMBOLS.IEmailService,

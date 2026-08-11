@@ -9,7 +9,7 @@ import { createEmailVerificationModule } from '@/di/modules/email-verification.m
 import { createLeavesModule } from '@/di/modules/leaves.module';
 import { createMonitoringModule } from '@/di/modules/monitoring.module';
 import { createPasswordResetModule } from '@/di/modules/password-reset.module';
-import { createUserSettingModule } from '@/di/modules/user-settings.module';
+import { createVisasModule } from '@/di/modules/visas.module';
 import { createUsersModule } from '@/di/modules/users.module';
 import { DI_RETURN_TYPES, DI_SYMBOLS } from '@/di/types';
 import { IInstrumentationService } from '@/src/application/services/instrumentation.service.interface';
@@ -29,10 +29,7 @@ ApplicationContainer.load(
 ApplicationContainer.load(Symbol('SessionsModule'), createSessionModule());
 ApplicationContainer.load(Symbol('UsersModule'), createUsersModule());
 ApplicationContainer.load(Symbol('LeavesModule'), createLeavesModule());
-ApplicationContainer.load(
-  Symbol('UserSettingsModule'),
-  createUserSettingModule()
-);
+ApplicationContainer.load(Symbol('VisasModule'), createVisasModule());
 ApplicationContainer.load(
   Symbol('PasswordResetModule'),
   createPasswordResetModule()
