@@ -35,9 +35,23 @@ jobs:
         run: yarn install --frozen-lockfile
 
       - name: Audit dependencies for high/critical vulnerabilities
-        # yarn audit exit codes are a severity bitmask: 2=low, 4=moderate, 8=high, 16=critical.
-        # --level high filters the printed report; the exit code still reflects all severities
-        # found, so we inspect the bitmask manually and only fail on high (8) or critical (16).
+        # yarn audit (Yarn Classic) has no built-in way to allow-list a single advisory, so we
+        # filter its --json output ourselves. GHSA-jmr9-qjv8-65gv (extract-zip symlink path
+        # traversal, advisory id 1139346) has no patched release upstream ("patched_versions":
+        # "<0.0.0") and only reaches us via @lhci/cli's Lighthouse tooling, a devDependency that
+        # extracts a Chromium binary fetched by Puppeteer itself during local CI runs rather than
+        # untrusted zip archives - so we allow that one advisory and fail on any other
+        # high/critical finding.
         run: |
-          yarn audit --level high || code=$?
-          if [ $(( ${code:-0} & 24 )) -ne 0 ]; then exit 1; fi
+          set -o pipefail
+          ALLOWED_ADVISORY_IDS='[1139346]'
+          yarn audit --level high --json > audit.json || true
+          UNALLOWED=$(jq -c --argjson allowed "$ALLOWED_ADVISORY_IDS" \
+            'select(.type == "auditAdvisory") | select(.data.advisory.id as $id | ($allowed | index($id)) == null)' \
+            audit.json)
+          if [ -n "$UNALLOWED" ]; then
+            echo "$UNALLOWED"
+            echo "::error::Unallowed high/critical vulnerabilities found."
+            exit 1
+          fi
+          echo "No unallowed high/critical vulnerabilities found (extract-zip GHSA-jmr9-qjv8-65gv allowed; no upstream patch exists)."
