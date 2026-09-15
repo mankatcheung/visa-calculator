@@ -87,7 +87,7 @@
     "@types/react": "19.2.7",
     "@types/react-dom": "19.2.3",
     "@vitejs/plugin-react": "^6.0.2",
-    "@vitest/coverage-istanbul": "^4.1.9",
+    "@vitest/coverage-istanbul": "^5.0.1",
     "axe-core": "^4.12.1",
     "cypress": "^15.17.0",
     "cypress-axe": "^1.7.0",
@@ -100,6 +100,7 @@
     "prettier": "^3.5.3",
     "tailwindcss": "^4.1.4",
     "typescript": "^5",
+    "vite": "^8.0.0",
     "vitest": "^5.0.1"
   },
   "resolutions": {
@@ -119,10 +120,10 @@
     "@lhci/cli/**/brace-expansion": "^1.1.17",
     "@sentry/nextjs/**/brace-expansion": "^5.0.8",
     "fast-uri": "^3.1.8",
-    "sharp": "^0.35.3",
+    "sharp": "^0.35.4",
     "postcss": "^8.5.23",
     "esbuild": "^0.28.1",
-    "js-yaml": "^4.2.0",
+    "js-yaml": "^4.3.2",
     "uuid": "^11.1.1",
     "nanoid": "^3.3.19"
   }
