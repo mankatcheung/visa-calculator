@@ -1,32 +1,21 @@
-import { logs, SeverityNumber } from '@opentelemetry/api-logs';
+import * as Sentry from '@sentry/nextjs';
 
 import { ILoggerService } from '@/src/application/services/logger.service.interface';
 
-const SERVICE_NAME = process.env.OTEL_SERVICE_NAME ?? 'visa-calculator';
-
 export class LoggerService implements ILoggerService {
-  private emit(severity: SeverityNumber, message: string, attrs?: Record<string, unknown>): void {
-    logs.getLogger(SERVICE_NAME).emit({
-      severityNumber: severity,
-      severityText: SeverityNumber[severity],
-      body: message,
-      attributes: attrs as Record<string, string | number | boolean>,
-    });
-  }
-
   debug(message: string, attrs?: Record<string, unknown>): void {
-    this.emit(SeverityNumber.DEBUG, message, attrs);
+    Sentry.logger.debug(message, attrs);
   }
 
   info(message: string, attrs?: Record<string, unknown>): void {
-    this.emit(SeverityNumber.INFO, message, attrs);
+    Sentry.logger.info(message, attrs);
   }
 
   warn(message: string, attrs?: Record<string, unknown>): void {
-    this.emit(SeverityNumber.WARN, message, attrs);
+    Sentry.logger.warn(message, attrs);
   }
 
   error(message: string, attrs?: Record<string, unknown>): void {
-    this.emit(SeverityNumber.ERROR, message, attrs);
+    Sentry.logger.error(message, attrs);
   }
 }

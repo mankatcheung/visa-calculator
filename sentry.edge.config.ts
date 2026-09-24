@@ -9,11 +9,10 @@ Sentry.init({
 
   sendDefaultPii: false,
 
-  // OTel provider is owned by @vercel/otel. Sentry handles errors only on Edge
-  // (SentrySpanProcessor is not available for Edge runtime).
-  // tracesSampleRate=0 disables Sentry's own tracer — OTel handles sampling.
-  tracesSampleRate: 0,
-  skipOpenTelemetrySetup: true,
+  // Sentry owns the OpenTelemetry setup and is the sole backend for traces,
+  // logs (LoggerService) and metrics (InstrumentationService.recordMetric).
+  tracesSampleRate: 1,
+  enableLogs: true,
 
   debug: false,
 });
