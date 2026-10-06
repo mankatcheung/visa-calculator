@@ -36,15 +36,19 @@ jobs:
 
       - name: Audit dependencies for high/critical vulnerabilities
         # yarn audit (Yarn Classic) has no built-in way to allow-list a single advisory, so we
-        # filter its --json output ourselves. Both allowed advisories affect extract-zip
-        # (GHSA-jmr9-qjv8-65gv, id 1139346, and GHSA-7pqw-9j4j-h8q3, id 1193685) and have no
-        # patched release upstream ("patched_versions": "<0.0.0"). extract-zip only reaches us
-        # via @lhci/cli's Lighthouse tooling, a devDependency that extracts a Chromium binary
-        # fetched by Puppeteer itself during local CI runs rather than untrusted zip archives -
-        # so we allow those two advisories and fail on any other high/critical finding.
+        # filter its --json output ourselves. None of the allowed advisories has a patched
+        # release upstream ("patched_versions": "<0.0.0"):
+        # - extract-zip (GHSA-jmr9-qjv8-65gv, id 1139346, and GHSA-7pqw-9j4j-h8q3, id 1193685)
+        #   only reaches us via @lhci/cli's Lighthouse tooling, a devDependency that extracts a
+        #   Chromium binary fetched by Puppeteer itself during local CI runs rather than
+        #   untrusted zip archives.
+        # - braces (GHSA-vfj7-8cjw-p6xm, id 1240992) only reaches us via micromatch in the
+        #   ESLint tooling (eslint-plugin-boundaries, eslint-config-next), which expands glob
+        #   patterns from our own lint config rather than untrusted input.
+        # We allow those advisories and fail on any other high/critical finding.
         run: |
           set -o pipefail
-          ALLOWED_ADVISORY_IDS='[1139346, 1193685]'
+          ALLOWED_ADVISORY_IDS='[1139346, 1193685, 1240992]'
           yarn audit --level high --json > audit.json || true
           UNALLOWED=$(jq -c --argjson allowed "$ALLOWED_ADVISORY_IDS" \
             'select(.type == "auditAdvisory") | select(.data.advisory.id as $id | ($allowed | index($id)) == null)' \
@@ -54,4 +58,4 @@ jobs:
             echo "::error::Unallowed high/critical vulnerabilities found."
             exit 1
           fi
-          echo "No unallowed high/critical vulnerabilities found (extract-zip advisories allowed; no upstream patch exists)."
+          echo "No unallowed high/critical vulnerabilities found (extract-zip and braces advisories allowed; no upstream patch exists)."
