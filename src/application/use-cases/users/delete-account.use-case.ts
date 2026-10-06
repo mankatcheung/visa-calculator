@@ -3,7 +3,7 @@ import { IEmailVerificationTokensRepository } from '@/src/application/repositori
 import { ILeavesRepository } from '@/src/application/repositories/leaves.repository.interface';
 import { IPasswordResetTokensRepository } from '@/src/application/repositories/password-reset-tokens.repository.interface';
 import { ISessionsRepository } from '@/src/application/repositories/sessions.repository.interface';
-import { IUserSettingsRepository } from '@/src/application/repositories/user-settings.repository.interface';
+import { IVisasRepository } from '@/src/application/repositories/visas.repository.interface';
 import { IUsersRepository } from '@/src/application/repositories/users.repository.interface';
 import { IAuthenticationService } from '@/src/application/services/authentication.service.interface';
 import { IInstrumentationService } from '@/src/application/services/instrumentation.service.interface';
@@ -18,7 +18,7 @@ export const deleteAccountUseCase =
     authenticationService: IAuthenticationService,
     usersRepository: IUsersRepository,
     leavesRepository: ILeavesRepository,
-    userSettingsRepository: IUserSettingsRepository,
+    visasRepository: IVisasRepository,
     passwordResetTokensRepository: IPasswordResetTokensRepository,
     emailVerificationTokensRepository: IEmailVerificationTokensRepository,
     emailChangeTokensRepository: IEmailChangeTokensRepository,
@@ -51,7 +51,7 @@ export const deleteAccountUseCase =
         // `ON DELETE CASCADE`) since FK enforcement isn't guaranteed to be
         // on for every connection/driver -- see drizzle/schema.ts.
         await leavesRepository.deleteLeavesForUser(userId, tx);
-        await userSettingsRepository.deleteUserSettingsForUser(userId, tx);
+        await visasRepository.deleteVisasForUser(userId, tx);
         await passwordResetTokensRepository.deleteTokensByUserId(userId, tx);
         await emailVerificationTokensRepository.deleteTokensByUserId(
           userId,

@@ -1,6 +1,6 @@
 import * as authActions from './auth';
 import * as leaveActions from './leaves';
-import * as userSettingsActions from './user-settings';
+import * as visaActions from './visas';
 import * as userActions from './users';
 
-export { userActions, leaveActions, authActions, userSettingsActions };
+export { userActions, leaveActions, authActions, visaActions };

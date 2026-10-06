@@ -9,6 +9,7 @@ export default defineConfig({
     maxWorkers: 1, // Run tests in a single worker
     clearMocks: true, // Reset vi.fn() call history between tests in the same file
     setupFiles: ['./tests/setup.ts', './tests/setup-rtl.ts'],
+    exclude: ['**/node_modules/**', '**/dist/**', 'visa-calculator/**'],
     coverage: {
       provider: 'istanbul',
       reportsDirectory: './tests/coverage',

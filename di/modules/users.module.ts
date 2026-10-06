@@ -59,7 +59,7 @@ export function createUsersModule() {
     .toHigherOrderFunction(getUserDataExportUseCase, [
       DI_SYMBOLS.IInstrumentationService,
       DI_SYMBOLS.IUsersRepository,
-      DI_SYMBOLS.IUserSettingsRepository,
+      DI_SYMBOLS.IVisasRepository,
       DI_SYMBOLS.ILeavesRepository,
     ]);
 
@@ -70,7 +70,7 @@ export function createUsersModule() {
       DI_SYMBOLS.IAuthenticationService,
       DI_SYMBOLS.IUsersRepository,
       DI_SYMBOLS.ILeavesRepository,
-      DI_SYMBOLS.IUserSettingsRepository,
+      DI_SYMBOLS.IVisasRepository,
       DI_SYMBOLS.IPasswordResetTokensRepository,
       DI_SYMBOLS.IEmailVerificationTokensRepository,
       DI_SYMBOLS.IEmailChangeTokensRepository,

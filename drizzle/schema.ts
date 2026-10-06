@@ -32,14 +32,23 @@ export const leaves = sqliteTable('leaves', {
     .notNull(),
 });
 
-export const userSettings = sqliteTable('user_settings', {
+export const visas = sqliteTable('visas', {
   id: integer('id').primaryKey({ autoIncrement: true }).notNull(),
-  visaStartDate: integer('visa_start_date', { mode: 'timestamp' }).notNull(),
-  visaExpiryDate: integer('visa_expiry_date', { mode: 'timestamp' }).notNull(),
-  arrivalDate: integer('arrival_date', { mode: 'timestamp' }).notNull(),
   userId: text('user_id')
-    .references(() => users.id)
+    .references(() => users.id, { onDelete: 'cascade' })
     .notNull(),
+  country: text('country').notNull(),
+  name: text('name').notNull(),
+  startDate: integer('start_date', { mode: 'timestamp' }).notNull(),
+  expiryDate: integer('expiry_date', { mode: 'timestamp' }).notNull(),
+  arrivalDate: integer('arrival_date', { mode: 'timestamp' }).notNull(),
+  maxStayDays: integer('max_stay_days'),
+  rollingWindowDays: integer('rolling_window_days'),
+  qualifyingPeriodYears: integer('qualifying_period_years'),
+  remarks: text('remarks'),
+  createdAt: integer('created_at', { mode: 'timestamp' })
+    .notNull()
+    .default(sql`(unixepoch())`),
 });
 
 export const passwordResetTokens = sqliteTable('password_reset_tokens', {

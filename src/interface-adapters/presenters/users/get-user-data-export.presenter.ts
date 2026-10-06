@@ -1,12 +1,12 @@
 import { IInstrumentationService } from '@/src/application/services/instrumentation.service.interface';
 import { Leave } from '@/src/entities/models/leave';
 import { User } from '@/src/entities/models/user';
-import { UserSetting } from '@/src/entities/models/userSettings';
+import { Visa } from '@/src/entities/models/visa';
 
 export function getUserDataExportPresenter(
   data: {
     user: User;
-    settings: UserSetting | undefined;
+    visas: Visa[];
     leaves: Leave[];
   },
   instrumentationService: IInstrumentationService
@@ -23,13 +23,19 @@ export function getUserDataExportPresenter(
         email: data.user.email,
         emailVerified: data.user.emailVerified,
       },
-      visaSettings: data.settings
-        ? {
-            visaStartDate: data.settings.visaStartDate,
-            visaExpiryDate: data.settings.visaExpiryDate,
-            arrivalDate: data.settings.arrivalDate,
-          }
-        : null,
+      visas: data.visas.map((visa) => ({
+        id: visa.id,
+        country: visa.country,
+        name: visa.name,
+        startDate: visa.startDate,
+        expiryDate: visa.expiryDate,
+        arrivalDate: visa.arrivalDate,
+        maxStayDays: visa.maxStayDays,
+        rollingWindowDays: visa.rollingWindowDays,
+        qualifyingPeriodYears: visa.qualifyingPeriodYears,
+        remarks: visa.remarks,
+        createdAt: visa.createdAt,
+      })),
       leaves: data.leaves.map((leave) => ({
         id: leave.id,
         startDate: leave.startDate,

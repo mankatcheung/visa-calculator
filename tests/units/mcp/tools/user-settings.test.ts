@@ -1,41 +1,49 @@
 import { expect, it } from 'vitest';
 
 import {
-  getUserSettingsHandler,
-  getVisaStatusHandler,
-  updateUserSettingsHandler,
+  createVisaHandler,
+  listVisasHandler,
+  getVisaStatusMcpHandler,
 } from '@/src/interface-adapters/mcp/tools/user-settings';
 
 const USER_ID = '1';
 
-it('get_user_settings returns seeded settings', async () => {
-  const result = await getUserSettingsHandler(USER_ID);
-  const settings = JSON.parse(result.content[0].text);
-  expect(settings).not.toBeNull();
-  expect(settings.userId).toBe(USER_ID);
-  expect(settings.visaStartDate).toBeDefined();
+it('list_visas returns seeded visas for the user', async () => {
+  const result = await listVisasHandler(USER_ID);
+  const visas = JSON.parse(result.content[0].text);
+  expect(Array.isArray(visas)).toBe(true);
+  expect(visas.length).toBeGreaterThan(0);
+  expect(visas[0].userId).toBe(USER_ID);
+  expect(visas[0].country).toBeDefined();
 });
 
-it('get_visa_status returns computed status shape', async () => {
-  const result = await getVisaStatusHandler(USER_ID);
-  const status = JSON.parse(result.content[0].text);
+it('get_visa_status returns computed status for the first visa', async () => {
+  const listResult = await listVisasHandler(USER_ID);
+  const visas = JSON.parse(listResult.content[0].text);
+  const visaId = visas[0].id;
+
+  const result = await getVisaStatusMcpHandler(USER_ID, visaId);
+  const { visa, status } = JSON.parse(result.content[0].text);
+  expect(visa.id).toBe(visaId);
   expect(status).toMatchObject({
-    applyILRDate: expect.any(String),
-    applyCitizenshipDate: expect.any(String),
-    progressPercentage: expect.any(Number),
     isExpired: expect.any(Boolean),
+    daysSinceArrival: expect.any(Number),
+    totalVisaDurationDays: expect.any(Number),
   });
 });
 
-it('update_user_settings persists new dates', async () => {
-  await updateUserSettingsHandler(USER_ID, {
-    visaStartDate: '2024-03-01',
-    visaExpiryDate: '2029-03-01',
-    arrivalDate: '2024-04-01',
+it('create_visa persists a new visa and it appears in list', async () => {
+  await createVisaHandler(USER_ID, {
+    country: 'Japan',
+    name: 'Tourist',
+    startDate: '2025-01-01',
+    expiryDate: '2025-04-01',
+    arrivalDate: '2025-01-15',
   });
 
-  const result = await getUserSettingsHandler(USER_ID);
-  const settings = JSON.parse(result.content[0].text);
-  expect(new Date(settings.visaStartDate).getFullYear()).toBe(2024);
-  expect(new Date(settings.visaExpiryDate).getFullYear()).toBe(2029);
+  const result = await listVisasHandler(USER_ID);
+  const visas = JSON.parse(result.content[0].text);
+  const japan = visas.find((v: { country: string }) => v.country === 'Japan');
+  expect(japan).toBeDefined();
+  expect(japan.name).toBe('Tourist');
 });

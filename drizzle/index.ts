@@ -9,8 +9,8 @@ import {
   leaves,
   passwordResetTokens,
   sessions,
-  userSettings,
   users,
+  visas,
 } from './schema';
 
 const connectionString = process.env.DATABASE_URL;
@@ -34,7 +34,7 @@ export const db = drizzle(client, {
     users,
     sessions,
     leaves,
-    userSettings,
+    visas,
     passwordResetTokens,
     emailVerificationTokens,
     emailChangeTokens,
@@ -45,7 +45,7 @@ type Schema = {
   users: typeof users;
   sessions: typeof sessions;
   leaves: typeof leaves;
-  userSettings: typeof userSettings;
+  visas: typeof visas;
   passwordResetTokens: typeof passwordResetTokens;
   emailVerificationTokens: typeof emailVerificationTokens;
   emailChangeTokens: typeof emailChangeTokens;
