@@ -13,6 +13,7 @@ export async function POST(request: NextRequest): Promise<Response> {
   const transport = new WebStandardStreamableHTTPServerTransport({
     sessionIdGenerator: undefined, // stateless — no session tracking needed
     enableJsonResponse: true,
+    maxRequestBodySize: 256 * 1024,
   });
 
   const server = buildMcpServer(auth.userId);
